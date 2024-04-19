@@ -110,67 +110,74 @@ function InfoCard({ title, Icon, children }) {
   );
 }
 
-function PricingCard({title,price,benefits,oneliner}) {
+function PricingCard({ title, price, benefits, oneliner }) {
   return (
-    <div className='h-fit w-full rounded flex flex-col p-8 gap-8 bg-gray-700 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20'>
-      <div className='flex flex-col gap-2'>
+    <div className="h-fit w-full rounded flex flex-col p-8 gap-8 bg-gray-700 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20">
+      <div className="flex flex-col gap-2">
         <div>
-          <h6 className='text-2xl'>{title}</h6>
-          <p className='text-sm text-zinc-500'>{oneliner}</p>
+          <h6 className="text-2xl">{title}</h6>
+          <p className="text-sm text-zinc-500">{oneliner}</p>
         </div>
-        <p className='text-4xl font-bold'>
-          ${price} <span className='text-sm font-normal text-zinc-500'>/ Month</span>
+        <p className="text-4xl font-bold">
+          ${price}{" "}
+          <span className="text-sm font-normal text-zinc-500">/ Month</span>
         </p>
       </div>
-      <button className='bg-fuchsia-700 rounded p-2 text-sm transition-colors hover:bg-fuchsia-800'>Try 7 days free!</button>
-      <div className='flex flex-col w-full gap-4'>
+      <button className="bg-fuchsia-700 rounded p-2 text-sm transition-colors hover:bg-fuchsia-800">
+        Try 7 days free!
+      </button>
+      <div className="flex flex-col w-full gap-4">
         {benefits.map((benefit, i) => {
-          return(
-            <p key={i} className='text-sm text-zinc-500 flex items-center gap-2'>
+          return (
+            <p
+              key={i}
+              className="text-sm text-zinc-500 flex items-center gap-2"
+            >
               <span>
                 <CheckCheck />
               </span>
               {benefit}
             </p>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
 
 function Navbar() {
   return (
-    <div className="w-full h-16 backdrop-filter backdrop-blur-xl bg-opacity-20 border-b flex items-center justify-center">
-      <div className="max-w-7xl w-full flex items-center justify-between p-4">
+    <div className="w-full h-16 backdrop-filter backdrop-blur-xl bg-opacity-20 border-b flex items-center justify-center sticky  top-0 z-10 bg-fuchsia-950">
+      <div className="max-w-7xl w-full flex items-center justify-between p-4 backdrop-filter ">
         <h6 className="font-bold">Insightful</h6>
         <ul className="flex gap-8">
-          <li>
+        <li>
             <Link
               className="hover:text-fuchsia-500 transition-colors text-xs sm:text-base"
               href="home"
             >
-              Home
+              Search proyects
             </Link>
           </li>
           <li>
             <Link
               className="hover:text-fuchsia-500 transition-colors text-xs sm:text-base"
-              href="#about"
+              href="signIn"
             >
-              About
+              Sign in
             </Link>
           </li>
           <li>
             <Link
-              className="hover:text-fuchsia-500 transition-colors text-xs sm:text-base"
-              href="#pricing"
+              className="hover:text-fuchsia-500 hover:border-fuchsia-500 transition-colors text-xs sm:text-base border-2 px-3 py-1 rounded"
+              href="signUp"
             >
-              Pricing
+              Sign up
             </Link>
           </li>
         </ul>
       </div>
+      
     </div>
   );
 }
