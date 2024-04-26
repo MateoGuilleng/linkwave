@@ -12,34 +12,34 @@ function dashboard() {
   }
   return (
     <div>
-      <Navbar />
-      <div className="bg-white w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#161931]">
+      <Navbar using={"dashboard"} />
+      <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
         <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">
           <div className="sticky flex flex-col gap-2 p-4 text-sm border-r border-indigo-100 top-12">
             <h2 className="pl-3 mb-4 text-2xl font-semibold">Settings</h2>
             <a
-              href="#"
-              className="flex items-center px-3 py-2.5 font-bold bg-white  text-indigo-900 border rounded-full"
+              href="/dashboard"
+              className="flex items-center px-3 py-2.5 font-bol bg-slate-200  text-black border rounded-full"
             >
-              Pubic Profile
+              Dashboard
             </a>
             <a
-              href="#"
-              className="flex items-center px-3 py-2.5 font-semibold  hover:text-indigo-900 hover:border hover:rounded-full"
+              href="dashboard/projects/"
+              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
+            >
+              Projects
+            </a>
+            <a
+              href="dashboard/account"
+              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full"
             >
               Account Settings
             </a>
             <a
-              href="#"
-              className="flex items-center px-3 py-2.5 font-semibold hover:text-indigo-900 hover:border hover:rounded-full  "
+              href="dashboard/notifications"
+              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
             >
               Notifications
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-3 py-2.5 font-semibold hover:text-indigo-900 hover:border hover:rounded-full  "
-            >
-              PRO Account
             </a>
           </div>
         </aside>
@@ -87,7 +87,7 @@ function dashboard() {
                       <input
                         type="text"
                         id="first_name"
-                        className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                        className="bg-black border border-indigo-300 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                         placeholder="Your first name"
                         defaultValue="Jane"
                         required=""
@@ -103,7 +103,7 @@ function dashboard() {
                       <input
                         type="text"
                         id="last_name"
-                        className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                        className="bg-black border border-indigo-300 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                         placeholder="Your last name"
                         defaultValue="Ferguson"
                         required=""
@@ -120,7 +120,7 @@ function dashboard() {
                     <input
                       type="email"
                       id="email"
-                      className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                      className="bg-black border border-indigo-300 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                       placeholder="your.email@mail.com"
                       required=""
                     />
@@ -135,7 +135,7 @@ function dashboard() {
                     <input
                       type="text"
                       id="profession"
-                      className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                      className="bg-black border border-indigo-300 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                       placeholder="your profession"
                       required=""
                     />
@@ -150,7 +150,7 @@ function dashboard() {
                     <textarea
                       id="message"
                       rows={4}
-                      className="block p-2.5 w-full text-sm text-indigo-900 bg-indigo-50 rounded-lg border border-indigo-300 focus:ring-indigo-500 focus:border-indigo-500 "
+                      className="block p-2.5 w-full text-sm text-white bg-black rounded-lg border border-indigo-300 focus:ring-indigo-500 focus:border-indigo-500 "
                       placeholder="Write your bio here..."
                       defaultValue={""}
                     />
@@ -172,6 +172,5 @@ function dashboard() {
     </div>
   );
 }
-
 
 export default dashboard;

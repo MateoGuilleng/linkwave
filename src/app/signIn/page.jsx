@@ -87,6 +87,7 @@ export default function page() {
               />
             </div>
             <div className="flex items-center justify-between mt-8">
+              {error}
               <button
                 type="submit"
                 className="flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-700 hover:bg-indigo-800 md:py-4 md:text-lg md:px-10"
