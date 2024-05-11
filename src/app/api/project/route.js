@@ -34,12 +34,22 @@ export const GET = async (request, res) => {
   try {
     await connect();
 
+    // Verificar la URL de la solicitud para determinar la fuente
+    const isFeedRequest = request.url.includes('/feed');
     const data = await getServerSession(authOptions);
-    const author = data.user.name;
-    const projects = await project.find({ author });
+    const author = data.user.email;
+
+    let projects;
+    if (isFeedRequest) {
+      // Si la solicitud proviene de la ruta /feed, obtener todos los proyectos de todos los usuarios
+      projects = await project.find();
+    } else {
+      // Si la solicitud no proviene de la ruta /feed, obtener solo los proyectos del usuario de la sesión
+      projects = await project.find({ author });
+    }
 
     if (!projects || projects.length === 0) {
-      return new NextResponse("No projects found for the author", {
+      return new NextResponse("No projects found", {
         status: 404,
       });
     } else {

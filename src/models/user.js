@@ -4,7 +4,11 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    name: {
+    firstName: {
+      type: String,
+      required: false,
+    },
+    lastName: {
       type: String,
       required: false,
     },
@@ -13,6 +17,18 @@ const userSchema = new Schema(
       required: true,
     },
     password: {
+      type: String,
+      required: false,
+    },
+    profile_image: {
+      type: String,
+      required: false,
+    },
+    profession: {
+      type: String,
+      required: false,
+    },
+    bio: {
       type: String,
       required: false,
     },

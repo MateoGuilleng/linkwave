@@ -42,9 +42,10 @@ export default function Page() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const name = e.target[0].value;
-    const email = e.target[1].value;
-    const password = e.target[2].value;
+    const firstName = e.target[0].value;
+    const lastName = e.target[1].value;
+    const email = e.target[2].value;
+    const password = e.target[3].value;
 
     if (!isValidEmail(email)) {
       setError("The email is invalid");
@@ -63,7 +64,8 @@ export default function Page() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
+          firstName,
+          lastName,
           email,
           password,
         }),
@@ -87,16 +89,30 @@ export default function Page() {
         <h1 className="mb-8 font-extrabold text-4xl">Register</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <form onSubmit={handleSubmit}>
-            <div>
+            <div className="mt-4">
               <label className="block font-semibold" htmlFor="name">
-                Name
+                First Name
               </label>
               <input
                 className="w-full shadow-inner bg-slate-900 rounded-lg  text-2xl p-4 border-none block mt-1 "
-                placeholder="Gumball Waterson"
+                placeholder="Gumball"
                 id="name"
                 type="text"
-                name="name"
+                name="FisrtName"
+                required="required"
+                autofocus="autofocus"
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block font-semibold" htmlFor="name">
+                Last Name
+              </label>
+              <input
+                className="w-full shadow-inner bg-slate-900 rounded-lg  text-2xl p-4 border-none block mt-1 "
+                placeholder="Waterson"
+                id="name"
+                type="text"
+                name="lastName"
                 required="required"
                 autofocus="autofocus"
               />
