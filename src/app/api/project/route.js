@@ -35,7 +35,10 @@ export const GET = async (request, res) => {
     await connect();
 
     // Verificar la URL de la solicitud para determinar la fuente
-    const isFeedRequest = request.url.includes('/feed');
+    const isFeedRequest = request.url.includes('feed');
+
+    console.log(request.HeadersList)
+
     const data = await getServerSession(authOptions);
     const author = data.user.email;
 
@@ -45,7 +48,7 @@ export const GET = async (request, res) => {
       projects = await project.find();
     } else {
       // Si la solicitud no proviene de la ruta /feed, obtener solo los proyectos del usuario de la sesión
-      projects = await project.find({ author });
+      projects = await project.find(); // Eliminamos la condición que filtra por autor
     }
 
     if (!projects || projects.length === 0) {
@@ -61,4 +64,3 @@ export const GET = async (request, res) => {
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
-

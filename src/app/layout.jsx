@@ -12,10 +12,24 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   const session = await getServerSession();
+  
   return (
     <html lang="en">
+      <head>
+        <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css"
+          rel="stylesheet"
+          async={false} // Esto carga el CSS de forma síncrona
+        />
+        {/* Agrega el título y la descripción usando el Metadata API */}
+        <title>{metadata.title}</title>
+        <meta name="description" content={metadata.description} />
+        
+      </head>
       <body className={inter.className}>
         <SessionProvider session={session}>{children}</SessionProvider>
+        {/* Incluye el script de Flowbite directamente en el cuerpo del documento */}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
       </body>
     </html>
   );

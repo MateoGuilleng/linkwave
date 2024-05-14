@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import { DarkThemeToggle, Flowbite } from "flowbite-react";
 function Navbar({ using }) {
   const { data: session } = useSession();
   const use = using;
@@ -17,10 +18,13 @@ function Navbar({ using }) {
               Insightful
             </Link>
             <ul className="flex gap-8">
+              <DarkThemeToggle />
               <li>
                 <Link
                   className={`hover:text-fuchsia-500 transition-colors text-xs sm:text-base ${
-                    use == "feed" ? "border-b-4 hover:border-fuchsia-500" : "text-white"
+                    use == "feed"
+                      ? "border-b-4 hover:border-fuchsia-500"
+                      : "text-white"
                   }`}
                   href="/feed"
                 >
@@ -30,7 +34,9 @@ function Navbar({ using }) {
               <li>
                 <Link
                   className={`hover:text-fuchsia-500 transition-colors text-xs sm:text-base ${
-                    use == "dashboard" ? "border-b-4 hover:border-fuchsia-500" : "text-white"
+                    use == "dashboard"
+                      ? "border-b-4 hover:border-fuchsia-500"
+                      : "text-white"
                   }`}
                   href="/dashboard"
                 >
@@ -48,7 +54,9 @@ function Navbar({ using }) {
               <li>
                 <Link
                   className={`hover:text-fuchsia-500 hover:border-fuchsia-500 transition-colors text-xs sm:text-base px-3 py-1 rounded  ${
-                    use == "projects" ? "border-b-4 hover:border-fuchsia-500" : "text-white"
+                    use == "projects"
+                      ? "border-b-4 hover:border-fuchsia-500"
+                      : "text-white"
                   }`}
                   href="/dashboard/projects"
                 >

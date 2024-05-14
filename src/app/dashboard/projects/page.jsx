@@ -1,15 +1,26 @@
 "use client";
+
 import { useState, useEffect } from "react";
+import { initFlowbite } from "flowbite";
 import Link from "next/link";
+import { FaPlus, FaInfo } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-
+import {
+  Dropdown,
+  Button,
+  Modal,
+  Checkbox,
+  Label,
+  TextInput,
+} from "flowbite-react";
 function ProjectsPage() {
+  const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
   const [projects, setProjects] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+
   const [error, setError] = useState();
 
   const handleProjectSubmit = async (e) => {
@@ -58,10 +69,10 @@ function ProjectsPage() {
       getProjects();
     }
   }, [status]);
-
+  const author = session?.user?.email;
   const getProjects = async () => {
     try {
-      const res = await fetch(`/api/project`, {
+      const res = await fetch(`/api/project/${author}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -78,89 +89,18 @@ function ProjectsPage() {
     }
   };
 
-  const handleCreateProject = () => {
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
   if (status === "loading") {
     return <p>Loading...</p>;
+  }
+
+  function onCloseModal() {
+    setOpenModal(false);
   }
 
   return (
     <div>
       <Navbar using={"projects"} />
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-zinc-900 p-6 rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">Create Project</h2>
-            <form>
-              <div className="mb-4">
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-white"
-                >
-                  Title
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  className="mt-1 p-2 border border-gray-700 bg-zinc-900 rounded-md w-full"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-white"
-                >
-                  Description
-                </label>
-                <input
-                  type="text"
-                  id="description"
-                  name="description"
-                  className="mt-1 p-2 border border-gray-300 bg-zinc-900 rounded-md w-full"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="content"
-                  className="block text-sm font-medium text-white"
-                >
-                  Content
-                </label>
-                <input
-                  type="text"
-                  id="content"
-                  name="content"
-                  className="mt-1 p-2 border border-gray-300 bg-zinc-900 rounded-md w-full"
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                  onClick={handleProjectSubmit}
-                >
-                  Create
-                </button>
-                <button
-                  type="button"
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                  onClick={closeModal}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-            <div className="text-red">{error}</div>
-          </div>
-        </div>
-      )}
+
       <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
         <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">
           <div className="sticky flex flex-col gap-2 p-4 text-sm border-r border-indigo-100 top-12">
@@ -198,25 +138,83 @@ function ProjectsPage() {
                 <h2 className="pl-6 text-2xl font-bold sm:text-xl">
                   Your projects:
                 </h2>
-                <button
-                  className="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-teal-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-                  onClick={handleCreateProject}
-                >
-                  Create Project
-                </button>
+
+                <>
+                  <Button
+                    className="hover:border-white bg-green-700"
+                    onClick={() => setOpenModal(true)}
+                  >
+                    <div className="flex gap-5 align-middle">
+                      <div>Create new project </div>
+                      <div>
+                        <FaPlus />
+                      </div>
+                    </div>
+                  </Button>
+                  <Modal show={openModal} onClose={() => setOpenModal(false)}>
+                    <Modal.Header>New project</Modal.Header>
+                    <Modal.Body>
+                      <form
+                        onSubmit={handleProjectSubmit}
+                        className="flex max-w-md flex-col gap-4"
+                      >
+                        <div>
+                          <div className="mb-2 block">
+                            <Label htmlFor="title" value="Title:" />
+                          </div>
+                          <TextInput
+                            id="title"
+                            name="title"
+                            type="title"
+                            placeholder="Title of my project"
+                            required
+                            autoComplete="off" // Evitar autocompletar
+                          />
+                        </div>
+                        <div>
+                          <div className="mb-2 block">
+                            <Label htmlFor="description" value="Description" />
+                          </div>
+                          <TextInput
+                            id="description"
+                            type="description"
+                            name="description"
+                            required
+                            autoComplete="off" // Evitar autocompletar
+                          />
+                        </div>
+                        <div>
+                          <div className="mb-2 block">
+                            <Label htmlFor="content" value="Content:" />
+                          </div>
+                          <TextInput
+                            id="content"
+                            type="content"
+                            name="content"
+                            required
+                            autoComplete="off" // Evitar autocompletar
+                          />
+                        </div>
+
+                        <Button type="submit">Submit</Button>
+                      </form>
+                    </Modal.Body>
+                  </Modal>
+                </>
               </div>
+
               <div className="grid grid-cols-1 gap-4 w-full">
                 {projects
                   ? projects.map((project) => (
                       <div
-                        className="max-w-sm w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+                        className="max-w-sm w-full bg-transparent border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
                         key={project._id}
                       >
                         <div className="m-4">
-                          <h3 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                          <h3 className="mb-2 text-2xl font-bold tracking-tight text-white dark:text-white">
                             {project.title}
                           </h3>
-                          <p className="pb-3 font-normal text-gray-700 dark:text-gray-400">
+                          <p className="pb-3 font-normal text-gray-400 dark:text-gray-400">
                             {project.description}
                           </p>
                           <p className="pb-3">{project.content}</p>

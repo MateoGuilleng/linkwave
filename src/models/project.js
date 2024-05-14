@@ -7,6 +7,7 @@ const projectSchema = new Schema(
     title: {
       type: String,
       required: true,
+      unique: true,
     },
     description: {
       type: String,
@@ -20,6 +21,10 @@ const projectSchema = new Schema(
       type: String,
       required: true,
     },
+    comments: {
+      type: Array,
+      required: false,
+    }
   },
   { timestamps: true }
 );

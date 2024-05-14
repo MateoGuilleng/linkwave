@@ -7,10 +7,10 @@ export const GET = async (request, { params }) => {
 
   const email = params.author;
 
-  const projectFound = await project.findOne({ author: email });
+  const authorProjects = await project.find({ author: email });
 
   try {
-    return new NextResponse(JSON.stringify(projectFound), { status: 200 });
+    return new NextResponse(JSON.stringify(authorProjects), { status: 200 });
   } catch (error) {
     return new NextResponse(error, { status: 500 });
   }
