@@ -4,13 +4,19 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import { Button, Modal, Label, FileInput } from "flowbite-react";
+import { HiOutlineExclamationCircle, HiSave } from "react-icons/hi";
 
 function Dashboard() {
+  const [openModal, setOpenModal] = useState(false);
+  const [picModal, setPicModal] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
   const [userData, setUserData] = useState(null);
   const [formFilled, setFormFilled] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [archivo, setArchivo] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -44,10 +50,40 @@ function Dashboard() {
     setFormFilled(false);
   };
 
+  const handleUploadImage = (e) => {
+    const archivoSeleccionado = e.target.files[0];
+
+    // Verificar si el archivo es de un tipo permitido
+    const tiposPermitidos = [
+      "image/svg+xml",
+      "image/png",
+      "image/jpeg",
+      "image/gif",
+    ];
+    if (
+      archivoSeleccionado &&
+      tiposPermitidos.includes(archivoSeleccionado.type)
+    ) {
+      setArchivo(archivoSeleccionado);
+
+      // Crear una URL temporal para previsualización de la imagen
+      const previewUrl = URL.createObjectURL(archivoSeleccionado);
+      setImagePreview(previewUrl);
+      console.log(previewUrl);
+    } else {
+      // Restablecer el estado en caso de un tipo de archivo no permitido
+      setArchivo(null);
+      setImagePreview(null);
+      setError(
+        "Tipo de archivo no permitido. Selecciona un archivo SVG, PNG, JPG o GIF."
+      );
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const email = session.user.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
+    const email = session?.user?.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
     let firstName = formData.get("firstName");
     let lastName = formData.get("lastName");
     let profession = formData.get("profession");
@@ -109,6 +145,57 @@ function Dashboard() {
     }
   };
 
+  const handleSaveImage = async (e) => {
+    e.preventDefault();
+    const email = session?.user?.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
+
+    const formImageData = new FormData();
+    try {
+      if (archivo ?? false) {
+        formImageData.append("file", archivo);
+        const uploadResponse = await fetch(`/api/uploadImage`, {
+          method: "POST",
+
+          body: formImageData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(
+            `Error al subir la imagen: ${uploadResponse.statusText}`
+          );
+        }
+
+        const uploadResult = await uploadResponse.json();
+        console.log(uploadResult.message);
+        console.log("Proyecto subido con éxito!");
+        const imageLink = await uploadResult.url;
+        console.log(imageLink)
+
+        const firstName = await userData.firstName
+        const lastName = await userData.lastName
+        const profession = await userData.profession
+        const bio = await userData.bio
+
+        // Hacer la solicitud POST a '../api/repos/uploadRepo'
+        const proyectResponse = await fetch(`/api/${email}`, {
+          method: "PUT",
+          body: JSON.stringify({ firstName, lastName, profession, bio, imageLink }),
+        });
+
+        if (!proyectResponse.ok) {
+          throw new Error(
+            `Error al subir el repositorio: ${proyectResponse.statusText}`
+          );
+        }
+
+        const resProyect = await proyectResponse.json();
+        console.log("resProyect", resProyect);
+      }
+    } catch (error) {
+      console.error(`Error al enviar la solicitud: ${error.message}`);
+    }
+  };
+
   if (status === "loading") {
     return <p>Loading...</p>;
   }
@@ -161,21 +248,137 @@ function Dashboard() {
                     alt="Bordered avatar"
                   />
                   <div className="flex flex-col space-y-5 sm:ml-8">
-                    <button
-                      type="button"
-                      className="py-3.5 px-7 text-base font-medium text-indigo-100 focus:outline-none bg-[#202142] rounded-lg border border-indigo-200 hover:bg-indigo-900 focus:z-10 focus:ring-4 focus:ring-indigo-200 "
-                    >
-                      Change picture
-                    </button>
+                    <>
+                      <Button
+                        className="hover:border-white bg-green-700"
+                        onClick={() => setPicModal(true)}
+                      >
+                        <div className="flex gap-5 align-middle">
+                          <div>Change profile image</div>
+                        </div>
+                      </Button>
+                      <Modal
+                        className="bg-black/75"
+                        show={picModal}
+                        onClose={() => setPicModal(false)}
+                      >
+                        <Modal.Header>Upload New Avatar:</Modal.Header>
+                        <Modal.Body>
+                          <div className="overflow-y-auto max-h-[70vh]">
+                            <div className="flex w-full items-center justify-center">
+                              <Label
+                                htmlFor="dropzone-file"
+                                className="flex h-34 w-full mb-10 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                              >
+                                <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                                  <svg
+                                    className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 20 16"
+                                  >
+                                    <path
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                                    />
+                                  </svg>
+                                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <span className="font-semibold">
+                                      Click to upload
+                                    </span>{" "}
+                                    or drag and drop
+                                  </p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    SVG, PNG, JPG or GIF (MAX. 800x400px)
+                                  </p>
+                                </div>
+                                <FileInput
+                                  onChange={(e) => handleUploadImage(e)}
+                                  id="dropzone-file"
+                                  className="hidden"
+                                />
+                              </Label>
+                            </div>
+                            <div className="w-full self-center">
+                              {imagePreview && (
+                                <div className="flex flex-col items-center justify-center">
+                                  <div className="text-left text-md font-semibold p-5">
+                                    Your Uploaded Avatar
+                                  </div>
+                                  <img
+                                    src={imagePreview}
+                                    alt="Vista previa de la imagen"
+                                    className="max-w-full max-h-[400px]"
+                                  />
+                                  <div className="mt-4 w-full flex flex-row justify-start">
+                                    <Button.Group>
+                                      <Button
+                                        onClick={(e) => handleSaveImage(e)}
+                                        className="hover:border-white bg-blue-600"
+                                      >
+                                        <HiSave className="mr-3 h-4 w-4" />
+                                        Save
+                                      </Button>
 
-                    <button
-                      data-modal-target="popup-modal"
-                      data-modal-toggle="popup-modal"
-                      className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                      type="button"
-                    >
-                      Toggle modal
-                    </button>
+                                      <Button className="hover:border-white">
+                                        Remove Avatar
+                                      </Button>
+                                    </Button.Group>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </Modal.Body>
+                      </Modal>
+                    </>
+                    <>
+                      <Button
+                        className="border-w hover:bg-red-800"
+                        onClick={() => setOpenModal(true)}
+                      >
+                        Sign out
+                      </Button>
+                      <Modal
+                        show={openModal}
+                        size="md"
+                        onClose={() => setOpenModal(false)}
+                        popup
+                      >
+                        <Modal.Header />
+                        <Modal.Body>
+                          <div className="text-center">
+                            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+                            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                              Are you sure you want to sign out?
+                            </h3>
+                            <div className="flex justify-center gap-4">
+                              <Button
+                                color="failure"
+                                onClick={() => {
+                                  setOpenModal(false);
+                                  signOut();
+                                  router.replace("/");
+                                }}
+                              >
+                                {"Yes, I'm sure"}
+                              </Button>
+                              <Button
+                                color="gray"
+                                onClick={() => setOpenModal(false)}
+                              >
+                                No, cancel
+                              </Button>
+                            </div>
+                          </div>
+                        </Modal.Body>
+                      </Modal>
+                    </>
+
                     <div
                       id="popup-modal"
                       tabIndex={-1}

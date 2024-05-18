@@ -24,9 +24,9 @@ export const PUT = async (request, { params, body }) => {
 
   const email = params.user;
 
-  const { firstName, lastName, profession, bio} = await request.json()
+  const { firstName, lastName, profession, bio, imageLink} = await request.json()
 
-  console.log(firstName, lastName, profession, bio)
+  console.log(firstName, lastName, profession, bio, imageLink)
 
   try {
     // Actualizar el usuario en la base de datos
@@ -37,6 +37,7 @@ export const PUT = async (request, { params, body }) => {
         lastName: lastName,
         profession: profession,
         bio: bio,
+        profile_image: imageLink,
       },
       { new: true }
     );
