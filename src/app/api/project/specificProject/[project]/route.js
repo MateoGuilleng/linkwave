@@ -43,6 +43,7 @@ export const PUT = async (request, { params }) => {
   const authorInfo = await user.findOne({ email: author });
   const authorFN = authorInfo.firstName;
   const authorLN = authorInfo.lastName;
+  const authorProfileImage = authorInfo.profile_image;
 
   console.log(
     "comentario:",
@@ -50,10 +51,13 @@ export const PUT = async (request, { params }) => {
     "author:",
     author,
     "proyecto:",
-    projectTitle
+    projectTitle,
+    'Imagen autor:',
+    authorProfileImage
+
   );
 
-  const newComment = { author, comment, authorFN, authorLN };
+  const newComment = { author, comment, authorFN, authorLN, authorProfileImage };
 
   // Agrega la fecha de creación al nuevo comentario
   newComment.createdAt = new Date();

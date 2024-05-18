@@ -164,24 +164,34 @@ function Page() {
                     </Modal.Header>
                     <Modal.Body className="max-h-[400px] overflow-y-auto">
                       <div className="space-y-6">
-                        <h3 className="text-xl">Comments:</h3>
+                        <h3 className="text-xl font-bold">Comments:</h3>
                         {project.comments &&
                           project.comments.map((comment, index) => (
                             <div
                               key={index}
-                              className="border border-gray-300 p-3 rounded"
+                              className="border-b-2 border-white/25 p-3 rounded"
                             >
-                              <p>
-                                <strong className="text-xl">
-                                  {comment.authorFN} {comment.authorLN}
-                                </strong>{" "}
-                                <p className="text-xs">{comment.author}</p>
-                              </p>
-                              <p className="text-xs mt-5">
-                                {formatCreatedAt(comment.createdAt)}
-                              </p>
-
-                              <p className="mt-10">{comment.comment}</p>
+                              <div className="flex">
+                                <img
+                                  alt="Bonnie image"
+                                  src={comment.authorProfileImage}
+                                  className="mb-3 rounded-full shadow-lg w-14 h-14"
+                                />
+                                <div className="flex flex-col ml-4">
+                                  <p>
+                                    <strong className="text-md ">
+                                      {comment.authorFN} {comment.authorLN}
+                                    </strong>{" "}
+                                    <p className="text-xs text-gray-400">
+                                      {comment.author}
+                                    </p>
+                                  </p>
+                                  <p className="text-xs mt-2 text-gray-400">
+                                    {formatCreatedAt(comment.createdAt)}
+                                  </p>
+                                  <p className="mt-10">{comment.comment}</p>
+                                </div>
+                              </div>
                             </div>
                           ))}
                       </div>
