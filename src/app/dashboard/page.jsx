@@ -145,6 +145,12 @@ function Dashboard() {
     }
   };
 
+  const handleDeleteImagePreview = async (e) => {
+    setImagePreview(null);
+    setArchivo(null);
+  };
+
+
   const handleSaveImage = async (e) => {
     e.preventDefault();
     const email = session?.user?.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
@@ -169,17 +175,23 @@ function Dashboard() {
         console.log(uploadResult.message);
         console.log("Proyecto subido con éxito!");
         const imageLink = await uploadResult.url;
-        console.log(imageLink)
+        console.log(imageLink);
 
-        const firstName = await userData.firstName
-        const lastName = await userData.lastName
-        const profession = await userData.profession
-        const bio = await userData.bio
+        const firstName = await userData.firstName;
+        const lastName = await userData.lastName;
+        const profession = await userData.profession;
+        const bio = await userData.bio;
 
         // Hacer la solicitud POST a '../api/repos/uploadRepo'
         const proyectResponse = await fetch(`/api/${email}`, {
           method: "PUT",
-          body: JSON.stringify({ firstName, lastName, profession, bio, imageLink }),
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            profession,
+            bio,
+            imageLink,
+          }),
         });
 
         if (!proyectResponse.ok) {
@@ -190,6 +202,7 @@ function Dashboard() {
 
         const resProyect = await proyectResponse.json();
         console.log("resProyect", resProyect);
+        router.refresh();
       }
     } catch (error) {
       console.error(`Error al enviar la solicitud: ${error.message}`);
@@ -324,7 +337,12 @@ function Dashboard() {
                                         Save
                                       </Button>
 
-                                      <Button className="hover:border-white">
+                                      <Button
+                                        onClick={() =>
+                                          handleDeleteImagePreview()
+                                        }
+                                        className="hover:border-white"
+                                      >
                                         Remove Avatar
                                       </Button>
                                     </Button.Group>
@@ -348,6 +366,7 @@ function Dashboard() {
                         size="md"
                         onClose={() => setOpenModal(false)}
                         popup
+                        className="bg-black/75"
                       >
                         <Modal.Header />
                         <Modal.Body>

@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export const PUT = async (request, { params }) => {
   await connect();
 
-  const { title, description, content } = await request.json();
+  const { title, description, content, imageLink } = await request.json();
 
   const projectTitle = params.projectAdmin;
 
@@ -18,6 +18,7 @@ export const PUT = async (request, { params }) => {
       title: title,
       description: description,
       content: content,
+      banner: imageLink,
     }
   );
 

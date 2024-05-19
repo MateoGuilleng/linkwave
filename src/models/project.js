@@ -9,6 +9,11 @@ const projectSchema = new Schema(
       required: true,
       unique: true,
     },
+    banner: {
+      type: String,
+      required: false,
+      default: "https://res.cloudinary.com/dudftt5ha/image/upload/v1716151679/yp1vcyfpqmn034jedg8n.jpg"
+    },
     description: {
       type: String,
       required: false,
@@ -24,7 +29,7 @@ const projectSchema = new Schema(
     comments: {
       type: Array,
       required: false,
-    }
+    },
   },
   { timestamps: true }
 );

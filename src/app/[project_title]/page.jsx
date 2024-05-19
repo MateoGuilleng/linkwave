@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { initFlowbite } from "flowbite";
 import Navbar from "@/components/Navbar";
 import { HiAdjustments, HiCloudDownload, HiUserCircle } from "react-icons/hi";
-import { Button, Modal, Textarea, Label } from "flowbite-react";
-import { FaArrowLeft, FaPlus, FaWindowClose, FaInfo } from "react-icons/fa";
+import { Button, Modal, Textarea, Label, Dropdown } from "flowbite-react";
+import { FaArrowLeft } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { Link } from "lucide-react";
+import { SlOptionsVertical } from "react-icons/sl";
 import { useSession } from "next-auth/react";
 
 function Page() {
@@ -95,12 +94,18 @@ function Page() {
     }
   };
 
+  const projectComments = project.comments;
   return (
     <div>
       <Navbar />
 
       <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
         <div className="w-full">
+          <img
+            className="object-cover w-full h-72 p-1 ring-2 ring-indigo-300 dark:ring-indigo-500"
+            src={project.banner}
+            alt="Bordered avatar"
+          />
           <div className="m-10  mb-0 text-2xl border-b pb-5 flex gap-6 justify-between border-indigo-100 font-semibold">
             <div className="flex gap-10">
               <button onClick={router.back}>
@@ -164,7 +169,9 @@ function Page() {
                     </Modal.Header>
                     <Modal.Body className="max-h-[400px] overflow-y-auto">
                       <div className="space-y-6">
-                        <h3 className="text-xl font-bold">Comments:</h3>
+                        <h3 className="text-xl font-bold">
+                          Comments: ({projectComments?.length})
+                        </h3>
                         {project.comments &&
                           project.comments.map((comment, index) => (
                             <div
@@ -177,15 +184,70 @@ function Page() {
                                   src={comment.authorProfileImage}
                                   className="mb-3 rounded-full shadow-lg w-14 h-14"
                                 />
-                                <div className="flex flex-col ml-4">
-                                  <p>
-                                    <strong className="text-md ">
-                                      {comment.authorFN} {comment.authorLN}
-                                    </strong>{" "}
-                                    <p className="text-xs text-gray-400">
-                                      {comment.author}
-                                    </p>
-                                  </p>
+                                <div className="flex flex-col w-full ml-4">
+                                  <div className="flex justify-between w-full">
+                                    <div>
+                                      <p>
+                                        <a
+                                          className="hover:border-b-2"
+                                          href={`profile/${author}`}
+                                        >
+                                          <strong className="text-md ">
+                                            {comment.authorFN}{" "}
+                                            {comment.authorLN}{" "}
+                                            {session?.user?.email ==
+                                            comment.author
+                                              ? "(you)"
+                                              : ""}
+                                          </strong>{" "}
+                                        </a>
+                                        <p className="text-xs text-gray-400">
+                                          {comment.author}
+                                        </p>
+                                      </p>
+                                    </div>
+                                    <div className="self-end">
+                                      <Dropdown
+                                        label=""
+                                        dismissOnClick={false}
+                                        renderTrigger={() => (
+                                          <span>
+                                            <SlOptionsVertical />
+                                          </span>
+                                        )}
+                                      >
+                                        {session?.user?.email ==
+                                        comment.author ? (
+                                          <div>
+                                            <Dropdown.Item>
+                                              Copy Link
+                                            </Dropdown.Item>
+                                            <Dropdown.Item>
+                                              Edit Comment
+                                            </Dropdown.Item>
+                                            <Dropdown.Item>
+                                              Follow Comment
+                                            </Dropdown.Item>
+                                            <Dropdown.Item>
+                                              Remove Comment
+                                            </Dropdown.Item>
+                                          </div>
+                                        ) : (
+                                          <div>
+                                            <Dropdown.Item>
+                                              Copy Link
+                                            </Dropdown.Item>
+                                            <Dropdown.Item>
+                                              Follow Comment
+                                            </Dropdown.Item>
+                                            <Dropdown.Item>
+                                              Report Comment
+                                            </Dropdown.Item>
+                                          </div>
+                                        )}
+                                      </Dropdown>
+                                    </div>
+                                  </div>
                                   <p className="text-xs mt-2 text-gray-400">
                                     {formatCreatedAt(comment.createdAt)}
                                   </p>
