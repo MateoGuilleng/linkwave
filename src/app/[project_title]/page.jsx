@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import Navbar from "@/components/Navbar";
-import { HiAdjustments, HiCloudDownload, HiUserCircle } from "react-icons/hi";
+import {
+  HiAdjustments,
+  HiCloudDownload,
+  HiUserCircle,
+  HiStar,
+  HiOutlineStar,
+} from "react-icons/hi";
 import { Button, Modal, Textarea, Label, Dropdown } from "flowbite-react";
 import { FaArrowLeft } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -11,6 +17,8 @@ import { SlOptionsVertical } from "react-icons/sl";
 import { useSession } from "next-auth/react";
 
 function Page() {
+  const [starIsClicked, setStarIsClicked] = useState(false);
+  const [binaryStar, setBinaryStar] = useState(0);
   const [openModal, setOpenModal] = useState(false);
   const [error, setError] = useState();
   const { data: session, status } = useSession();
@@ -33,6 +41,48 @@ function Page() {
     }
   }, [status]);
 
+  useEffect(() => {
+    if (project.starredBy?.includes(session?.user?.email)) {
+      setStarIsClicked(true);
+      setBinaryStar(1);
+    } else {
+      setStarIsClicked(false);
+      setBinaryStar(0);
+    }
+  }, [project, session]);
+
+  const handleStarClick = async () => {
+    console.log("loco");
+    const newStarIsClicked = !starIsClicked;
+    setStarIsClicked(newStarIsClicked); // Cambia el estado de clicado a no clicado y viceversa
+
+    const newBinaryStar = newStarIsClicked ? 1 : 0;
+
+    console.log("binary Star: ", newBinaryStar, typeof newBinaryStar); //binary Star:  1 number
+    console.log("lastWord: ", lastWord, typeof lastWord); // Añade un log para lastWord
+
+    const starredBy = await session?.user?.email;
+    try {
+      const res = await fetch(`/api/stars/project/${lastWord}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          binaryStar: newBinaryStar,
+          starredBy,
+        }),
+      });
+
+      if (res.status === 200) {
+        setError("");
+      } else {
+        setError("Failed to update the star status");
+        console.log("Response status: ", res.status);
+      }
+    } catch (error) {
+      setError("Something went wrong, try again");
+      console.log(error);
+    }
+  };
+
   const router = useRouter();
 
   const getProject = async () => {
@@ -53,10 +103,11 @@ function Page() {
       console.error("Error fetching projects:", error.message);
     }
   };
-  // Función para formatear la fecha y calcular la diferencia de tiempo desde el momento actual
+
   const formatCreatedAt = (createdAt) => {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
   };
+
   const handleCommentInputChange = (e) => {
     const text = e.target.value;
     setCommentText(text);
@@ -94,7 +145,7 @@ function Page() {
     }
   };
 
-  const projectComments = project.comments;
+  const projectComments = project?.comments;
   return (
     <div>
       <Navbar />
@@ -111,12 +162,28 @@ function Page() {
               <button onClick={router.back}>
                 <FaArrowLeft />{" "}
               </button>{" "}
-              <h2>{project?.title}</h2>{" "}
+              <div>
+                <h2>{project?.title}</h2>{" "}
+                <a
+                  className="text-lg border-b-2"
+                  href={`profile/${project?.author}`}
+                >
+                  {" "}
+                  {project?.author}{" "}
+                </a>
+              </div>
               <h3 className="text-gray-400 text-xl">
                 {" "}
                 {project?.description}{" "}
               </h3>
             </div>{" "}
+            <button onClick={handleStarClick} className="p-4 mr-24">
+              {starIsClicked ? (
+                <HiStar className="w-12 h-12" />
+              ) : (
+                <HiOutlineStar className="w-12 h-12" />
+              )}
+            </button>
           </div>
 
           <main className="m-10 mt-0">
@@ -264,6 +331,19 @@ function Page() {
                   <HiAdjustments className="mr-3 h-4 w-4" />
                   Settings
                 </Button>
+                {project?.author == author ? (
+                  <Button
+                    color=""
+                    onClick={() =>
+                      router.push(`/dashboard/projects/${project?.title}`)
+                    }
+                  >
+                    <HiAdjustments className="mr-3 h-4 w-4" />
+                    Edit Project
+                  </Button>
+                ) : (
+                  ""
+                )}
               </Button.Group>
             </div>
             <div className="m-10"> {project?.content}</div>

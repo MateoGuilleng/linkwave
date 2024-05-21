@@ -5,10 +5,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 
 export const POST = async (request) => {
-  const { title, description, content, author } = await request.json();
+  const { title, description, content, author, projectType } =
+    await request.json();
 
   await connect();
-
+  const stars = 0;
   const existingProject = await project.findOne({ title });
 
   if (existingProject) {
@@ -20,6 +21,8 @@ export const POST = async (request) => {
     description,
     content,
     author,
+    projectType,
+    stars,
   });
 
   try {
@@ -35,9 +38,9 @@ export const GET = async (request, res) => {
     await connect();
 
     // Verificar la URL de la solicitud para determinar la fuente
-    const isFeedRequest = request.url.includes('feed');
+    const isFeedRequest = request.url.includes("feed");
 
-    console.log(request.HeadersList)
+    console.log(request.HeadersList);
 
     const data = await getServerSession(authOptions);
     const author = data.user.email;

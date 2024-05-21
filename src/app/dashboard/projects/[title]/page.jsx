@@ -13,11 +13,12 @@ import {
 import { useRouter } from "next/navigation";
 import { Link } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { Label, FileInput, Button, Modal } from "flowbite-react";
+import { Label, FileInput, Button, Modal, Select } from "flowbite-react";
 import { HiSave } from "react-icons/hi";
 
 function Page() {
   const [editModal, setEditModal] = useState(false);
+  const [selectedProjectType, setSelectedProjectType] = useState("");
   const [archivo, setArchivo] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const { data: session, status } = useSession();
@@ -25,6 +26,11 @@ function Page() {
   const [project, setProject] = useState({});
   const author = session?.user?.email;
   const [formFilled, setFormFilled] = useState(false);
+
+  const handleProjectTypeChange = (e) => {
+    setSelectedProjectType(e.target.value);
+    console.log(selectedProjectType);
+  };
 
   const handleSaveImage = async (e) => {
     e.preventDefault();
@@ -132,10 +138,11 @@ function Page() {
             title,
             description,
             content,
+            projectType: selectedProjectType,
           }),
         }
       );
-
+      router.refresh();
       // Comprobar si la solicitud fue exitosa
       if (res.ok) {
         // Convertir la respuesta a formato JSON
@@ -144,15 +151,6 @@ function Page() {
         console.log("Respuesta del servidor:", data);
 
         router.back();
-        // Mostrar el modal
-        setShowModal(true);
-        // Reiniciar la página después de 2 segundos
-        setTimeout(() => {
-          router.refresh();
-        }, 2000);
-        setTimeout(() => {
-          setShowModal(false);
-        }, 2000);
       } else {
         // Imprimir un mensaje de error si la solicitud no fue exitosa
         console.error("Error en la solicitud:", res.statusText);
@@ -170,6 +168,9 @@ function Page() {
       }
     }
     setFormFilled(false);
+    if (project.projectType !== selectedProjectType) {
+      setFormFilled(true);
+    }
   };
 
   useEffect(() => {
@@ -399,22 +400,30 @@ function Page() {
                             />
                           </div>
                           <div className="col-span-2 sm:col-span-1">
-                            <label
-                              htmlFor="category"
-                              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            <div className="mb-2 block">
+                              <Label htmlFor="type" value="type" />
+                            </div>
+                            <Select
+                              id="type"
+                              type="type"
+                              name="type"
+                              required
+                              onChange={handleProjectTypeChange}
                             >
-                              Tags
-                            </label>
-                            <select
-                              id="category"
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            >
-                              <option selected="">Select category</option>
-                              <option value="TV">TV/Monitors</option>
-                              <option value="PC">PC</option>
-                              <option value="GA">Gaming/Console</option>
-                              <option value="PH">Phones</option>
-                            </select>
+                              <option value="current">
+                                current: {project.projectType}
+                              </option>
+
+                              <option value="Aplication">
+                                Application / Game
+                              </option>
+                              <option value="Art">Art</option>
+                              <option value="General discussion">
+                                General discussion
+                              </option>
+                              <option value="Audio">Audio</option>
+                              <option value="Video">Video</option>
+                            </Select>
                           </div>
                           <div className="col-span-2">
                             <label

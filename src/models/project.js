@@ -12,7 +12,12 @@ const projectSchema = new Schema(
     banner: {
       type: String,
       required: false,
-      default: "https://res.cloudinary.com/dudftt5ha/image/upload/v1716151679/yp1vcyfpqmn034jedg8n.jpg"
+      default:
+        "https://res.cloudinary.com/dudftt5ha/image/upload/v1716151679/yp1vcyfpqmn034jedg8n.jpg",
+    },
+    projectType: {
+      type: String,
+      required: true,
     },
     description: {
       type: String,
@@ -30,6 +35,14 @@ const projectSchema = new Schema(
       type: Array,
       required: false,
     },
+    stars: {
+      type: Number,
+      required: false,
+    },
+    starredBy: {
+      type: Array,
+      required: false,
+    }
   },
   { timestamps: true }
 );

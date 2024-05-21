@@ -7,15 +7,10 @@ import { FaPlus, FaInfo } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import {
-  Dropdown,
-  Button,
-  Modal,
-  Checkbox,
-  Label,
-  TextInput,
-} from "flowbite-react";
+import { Button, Modal, Label, TextInput, Card, Select } from "flowbite-react";
+
 function ProjectsPage() {
+  const [selectedProjectType, setSelectedProjectType] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -23,14 +18,21 @@ function ProjectsPage() {
 
   const [error, setError] = useState();
 
+  const handleProjectTypeChange = (e) => {
+    setSelectedProjectType(e.target.value);
+    console.log(selectedProjectType);
+  };
   const handleProjectSubmit = async (e) => {
     const author = session?.user?.email;
     e.preventDefault();
+
+    console.log("hol");
 
     const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
 
     const title = formData.get("title");
     const description = formData.get("description");
+    const projectType = formData.get("type");
     const content = formData.get("content");
 
     if (!title || !content) {
@@ -49,6 +51,7 @@ function ProjectsPage() {
           description,
           content,
           author,
+          projectType: selectedProjectType, // Incluye el tipo de proyecto seleccionado
         }),
       });
       if (res.status === 400) {
@@ -102,7 +105,7 @@ function ProjectsPage() {
       <Navbar using={"projects"} />
 
       <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
-        <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">
+        <aside className="hidden w-full max-w-2xs py-4 md:w-1/3 lg:w-1/4 md:block">
           <div className="sticky flex flex-col gap-2 p-4 text-sm border-r border-indigo-100 top-12">
             <h2 className="pl-3 mb-4 text-2xl font-semibold">Settings</h2>
             <a
@@ -131,17 +134,18 @@ function ProjectsPage() {
             </a>
           </div>
         </aside>
+
         <main className="w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
           <div className="p-2 md:p-4 w-full">
             <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
               <div className="flex justify-between mb-10 w-full">
-                <h2 className="pl-6 text-2xl font-bold sm:text-xl">
+                <h2 className="pl-3 mb-4 text-2xl font-semibold">
                   Your projects:
                 </h2>
 
                 <>
                   <Button
-                    className="hover:border-white bg-green-700"
+                    className="hover:border-white h-fit bg-green-700"
                     onClick={() => setOpenModal(true)}
                   >
                     <div className="flex gap-5 align-middle">
@@ -151,47 +155,83 @@ function ProjectsPage() {
                       </div>
                     </div>
                   </Button>
-                  <Modal show={openModal} onClose={() => setOpenModal(false)}>
+                  <Modal
+                    className="bg-black/75 "
+                    show={openModal}
+                    onClose={() => setOpenModal(false)}
+                  >
                     <Modal.Header>New project</Modal.Header>
                     <Modal.Body>
                       <form
                         onSubmit={handleProjectSubmit}
                         className="flex max-w-md flex-col gap-4"
                       >
-                        <div>
-                          <div className="mb-2 block">
-                            <Label htmlFor="title" value="Title:" />
+                        <div className="flex flex-row gap-10">
+                          <div>
+                            <div className="mb-2 block">
+                              <Label htmlFor="title" value="Title:" />
+                            </div>
+                            <TextInput
+                              id="title"
+                              name="title"
+                              type="title"
+                              placeholder="Title of my project"
+                              required
+                              autoComplete="off" // Evitar autocompletar
+                            />
+
+                            <div className="mt-5 w-60">
+                              <div className="mb-2 block">
+                                <Label
+                                  htmlFor="description"
+                                  value="Description"
+                                />
+                              </div>
+                              <TextInput
+                                id="description"
+                                type="description"
+                                placeholder="A brief description of my project"
+                                name="description"
+                                required
+                                autoComplete="off" // Evitar autocompletar
+                              />
+                            </div>
                           </div>
-                          <TextInput
-                            id="title"
-                            name="title"
-                            type="title"
-                            placeholder="Title of my project"
-                            required
-                            autoComplete="off" // Evitar autocompletar
-                          />
+                          <div className="max-w-md">
+                            <div className="mb-2 block">
+                              <Label htmlFor="type" value="type" />
+                            </div>
+                            <Select
+                              id="type"
+                              type="type"
+                              name="type"
+                              required
+                              onChange={handleProjectTypeChange}
+                            >
+                              <option value="Aplication">
+                                Application / Game
+                              </option>
+                              <option value="Art">Art</option>
+                              <option value="General discussion">
+                                General discussion
+                              </option>
+                              <option value="Audio">Audio</option>
+                              <option value="Video">Video</option>
+                            </Select>
+                          </div>
                         </div>
                         <div>
                           <div className="mb-2 block">
-                            <Label htmlFor="description" value="Description" />
-                          </div>
-                          <TextInput
-                            id="description"
-                            type="description"
-                            name="description"
-                            required
-                            autoComplete="off" // Evitar autocompletar
-                          />
-                        </div>
-                        <div>
-                          <div className="mb-2 block">
-                            <Label htmlFor="content" value="Content:" />
+                            <Label
+                              htmlFor="content"
+                              value="Content: (optional)"
+                            />
                           </div>
                           <TextInput
                             id="content"
                             type="content"
                             name="content"
-                            required
+                            placeholder="full explanation"
                             autoComplete="off" // Evitar autocompletar
                           />
                         </div>
@@ -206,8 +246,10 @@ function ProjectsPage() {
               <div className="grid grid-cols-1 gap-4 w-full">
                 {projects
                   ? projects.map((project) => (
-                      <div
-                        className="max-w-sm w-full bg-transparent border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+                      <Card
+                        className="max-w-sm"
+                        imgSrc={project.banner}
+                        horizontal
                         key={project._id}
                       >
                         <div className="m-4">
@@ -217,7 +259,7 @@ function ProjectsPage() {
                           <p className="pb-3 font-normal text-gray-400 dark:text-gray-400">
                             {project.description}
                           </p>
-                          <p className="pb-3">{project.content}</p>
+
                           <a
                             href={`/dashboard/projects/${project.title}`}
                             className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -240,13 +282,34 @@ function ProjectsPage() {
                             </svg>
                           </a>
                         </div>
-                      </div>
+                      </Card>
                     ))
                   : "cargando..."}
               </div>
             </div>
           </div>
         </main>
+
+        <aside className="py-4 md:w-1/3 lg:w-1/4 mt-5 mr-7 md:block w-full max-w-sm">
+          <div className="flex flex-col gap-2 p-4 text-sm  border-indigo-100 top-12">
+            <h2 className="pl-3 mb-4 text-2xl font-semibold">
+              Following projects:
+            </h2>
+            <Card
+              className="max-w-sm"
+              imgSrc="/images/blog/image-4.jpg"
+              horizontal
+            >
+              <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                Noteworthy technology acquisitions 2021
+              </h5>
+              <p className="font-normal text-gray-700 dark:text-gray-400">
+                Here are the biggest enterprise technology acquisitions of 2021
+                so far, in reverse chronological order.
+              </p>
+            </Card>
+          </div>
+        </aside>
       </div>
     </div>
   );
