@@ -43,7 +43,6 @@ export const GET = async (request, res) => {
     console.log(request.HeadersList);
 
     const data = await getServerSession(authOptions);
-    const author = data.user.email;
 
     let projects;
     if (isFeedRequest) {

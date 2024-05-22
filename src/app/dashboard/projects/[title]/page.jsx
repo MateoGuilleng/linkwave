@@ -150,7 +150,7 @@ function Page() {
         // Imprimir la respuesta en la consola
         console.log("Respuesta del servidor:", data);
 
-        router.back();
+        router.replace('/dashboard/projects');
       } else {
         // Imprimir un mensaje de error si la solicitud no fue exitosa
         console.error("Error en la solicitud:", res.statusText);

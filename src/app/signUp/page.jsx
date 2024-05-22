@@ -94,7 +94,7 @@ export default function Page() {
                 First Name
               </label>
               <input
-                className="w-full shadow-inner bg-slate-900 rounded-lg  text-2xl p-4 border-none block mt-1 "
+                className="w-full shadow-inner bg-slate-900 rounded-lg text-black text-2xl p-4 border-none block mt-1 "
                 placeholder="Gumball"
                 id="name"
                 type="text"
@@ -108,7 +108,7 @@ export default function Page() {
                 Last Name
               </label>
               <input
-                className="w-full shadow-inner bg-slate-900 rounded-lg  text-2xl p-4 border-none block mt-1 "
+                className="w-full shadow-inner bg-slate-900 text-black rounded-lg  text-2xl p-4 border-none block mt-1 "
                 placeholder="Waterson"
                 id="name"
                 type="text"
@@ -122,7 +122,7 @@ export default function Page() {
                 Email
               </label>
               <input
-                className="w-full shadow-inner bg-slate-900 rounded-lg text-2xl p-4 border-none block mt-1"
+                className="w-full shadow-inner bg-slate-900 text-black rounded-lg  text-2xl p-4 border-none block mt-1 "
                 placeholder="example@example.com"
                 id="email"
                 type="email"
@@ -135,7 +135,7 @@ export default function Page() {
                 Password
               </label>
               <input
-                className="w-full shadow-inner bg-slate-900 rounded-lg text-2xl p-4 border-none block mt-1 "
+                className="w-full shadow-inner bg-slate-900 text-black rounded-lg  text-2xl p-4 border-none block mt-1 "
                 id="password"
                 type="password"
                 name="password"

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
+import { DarkThemeToggle, Flowbite } from "flowbite-react";
 import { useRouter } from "next/navigation";
 
 export default function page() {
@@ -78,7 +79,7 @@ export default function page() {
                 Password
               </label>
               <input
-                className="w-full shadow-inner bg-slate-900 rounded-lg placeholder-black text-2xl p-4 border-none block mt-1 "
+                className="w-full shadow-inner bg-slate-900 rounded-lg text-black placeholder-black text-2xl p-4 border-none block mt-1 "
                 id="password"
                 type="password"
                 name="password"

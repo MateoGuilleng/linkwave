@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { Button, Modal, Label, FileInput } from "flowbite-react";
+import { Button, Modal, Label, FileInput, DarkThemeToggle } from "flowbite-react";
+
 import { HiOutlineExclamationCircle, HiSave } from "react-icons/hi";
 
 function Dashboard() {
@@ -250,7 +251,7 @@ function Dashboard() {
           <div className="p-2 md:p-4">
             <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
               <h2 className="pl-6 text-2xl font-bold sm:text-xl">
-                Welcome {userData?.firstName || ""} {userData?.lastName || ""}
+                Welcome {userData?.firstName || ""} {userData?.lastName || ""} <DarkThemeToggle/>
               </h2>
 
               <div className="grid max-w-2xl mx-auto mt-8">
@@ -487,7 +488,7 @@ function Dashboard() {
                           type="text"
                           name="firstName"
                           id="first_name"
-                          className="bg-black border border-indigo-300 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                          className="bg-black border border-indigo-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                           placeholder={userData?.firstName || ""}
                           defaultValue={session.user.name}
                           required=""
@@ -504,7 +505,7 @@ function Dashboard() {
                           type="text"
                           name="lastName"
                           id="last_name"
-                          className="bg-black border border-indigo-300 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                          className="bg-black border border-indigo-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                           placeholder={userData?.lastName || ""}
                           defaultValue={session.user.name}
                           required=""
@@ -523,7 +524,7 @@ function Dashboard() {
                         type="text"
                         name="profession"
                         id="profession"
-                        className="bg-black border border-indigo-300 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                        className="bg-trasparent border border-indigo-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                         placeholder={userData?.profession || ""}
                         required=""
                       />
