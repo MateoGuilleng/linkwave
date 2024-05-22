@@ -182,8 +182,7 @@ function Dashboard() {
         const lastName = await userData.lastName;
         const profession = await userData.profession;
         const bio = await userData.bio;
-
-        // Hacer la solicitud POST a '../api/repos/uploadRepo'
+        
         const proyectResponse = await fetch(`/api/${email}`, {
           method: "PUT",
           body: JSON.stringify({
@@ -385,7 +384,7 @@ function Dashboard() {
                                   router.replace("/");
                                 }}
                               >
-                                {"Yes, I'm sure"}
+                                {"Yes, Im sure"}
                               </Button>
                               <Button
                                 color="gray"
@@ -456,7 +455,7 @@ function Dashboard() {
                               type="button"
                               className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
                             >
-                              Yes, I'm sure
+                              Yes, Im sure
                             </button>
                             <button
                               data-modal-hide="popup-modal"

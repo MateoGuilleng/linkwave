@@ -150,7 +150,7 @@ function Page() {
         // Imprimir la respuesta en la consola
         console.log("Respuesta del servidor:", data);
 
-        router.replace('/dashboard/projects');
+        router.replace("/dashboard/projects");
       } else {
         // Imprimir un mensaje de error si la solicitud no fue exitosa
         console.error("Error en la solicitud:", res.statusText);
@@ -654,7 +654,7 @@ function Page() {
                       <div className="p-4 md:p-5 space-y-4">
                         <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                           here you will have the info of your project, start to
-                          add files to it! <br /> (if you dont see the project's
+                          add files to it! <br /> (if you dont see the project`s
                           info, try to refresh this page)
                         </p>
                       </div>

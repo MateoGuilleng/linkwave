@@ -155,7 +155,7 @@ function Navbar() {
           Insightful
         </Link>
         <ul className="flex gap-8">
-          <li>Doesn't have an account yet?</li>
+          <li>Doesnt have an account yet?</li>
           <li>
             <Link
               className="hover:text-fuchsia-500 hover:border-fuchsia-500 transition-colors text-xs sm:text-base border-2 px-3 py-1 rounded"
