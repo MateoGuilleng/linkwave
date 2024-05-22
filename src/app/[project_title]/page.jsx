@@ -19,13 +19,20 @@ import { useSession } from "next-auth/react";
 function Page() {
   const [starIsClicked, setStarIsClicked] = useState(false);
   const [binaryStar, setBinaryStar] = useState(0);
+
   const [openModal, setOpenModal] = useState(false);
+  const [openCommentEditModal, setOpenCommentEditModal] = useState(false);
+
+  const [commentId, setCommentId] = useState();
+
   const [error, setError] = useState();
   const { data: session, status } = useSession();
   const [project, setProject] = useState({});
   const author = session?.user?.email;
   const [lastWord, setLastWord] = useState("");
   const [commentText, setCommentText] = useState("");
+  const [newComment, setNewComment] = useState("");
+  const [showUpEditCommentButton, setShowUpEditCommentButton] = useState(false);
   const [showUploadButton, setShowUploadButton] = useState(false); // Estado para controlar la visibilidad del botón de carga de comentarios
 
   useEffect(() => {
@@ -42,7 +49,7 @@ function Page() {
   }, [status]);
 
   useEffect(() => {
-    if (project.starredBy?.includes(session?.user?.email)) {
+    if (project?.starredBy?.includes(session?.user?.email)) {
       setStarIsClicked(true);
       setBinaryStar(1);
     } else {
@@ -108,6 +115,11 @@ function Page() {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
   };
 
+  const handleEditCommentInputChange = (e) => {
+    const text = e.target.value;
+    setNewComment(text);
+    setShowUpEditCommentButton(text.trim().length > 0); // Mostrar el botón si hay texto en el área de comentario
+  };
   const handleCommentInputChange = (e) => {
     const text = e.target.value;
     setCommentText(text);
@@ -135,9 +147,66 @@ function Page() {
 
       if (res.status === 200) {
         setError("");
+        window.location.reload();
         const { comments } = await res.json();
         console.log("¡Comentario agregado con éxito!");
         console.log("Comentarios:", comments);
+      }
+    } catch (error) {
+      setError("Something went wrong, try again");
+      console.log(error);
+    }
+  };
+
+  const handleDeleteComment = async () => {
+    console.log(commentId);
+    try {
+      const res = await fetch(`/api/comments/${lastWord}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          commentId,
+        }),
+      });
+      if (res.ok) {
+        // Redirige a la misma página para refrescar
+        window.location.reload();
+      } else {
+        console.error("Failed to delete comment:", res.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error.message);
+    }
+  };
+
+  const handleUploadEditComment = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
+
+    const newComment = formData.get("newComment");
+
+    try {
+      const res = await fetch(`/api/comments/${lastWord}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          commentId,
+          newComment,
+        }),
+      });
+
+      if (res.ok) {
+        setError("");
+
+        const { comments } = await res.json();
+        console.log("¡Comentario agregado con éxito!");
+        console.log("Comentarios:", comments);
+        window.location.reload();
       }
     } catch (error) {
       setError("Something went wrong, try again");
@@ -154,7 +223,7 @@ function Page() {
         <div className="w-full">
           <img
             className="object-cover w-full h-72 p-1 ring-2 ring-indigo-300 dark:ring-indigo-500"
-            src={project.banner}
+            src={project?.banner}
             alt="Bordered avatar"
           />
           <div className="m-10  mb-0 text-2xl border-b pb-5 flex gap-6 justify-between border-indigo-100 font-semibold">
@@ -172,12 +241,16 @@ function Page() {
                   {project?.author}{" "}
                 </a>
               </div>
-              <h3 className="text-gray-400 text-xl">
+              <h3 className="text-gray-400 text-xl mt-2">
                 {" "}
                 {project?.description}{" "}
               </h3>
             </div>{" "}
-            <button onClick={handleStarClick} className="p-4 mr-24">
+            <button
+              onClick={handleStarClick}
+              className="p-4 mr-24 flex items-center gap-8"
+            >
+              <div className="text-xl">{project?.stars}</div>
               {starIsClicked ? (
                 <HiStar className="w-12 h-12" />
               ) : (
@@ -239,7 +312,7 @@ function Page() {
                         <h3 className="text-xl font-bold">
                           Comments: ({projectComments?.length})
                         </h3>
-                        {project.comments &&
+                        {project?.comments &&
                           project.comments.map((comment, index) => (
                             <div
                               key={index}
@@ -252,7 +325,13 @@ function Page() {
                                   className="mb-3 rounded-full shadow-lg w-14 h-14"
                                 />
                                 <div className="flex flex-col w-full ml-4">
-                                  <div className="flex justify-between w-full">
+                                  <div
+                                    onClick={() => {
+                                      setCommentId(comment.id);
+                                      console.log(commentId);
+                                    }}
+                                    className="flex justify-between w-full"
+                                  >
                                     <div>
                                       <p>
                                         <a
@@ -273,10 +352,67 @@ function Page() {
                                         </p>
                                       </p>
                                     </div>
+                                    <>
+                                      <Modal
+                                        dismissible={false} // Evitar que se cierre haciendo clic fuera del modal
+                                        className="bg-black/50"
+                                        show={openCommentEditModal}
+                                        onClose={() => {
+                                          setOpenCommentEditModal(false);
+                                        }}
+                                      >
+                                        <Modal.Header className="">
+                                          <form
+                                            action=""
+                                            onSubmit={handleUploadEditComment}
+                                          >
+                                            <div className="w-full">
+                                              <div className="mb-2">
+                                                <Label
+                                                  className="text-xl"
+                                                  htmlFor="comment"
+                                                  value="Edit This Comment:"
+                                                />
+                                              </div>
+
+                                              <Textarea
+                                                className="mt-5"
+                                                id="newComment"
+                                                name="newComment"
+                                                placeholder={comment.comment}
+                                                required
+                                                rows={4}
+                                                value={newComment}
+                                                onChange={
+                                                  handleEditCommentInputChange
+                                                }
+                                                onClick={(e) =>
+                                                  e.stopPropagation()
+                                                } // Evitar que se cierre al hacer clic dentro del textarea
+                                              />
+
+                                              {error}
+                                              {showUpEditCommentButton && (
+                                                <Button
+                                                  type="submit"
+                                                  className="mt-3"
+                                                >
+                                                  Edit Comment
+                                                </Button>
+                                              )}
+                                            </div>
+                                          </form>
+                                        </Modal.Header>
+                                      </Modal>
+                                    </>
                                     <div className="self-end">
                                       <Dropdown
                                         label=""
                                         dismissOnClick={false}
+                                        onClick={() => {
+                                          setCommentId(comment.id);
+                                          console.log(comment.id);
+                                        }}
                                         renderTrigger={() => (
                                           <span>
                                             <SlOptionsVertical />
@@ -290,12 +426,26 @@ function Page() {
                                               Copy Link
                                             </Dropdown.Item>
                                             <Dropdown.Item>
-                                              Edit Comment
+                                              <Button
+                                                className="w-full h-full"
+                                                onClick={() => {
+                                                  setOpenCommentEditModal(true);
+                                                  setCommentId(comment?.id);
+                                                }}
+                                              >
+                                                Edit Comment
+                                              </Button>
                                             </Dropdown.Item>
                                             <Dropdown.Item>
                                               Follow Comment
                                             </Dropdown.Item>
-                                            <Dropdown.Item>
+                                            <Dropdown.Item
+                                              onClick={async () => {
+                                                await setCommentId(comment.id);
+                                                console.log(commentId);
+                                                handleDeleteComment();
+                                              }}
+                                            >
                                               Remove Comment
                                             </Dropdown.Item>
                                           </div>
@@ -316,9 +466,10 @@ function Page() {
                                     </div>
                                   </div>
                                   <p className="text-xs mt-2 text-gray-400">
-                                    {formatCreatedAt(comment.createdAt)}
+                                    {formatCreatedAt(comment.createdAt)}{" "}
+                                    {comment.edited ? "(Edited)" : ""}{" "}
                                   </p>
-                                  <p className="mt-10">{comment.comment}</p>
+                                  <p className="mt-10"> {comment.comment}</p>
                                 </div>
                               </div>
                             </div>
@@ -327,6 +478,7 @@ function Page() {
                     </Modal.Body>
                   </Modal>
                 </>
+
                 <Button color="">
                   <HiAdjustments className="mr-3 h-4 w-4" />
                   Settings

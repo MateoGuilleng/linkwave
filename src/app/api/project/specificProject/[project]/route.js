@@ -2,6 +2,7 @@ import project from "@/models/project";
 import user from "@/models/user";
 import connect from "@/utils/db";
 import { NextResponse } from "next/server";
+import { v4 as uuidv4 } from "uuid";
 
 export const GET = async (request, { params }) => {
   await connect();
@@ -44,20 +45,17 @@ export const PUT = async (request, { params }) => {
   const authorFN = authorInfo.firstName;
   const authorLN = authorInfo.lastName;
   const authorProfileImage = authorInfo.profile_image;
+  const edited = false;
 
-  console.log(
-    "comentario:",
-    comment,
-    "author:",
+  const newComment = {
+    id: uuidv4(),
     author,
-    "proyecto:",
-    projectTitle,
-    'Imagen autor:',
-    authorProfileImage
-
-  );
-
-  const newComment = { author, comment, authorFN, authorLN, authorProfileImage };
+    comment,
+    authorFN,
+    authorLN,
+    authorProfileImage,
+    edited,
+  };
 
   // Agrega la fecha de creación al nuevo comentario
   newComment.createdAt = new Date();
@@ -76,4 +74,3 @@ export const PUT = async (request, { params }) => {
     return new NextResponse(error, { status: 500 });
   }
 };
-
