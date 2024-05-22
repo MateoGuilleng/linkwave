@@ -3,7 +3,13 @@ import "./globals.css";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/utils/SessionProvider";
 import { Footer } from "flowbite-react";
-import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from "react-icons/bs";
+import {
+  BsDribbble,
+  BsFacebook,
+  BsGithub,
+  BsInstagram,
+  BsTwitter,
+} from "react-icons/bs";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -20,15 +26,15 @@ export default async function RootLayout({ children }) {
         <link
           href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css"
           rel="stylesheet"
-          async={false} // Esto carga el CSS de forma síncrona
         />
         {/* Agrega el título y la descripción usando el Metadata API */}
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
+        {/* Mueve el script de Flowbite al encabezado para evitar errores de scripts síncronos */}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
       </head>
       <body className={inter.className}>
         <SessionProvider session={session}>{children}</SessionProvider>
-        {/* Incluye el script de Flowbite directamente en el cuerpo del documento */}
         <Footer bgDark className="mt-20">
           <div className="w-full">
             <div className="grid w-full grid-cols-2 gap-8 px-6 py-8 md:grid-cols-4">
@@ -80,7 +86,6 @@ export default async function RootLayout({ children }) {
             </div>
           </div>
         </Footer>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
       </body>
     </html>
   );

@@ -2,13 +2,11 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
-import { DarkThemeToggle, Flowbite } from "flowbite-react";
 import { useRouter } from "next/navigation";
 
-export default function page() {
+export default function SignIn() {
   const router = useRouter();
   const [error, setError] = useState("");
-  // const session = useSession();
   const { data: session, status: sessionStatus } = useSession();
 
   useEffect(() => {
@@ -51,9 +49,6 @@ export default function page() {
     }
   };
 
-  if (sessionStatus === "loading") {
-    return <h1>Loading...</h1>;
-  }
   function Form() {
     return (
       <div className="p-10 w-full items-center">
@@ -79,7 +74,7 @@ export default function page() {
                 Password
               </label>
               <input
-                className="w-full shadow-inner bg-slate-900 rounded-lg text-black placeholder-black text-2xl p-4 border-none block mt-1 "
+                className="w-full shadow-inner bg-slate-900 rounded-lg text-black placeholder-black text-2xl p-4 border-none block mt-1"
                 id="password"
                 type="password"
                 name="password"
@@ -88,7 +83,7 @@ export default function page() {
               />
             </div>
             <div className="flex items-center justify-between mt-8">
-              {error}
+              <p>{error}</p> {/* Cambiado a un párrafo para mostrar el error */}
               <button
                 type="submit"
                 className="flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-700 hover:bg-indigo-800 md:py-4 md:text-lg md:px-10"
@@ -100,7 +95,7 @@ export default function page() {
           <aside className="">
             <div className="bg-slate-900 p-8 rounded backdrop-filter">
               <h2 className="font-bold text-2xl ">Instructions</h2>
-              <ul className="list-disc mt-4 list-inside text-gray-500 ">
+              <ul className="list-disc mt-4 list-inside text-gray-500">
                 <li>
                   All users must provide a valid email address and password to
                   create an account.
@@ -108,7 +103,7 @@ export default function page() {
                 <li>
                   Users must not use offensive, vulgar, or otherwise
                   inappropriate language in their username or profile
-                  information
+                  information.
                 </li>
                 <li>
                   Users must not create multiple accounts for the same person.
@@ -120,14 +115,37 @@ export default function page() {
       </div>
     );
   }
-  if (sessionStatus === "loading") {
-    return <h1>Loading...</h1>;
+
+  function Navbar() {
+    return (
+      <div className="w-full h-16 backdrop-filter backdrop-blur-xl bg-opacity-20 border-b flex items-center justify-center sticky  top-0 z-10 bg-fuchsia-950">
+        <div className="max-w-7xl w-full flex items-center justify-between p-4 backdrop-filter ">
+          <Link
+            className="hover:text-fuchsia-500 transition-colors text-xs sm:text-base"
+            href="/"
+          >
+            Insightful
+          </Link>
+          <ul className="flex gap-8">
+            <li>Doesnt have an account yet?</li>
+            <li>
+              <Link
+                className="hover:text-fuchsia-500 hover:border-fuchsia-500 transition-colors text-xs sm:text-base border-2 px-3 py-1 rounded"
+                href="signUp"
+              >
+                Sign up
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
   }
 
   return (
-    sessionStatus !== "authenticated" && (
-      <div>
-        <Navbar />
+    <div>
+      <Navbar />
+      {sessionStatus !== "authenticated" && (
         <section>
           <Form />
           <button
@@ -139,33 +157,7 @@ export default function page() {
             Sign In with Github
           </button>
         </section>
-      </div>
-    )
-  );
-}
-
-function Navbar() {
-  return (
-    <div className="w-full h-16 backdrop-filter backdrop-blur-xl bg-opacity-20 border-b flex items-center justify-center sticky  top-0 z-10 bg-fuchsia-950">
-      <div className="max-w-7xl w-full flex items-center justify-between p-4 backdrop-filter ">
-        <Link
-          className="hover:text-fuchsia-500 transition-colors text-xs sm:text-base"
-          href="/"
-        >
-          Insightful
-        </Link>
-        <ul className="flex gap-8">
-          <li>Doesnt have an account yet?</li>
-          <li>
-            <Link
-              className="hover:text-fuchsia-500 hover:border-fuchsia-500 transition-colors text-xs sm:text-base border-2 px-3 py-1 rounded"
-              href="signUp"
-            >
-              Sign up
-            </Link>
-          </li>
-        </ul>
-      </div>
+      )}
     </div>
   );
 }
