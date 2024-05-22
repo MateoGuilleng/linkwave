@@ -31,7 +31,10 @@ export default async function RootLayout({ children }) {
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
         {/* Mueve el script de Flowbite al encabezado para evitar errores de scripts síncronos */}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+        <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"
+          defer
+        ></script>
       </head>
       <body className={inter.className}>
         <SessionProvider session={session}>{children}</SessionProvider>
