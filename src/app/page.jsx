@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen h-fit flex-col items-center justify-center relative">
       <div className="w-full">
-        <Navbar />
+        <Navbar /> 
       </div>
       
       <header
@@ -43,7 +43,7 @@ export default function Home() {
               onClick={() => router.push("/signUp")}
               className="w-48 h-12 text-sm sm:text-base rounded hover:bg-white hover:text-white hover:bg-opacity-5 transition-colors"
             >
-              Sign Up
+              Sign Up 
             </button>
           </div>
         </div>
