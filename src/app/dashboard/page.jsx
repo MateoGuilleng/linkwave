@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { Button, Modal, Label, FileInput, DarkThemeToggle } from "flowbite-react";
+import {
+  Button,
+  Modal,
+  Label,
+  FileInput,
+  DarkThemeToggle,
+} from "flowbite-react";
 
 import { HiOutlineExclamationCircle, HiSave } from "react-icons/hi";
 
@@ -151,7 +157,6 @@ function Dashboard() {
     setArchivo(null);
   };
 
-
   const handleSaveImage = async (e) => {
     e.preventDefault();
     const email = session?.user?.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
@@ -182,7 +187,7 @@ function Dashboard() {
         const lastName = await userData.lastName;
         const profession = await userData.profession;
         const bio = await userData.bio;
-        
+
         const proyectResponse = await fetch(`/api/${email}`, {
           method: "PUT",
           body: JSON.stringify({
@@ -250,7 +255,8 @@ function Dashboard() {
           <div className="p-2 md:p-4">
             <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
               <h2 className="pl-6 text-2xl font-bold sm:text-xl">
-                Welcome {userData?.firstName || ""} {userData?.lastName || ""} <DarkThemeToggle/>
+                Welcome {userData?.firstName || ""} {userData?.lastName || ""}{" "}
+                <DarkThemeToggle />
               </h2>
 
               <div className="grid max-w-2xl mx-auto mt-8">
@@ -489,7 +495,6 @@ function Dashboard() {
                           id="first_name"
                           className="bg-black border border-indigo-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                           placeholder={userData?.firstName || ""}
-                          defaultValue={session.user.name}
                           required=""
                         />
                       </div>
@@ -506,7 +511,6 @@ function Dashboard() {
                           id="last_name"
                           className="bg-black border border-indigo-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
                           placeholder={userData?.lastName || ""}
-                          defaultValue={session.user.name}
                           required=""
                         />
                       </div>
