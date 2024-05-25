@@ -692,12 +692,17 @@ function Page() {
             >
               Project info
             </a>
-
             <a
-              href={`${lastWord}/social`}
+              href="dashboard/projects/"
               className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
             >
               People
+            </a>
+            <a
+              href="dashboard/projects/"
+              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
+            >
+              social
             </a>
 
             <button

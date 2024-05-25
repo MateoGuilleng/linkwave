@@ -69,72 +69,73 @@ export default function UsersPage() {
       )}
 
       <h2 className="pl-3 mb-4 text-2xl font-semibold m-10">Search:</h2>
-      <div className="flex w-full justify-evenly">
+
+      <div className="grid grid-cols-3 justify-center ml-7 gap-5">
         <button
-          className={`flex-shrink-0 w-40 h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+          className={`w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
             !selectedCategory && "bg-blue-500" // Estilo activo si no hay categoría seleccionada
           }`}
           onClick={() => handleCategoryClick("")} // Manejar clic para mostrar todos los proyectos
         >
-          <div className="text-3xl">
+          <div className="text-2xl sm:text-3xl">
             <HiArchive />
           </div>
-          <div className="mt-2 p-2">All</div>
+          <div className="mt-2 p-2 text-sm sm:text-base">All</div>
         </button>
         <button
-          className={`flex-shrink-0 w-40 h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+          className={`w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
             selectedCategory === "Aplication" && "bg-blue-500" // Estilo activo
           }`}
           onClick={() => handleCategoryClick("Aplication")}
         >
-          <div className="text-3xl">
+          <div className="text-2xl sm:text-3xl">
             <HiPaperClip />
           </div>
-          <div className="mt-2 p-2">Aplication / Game</div>
+          <div className="mt-2 p-2 text-sm sm:text-base">Aplication / Game</div>
         </button>
         <button
-          className={`flex-shrink-0 w-40 h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+          className={`w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
             selectedCategory === "Art" && "bg-blue-500" // Estilo activo
           }`}
           onClick={() => handleCategoryClick("Art")}
         >
-          <div className="text-3xl">
+          <div className="text-2xl sm:text-3xl">
             <HiPencil />
           </div>
-          <div className="mt-2">Art</div>
+          <div className="mt-2 text-sm sm:text-base">Art</div>
         </button>
         <button
-          className={`flex-shrink-0 w-40 h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+          className={`w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
             selectedCategory === "General discussion" && "bg-blue-500" // Estilo activo
           }`}
           onClick={() => handleCategoryClick("General discussion")}
         >
-          <div className="text-3xl">
+          <div className="text-2xl sm:text-3xl">
             <HiGlobe />
           </div>
-          <div className="mt-2">General discussion</div>
+          <div className="mt-2 text-sm sm:text-base">General discussion</div>
         </button>
         <button
-          className={`flex-shrink-0 w-40 h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+          className={`w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
             selectedCategory === "Audio" && "bg-blue-500" // Estilo activo
           }`}
           onClick={() => handleCategoryClick("Audio")}
         >
-          <div className="text-3xl">
+          <div className="text-2xl sm:text-3xl">
             <HiOutlineSpeakerphone />
           </div>
-          <div className="mt-2">Audio</div>
+          <div className="mt-2 text-sm sm:text-base">Audio</div>
         </button>
         <button
-          className={`flex-shrink-0 w-40 h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+          className={`w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
             selectedCategory === "Video" && "bg-blue-500" // Estilo activo
           }`}
           onClick={() => handleCategoryClick("Video")}
         >
-          <div className="text-3xl">
+          <div className="text-2xl sm:text-3xl">
             <HiCamera />
           </div>
-          <div className="mt-2">Video</div>
+          <div className="mt-2 text-sm sm:text-base">Video</div>
         </button>
       </div>
 

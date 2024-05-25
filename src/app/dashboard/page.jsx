@@ -10,9 +10,25 @@ import {
   Label,
   FileInput,
   DarkThemeToggle,
+  Drawer,
+  Sidebar,
+  TextInput,
 } from "flowbite-react";
 
-import { HiOutlineExclamationCircle, HiSave } from "react-icons/hi";
+import {
+  HiOutlineExclamationCircle,
+  HiSave,
+  HiMenu,
+  HiChartPie,
+  HiClipboard,
+  HiCollection,
+  HiInformationCircle,
+  HiLogin,
+  HiPencil,
+  HiSearch,
+  HiShoppingBag,
+  HiUsers,
+} from "react-icons/hi";
 
 function Dashboard() {
   const [openModal, setOpenModal] = useState(false);
@@ -24,6 +40,10 @@ function Dashboard() {
   const [showModal, setShowModal] = useState(false);
   const [archivo, setArchivo] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleClose = () => setIsOpen(false);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -221,6 +241,50 @@ function Dashboard() {
   return (
     <div>
       <Navbar using={"dashboard"} />
+      <>
+        <Drawer open={isOpen} onClose={handleClose}>
+          <Drawer.Header title="MENU" titleIcon={() => <></>} />
+          <Drawer.Items>
+            <Sidebar
+              aria-label="Sidebar with multi-level dropdown example"
+              className="[&>div]:bg-transparent [&>div]:p-0"
+            >
+              <div className="flex h-full flex-col justify-between py-2">
+                <div>
+                  <form className="pb-3 md:hidden">
+                    <TextInput
+                      icon={HiSearch}
+                      type="search"
+                      placeholder="Search"
+                      required
+                      size={32}
+                    />
+                  </form>
+                  <Sidebar.Items>
+                    <Sidebar.ItemGroup>
+                      <Sidebar.Item href="/dashboard" icon={HiChartPie}>
+                        Dashboard
+                      </Sidebar.Item>
+                      <Sidebar.Item href="/dashboard/projects" icon={HiPencil}>
+                        Projects
+                      </Sidebar.Item>
+                      <Sidebar.Item href="/users/list" icon={HiUsers}>
+                        Account Settings
+                      </Sidebar.Item>
+                      <Sidebar.Item
+                        href="/authentication/sign-in"
+                        icon={HiLogin}
+                      >
+                        Notifications
+                      </Sidebar.Item>
+                    </Sidebar.ItemGroup>
+                  </Sidebar.Items>
+                </div>
+              </div>
+            </Sidebar>
+          </Drawer.Items>
+        </Drawer>
+      </>
       <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
         <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">
           <div className="sticky flex flex-col gap-2 p-4 text-sm border-r border-indigo-100 top-12">
@@ -229,7 +293,7 @@ function Dashboard() {
               href="/dashboard"
               className="flex items-center px-3 py-2.5 font-bol bg-slate-200  text-black border rounded-full"
             >
-              Personal info
+              Dashboard
             </a>
             <a
               href="dashboard/projects/"
@@ -254,10 +318,19 @@ function Dashboard() {
         <main className="w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
           <div className="p-2 md:p-4">
             <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
-              <h2 className="pl-6 text-2xl font-bold sm:text-xl">
-                Welcome {userData?.firstName || ""} {userData?.lastName || ""}{" "}
-                <DarkThemeToggle />
-              </h2>
+              <div className="flex">
+                <Button
+                  className="md:hidden visible"
+                  onClick={() => setIsOpen(true)}
+                >
+                  {" "}
+                  <HiMenu className="w-7 h-7" />{" "}
+                </Button>
+                <h2 className="pl-6 text-2xl font-bold sm:text-xl">
+                  Welcome {userData?.firstName || ""} {userData?.lastName || ""}{" "}
+                  <DarkThemeToggle />
+                </h2>
+              </div>
 
               <div className="grid max-w-2xl mx-auto mt-8">
                 <div className="flex flex-col items-center space-y-5 sm:flex-row sm:space-y-0">

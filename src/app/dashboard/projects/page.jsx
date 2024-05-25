@@ -135,9 +135,9 @@ function ProjectsPage() {
           </div>
         </aside>
 
-        <main className="w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
-          <div className="p-2 md:p-4 w-full">
-            <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
+        <main className="w-screen min-h-screen py-1 md:w-2/3 lg:w-3/4">
+          <div className="p-2 md:p-4">
+            <div className="w-full px-6 pb-8 mt-8 sm:rounded-lg">
               <div className="flex justify-between mb-10 w-full">
                 <h2 className="pl-3 mb-4 text-2xl font-semibold">
                   Your projects:
@@ -242,52 +242,23 @@ function ProjectsPage() {
                 </>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 w-full">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
                 {projects ? (
                   projects.map((project) => (
-                    <Card
-                      className="max-w-xs max-h-xs"
-                      imgSrc={project.banner}
-                      horizontal
-                      key={project._id}
-                    >
-                      <div className="top-0 right-0 px-3 py-1 bg-black bg-opacity-75 text-white text-xs font-semibold">
-                        {project.projectType}
-                      </div>
-                      <div className="flex flex-col justify-between h-full">
-                        <div className>
-                          <h3 className="text-xl font-bold tracking-tight text-white dark:text-white">
-                            {project.title}
-                          </h3>
-                          <p className=" text-gray-400 dark:text-gray-400">
-                            {project.description}
-                          </p>
-                        </div>
-                        <div className="">
-                          <a
-                            href={`/dashboard/projects/${project.title}`}
-                            className="xs:mt-0 mt-5 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                          >
-                            View Project
-                            <svg
-                              className="rtl:rotate-180 w-4 h-4 ml-2"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 14 10"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M1 5h12m0 0L9 1m4 4L9 9"
-                              />
-                            </svg>
-                          </a>
-                        </div>
-                      </div>
-                    </Card>
+                    <div>
+                      <Card
+                        className="max-w-sm lg:h-52 lg:text-xs"
+                        imgSrc={project.banner}
+                        horizontal
+                      >
+                        <h5 className="text-2xl font-bold tracking-tight lg:text-xs lg:pt-10 text-gray-900 dark:text-white">
+                          {project.title}
+                        </h5>
+                        <p className="font-normal text-gray-700 lg:pb-10 dark:text-gray-400">
+                          {project.description}
+                        </p>
+                      </Card>
+                    </div>
                   ))
                 ) : (
                   <p>cargando...</p>
