@@ -245,7 +245,7 @@ function ProjectsPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
                 {projects ? (
                   projects.map((project) => (
-                    <div>
+                    <div key={project._id}>
                       <Card
                         className="max-w-sm lg:h-52 lg:text-xs"
                         imgSrc={project.banner}
