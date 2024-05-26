@@ -70,7 +70,7 @@ export default function UsersPage() {
 
       <h2 className="pl-3 mb-4 text-2xl font-semibold m-10">Search:</h2>
 
-      <div className="grid grid-cols-3 justify-center ml-7 gap-5">
+      <div className="grid  md:flex md:justify-between md:mx-12 grid-cols-3  justify-center ml-7 gap-5">
         <button
           className={`w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
             !selectedCategory && "bg-blue-500" // Estilo activo si no hay categoría seleccionada

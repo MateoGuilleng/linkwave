@@ -20,13 +20,9 @@ import {
   HiSave,
   HiMenu,
   HiChartPie,
-  HiClipboard,
-  HiCollection,
-  HiInformationCircle,
   HiLogin,
   HiPencil,
   HiSearch,
-  HiShoppingBag,
   HiUsers,
 } from "react-icons/hi";
 

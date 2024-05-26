@@ -6,8 +6,27 @@ import Link from "next/link";
 import { FaPlus, FaInfo } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import {
+  HiMenu,
+  HiChartPie,
+  HiLogin,
+  HiPencil,
+  HiSearch,
+  HiUsers,
+} from "react-icons/hi";
 import Navbar from "@/components/Navbar";
-import { Button, Modal, Label, TextInput, Card, Select } from "flowbite-react";
+import {
+  Modal,
+  Label,
+  TextInput,
+  Card,
+  Select,
+  Sidebar,
+  Button,
+  FileInput,
+  DarkThemeToggle,
+  Drawer,
+} from "flowbite-react";
 
 function ProjectsPage() {
   const [selectedProjectType, setSelectedProjectType] = useState("");
@@ -15,20 +34,23 @@ function ProjectsPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [projects, setProjects] = useState([]);
-
   const [error, setError] = useState();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleClose = () => setIsOpen(false);
 
   const handleProjectTypeChange = (e) => {
     setSelectedProjectType(e.target.value);
     console.log(selectedProjectType);
   };
+
   const handleProjectSubmit = async (e) => {
     const author = session?.user?.email;
     e.preventDefault();
 
     console.log("hol");
 
-    const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
+    const formData = new FormData(e.target.closest("form"));
 
     const title = formData.get("title");
     const description = formData.get("description");
@@ -51,7 +73,7 @@ function ProjectsPage() {
           description,
           content,
           author,
-          projectType: selectedProjectType, // Incluye el tipo de proyecto seleccionado
+          projectType: selectedProjectType,
         }),
       });
       if (res.status === 400) {
@@ -72,6 +94,7 @@ function ProjectsPage() {
       getProjects();
     }
   }, [status]);
+
   const author = session?.user?.email;
   const getProjects = async () => {
     try {
@@ -102,9 +125,53 @@ function ProjectsPage() {
 
   return (
     <div>
+      <>
+        <Drawer open={isOpen} onClose={handleClose}>
+          <Drawer.Header title="MENU" titleIcon={() => <></>} />
+          <Drawer.Items>
+            <Sidebar
+              aria-label="Sidebar with multi-level dropdown example"
+              className="[&>div]:bg-transparent [&>div]:p-0"
+            >
+              <div className="flex h-full flex-col justify-between py-2">
+                <div>
+                  <form className="pb-3 md:hidden">
+                    <TextInput
+                      icon={HiSearch}
+                      type="search"
+                      placeholder="Search"
+                      required
+                      size={32}
+                    />
+                  </form>
+                  <Sidebar.Items>
+                    <Sidebar.ItemGroup>
+                      <Sidebar.Item href="/dashboard" icon={HiChartPie}>
+                        Dashboard
+                      </Sidebar.Item>
+                      <Sidebar.Item href="/dashboard/projects" icon={HiPencil}>
+                        Projects
+                      </Sidebar.Item>
+                      <Sidebar.Item href="/users/list" icon={HiUsers}>
+                        Account Settings
+                      </Sidebar.Item>
+                      <Sidebar.Item
+                        href="/authentication/sign-in"
+                        icon={HiLogin}
+                      >
+                        Notifications
+                      </Sidebar.Item>
+                    </Sidebar.ItemGroup>
+                  </Sidebar.Items>
+                </div>
+              </div>
+            </Sidebar>
+          </Drawer.Items>
+        </Drawer>
+      </>
       <Navbar using={"projects"} />
 
-      <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
+      <div className="bg-black w-full flex flex-col gap-5 sm:px-5 md:px-10 md:flex-row text-[#ffffff]">
         <aside className="hidden w-full max-w-2xs py-4 md:w-1/3 lg:w-1/4 md:block">
           <div className="sticky flex flex-col gap-2 p-4 text-sm border-r border-indigo-100 top-12">
             <h2 className="pl-3 mb-4 text-2xl font-semibold">Settings</h2>
@@ -136,10 +203,16 @@ function ProjectsPage() {
         </aside>
 
         <main className="w-screen min-h-screen py-1 md:w-2/3 lg:w-3/4">
-          <div className="p-2 md:p-4">
+          <div className="md:p-4 mr-2">
             <div className="w-full px-6 pb-8 mt-8 sm:rounded-lg">
               <div className="flex justify-between mb-10 w-full">
-                <h2 className="pl-3 mb-4 text-2xl font-semibold">
+                <Button
+                  className="md:hidden visible"
+                  onClick={() => setIsOpen(true)}
+                >
+                  <HiMenu className="w-7 h-7" />
+                </Button>
+                <h2 className="pl-3 mb-4 text-xl sm:text-2xl font-semibold">
                   Your projects:
                 </h2>
                 <>
@@ -155,7 +228,7 @@ function ProjectsPage() {
                     </div>
                   </Button>
                   <Modal
-                    className="bg-black/75 "
+                    className="bg-black/75"
                     show={openModal}
                     onClose={() => setOpenModal(false)}
                   >
@@ -176,7 +249,7 @@ function ProjectsPage() {
                               type="title"
                               placeholder="Title of my project"
                               required
-                              autoComplete="off" // Evitar autocompletar
+                              autoComplete="off"
                             />
 
                             <div className="mt-5 w-60">
@@ -192,7 +265,7 @@ function ProjectsPage() {
                                 placeholder="A brief description of my project"
                                 name="description"
                                 required
-                                autoComplete="off" // Evitar autocompletar
+                                autoComplete="off"
                               />
                             </div>
                           </div>
@@ -231,7 +304,7 @@ function ProjectsPage() {
                             type="content"
                             name="content"
                             placeholder="full explanation"
-                            autoComplete="off" // Evitar autocompletar
+                            autoComplete="off"
                           />
                         </div>
 
@@ -243,25 +316,34 @@ function ProjectsPage() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
-                {projects ? (
+                {projects.length > 0 ? (
                   projects.map((project) => (
-                    <div key={project._id}>
+                    <button
+                      className="relative text-white px-4 py-2 rounded transition transform hover:-translate-y-1 hover:shadow-lg hover:shadow-white"
+                      onClick={() => {
+                        router.push(`/${project.title}`);
+                      }}
+                      key={project._id}
+                    >
                       <Card
                         className="max-w-sm lg:h-52 lg:text-xs"
                         imgSrc={project.banner}
                         horizontal
                       >
-                        <h5 className="text-2xl font-bold tracking-tight lg:text-xs lg:pt-10 text-gray-900 dark:text-white">
+                        <div className="absolute top-5 left-5 px-5 py-2 bg-black bg-opacity-75 text-white text-xs font-semibold">
+                          {project.projectType}
+                        </div>
+                        <h5 className="text-2xl font-bold tracking-tight lg:text-xl lg:pt-0 text-gray-900 dark:text-white">
                           {project.title}
                         </h5>
                         <p className="font-normal text-gray-700 lg:pb-10 dark:text-gray-400">
                           {project.description}
                         </p>
                       </Card>
-                    </div>
+                    </button>
                   ))
                 ) : (
-                  <p>cargando...</p>
+                  <p>Loading...</p>
                 )}
               </div>
             </div>
