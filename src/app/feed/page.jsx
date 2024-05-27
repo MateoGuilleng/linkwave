@@ -143,8 +143,8 @@ export default function UsersPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 m-10">
         {filteredProjects.map((project) => (
-          <Link key={project._id} href={`/${project.title}`}>
-            <div className="relative rounded-lg overflow-hidden shadow-md bg-white dark:bg-gray-800">
+          <Link key={project._id} href={`/${project.author}/${project.title}`}>
+            <div className="relative rounded-lg overflow-hidden hover:-translate-y-1 hover:shadow-lg hover:shadow-white shadow-md bg-white dark:bg-gray-800">
               <img
                 className="w-full h-60 object-cover"
                 src={project.banner}

@@ -321,7 +321,7 @@ function ProjectsPage() {
                     <button
                       className="relative text-white px-4 py-2 rounded transition transform hover:-translate-y-1 hover:shadow-lg hover:shadow-white"
                       onClick={() => {
-                        router.push(`/${project.title}`);
+                        router.push(`projects/${project.title}`);
                       }}
                       key={project._id}
                     >
