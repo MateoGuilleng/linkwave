@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import Navbar from "@/components/Navbar";
+
 import {
   HiAdjustments,
   HiCloudDownload,
@@ -10,8 +11,18 @@ import {
   HiStar,
   HiOutlineStar,
 } from "react-icons/hi";
-import { Button, Modal, Textarea, Label, Dropdown } from "flowbite-react";
-import { FaArrowLeft } from "react-icons/fa";
+
+import {
+  Button,
+  Dropdown,
+  Modal,
+  Textarea,
+  Label,
+  DropdownLabel,
+  FileInput,
+  Select,
+} from "flowbite-react";
+import { FaArrowLeft, FaPlus } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { SlOptionsVertical } from "react-icons/sl";
 import { useSession } from "next-auth/react";
@@ -19,12 +30,12 @@ import { useSession } from "next-auth/react";
 function Page() {
   const [starIsClicked, setStarIsClicked] = useState(false);
   const [binaryStar, setBinaryStar] = useState(0);
-
+  const [imagePreview, setImagePreview] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [openCommentEditModal, setOpenCommentEditModal] = useState(false);
 
   const [commentId, setCommentId] = useState();
-
+  const [uploadModal, setUploadModal] = useState(false);
   const [error, setError] = useState();
   const { data: session, status } = useSession();
   const [project, setProject] = useState({});
@@ -34,6 +45,7 @@ function Page() {
   const [newComment, setNewComment] = useState("");
   const [showUpEditCommentButton, setShowUpEditCommentButton] = useState(false);
   const [showUploadButton, setShowUploadButton] = useState(false); // Estado para controlar la visibilidad del botón de carga de comentarios
+  const [formFilled, setFormFilled] = useState(false);
 
   useEffect(() => {
     const currentPath = window.location.pathname;
@@ -47,6 +59,79 @@ function Page() {
       getProject();
     }
   }, [status]);
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const email = session.user.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
+    let title = formData.get("title");
+    let description = formData.get("description");
+    let content = formData.get("content");
+
+    // Verificar si el campo está vacío y reemplazar con el valor del placeholder
+    if (!title.trim()) {
+      title = e.target.querySelector("#title").getAttribute("placeholder");
+    }
+    if (!description.trim()) {
+      description = e.target
+        .querySelector("#description")
+        .getAttribute("placeholder");
+    }
+    if (!content.trim()) {
+      content = e.target.querySelector("#content").getAttribute("placeholder");
+    }
+
+    try {
+      const res = await fetch(
+        `/api/project/specificProject/projectAdmin/${lastWord}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            content,
+            projectType: selectedProjectType,
+          }),
+        }
+      );
+      router.refresh();
+      // Comprobar si la solicitud fue exitosa
+      if (res.ok) {
+        // Convertir la respuesta a formato JSON
+        const data = await res.json();
+        // Imprimir la respuesta en la consola
+        console.log("Respuesta del servidor:", data);
+
+        router.replace("/dashboard/projects");
+      } else {
+        // Imprimir un mensaje de error si la solicitud no fue exitosa
+        console.error("Error en la solicitud:", res.statusText);
+      }
+    } catch (error) {
+      console.log("Error de red:", error);
+    }
+  };
+
+  const handleChange = () => {
+    const formFields = document.querySelectorAll("form input, form textarea");
+    for (const field of formFields) {
+      if (field.value) {
+        setFormFilled(true);
+        return;
+      }
+    }
+    setFormFilled(false);
+    if (project.projectType !== selectedProjectType) {
+      setFormFilled(true);
+    }
+  };
+
+  const handleProjectTypeChange = (e) => {
+    setSelectedProjectType(e.target.value);
+    console.log(selectedProjectType);
+  };
 
   useEffect(() => {
     if (project?.starredBy?.includes(session?.user?.email)) {
@@ -226,43 +311,57 @@ function Page() {
             src={project?.banner}
             alt="Bordered avatar"
           />
-          <div className="m-10  mb-0 text-2xl border-b pb-5 flex gap-6 justify-between border-indigo-100 font-semibold">
-            <div className="flex gap-10">
-              <button onClick={router.back}>
-                <FaArrowLeft />{" "}
-              </button>{" "}
-              <div>
-                <h2>{project?.title}</h2>{" "}
-                <a
-                  className="text-lg border-b-2"
-                  href={`profile/${project?.author}`}
-                >
-                  {" "}
-                  {project?.author}{" "}
-                </a>
+          <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
+            <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
+              <div className="flex flex-wrap sm:w-fit">
+                <div className="text-3xl sm:text-5xl sm:w-fit  w-full sm:order-first">
+                  <div className="flex gap-3">
+                    <button onClick={router.back}>
+                      <FaArrowLeft />{" "}
+                    </button>{" "}
+                    <h2 className="sm:text-4xl sm:w-fit">{project?.title}</h2>{" "}
+                  </div>
+                  <a
+                    className="text-sm border-b-2 sm:text-xl "
+                    href={`/${project?.author}`}
+                  >
+                    {" "}
+                    {project?.author}{" "}
+                  </a>
+                </div>
+                <h3 className="text-gray-400 text-xl mt-4 sm:mt-5 sm:order-first">
+                  Description: {project?.description}{" "}
+                </h3>
               </div>
-              <h3 className="text-gray-400 text-xl mt-2">
-                {" "}
-                {project?.description}{" "}
-              </h3>
-            </div>{" "}
-            <button
-              onClick={handleStarClick}
-              className="p-4 mr-24 flex items-center gap-8"
-            >
-              <div className="text-xl">{project?.stars}</div>
-              {starIsClicked ? (
-                <HiStar className="w-12 h-12" />
-              ) : (
-                <HiOutlineStar className="w-12 h-12" />
-              )}
-            </button>
+              <div className="sm:flex sm:gap-3 sm:flex-col sm:items-end w-full lg:max-w-72">
+                <div className="text-xl flex sm:w-fit border-2 rounded-lg w-full pt-2 px-2 align-middle justify-between">
+                  <div>Stars: {project?.stars}</div>
+                  <button onClick={handleStarClick}>
+                    {starIsClicked ? (
+                      <HiStar className="w-9 h-9 pb-2" />
+                    ) : (
+                      <HiOutlineStar className="w-9 h-9 pb-2" />
+                    )}
+                  </button>
+                </div>
+                <div className="text-xl flex w-full sm:w-1/2 border-2 rounded-lg pt-2 px-2 align-middle justify-between">
+                  <div>Stars: {project?.stars}</div>
+                  <button onClick={handleStarClick}>
+                    {starIsClicked ? (
+                      <HiStar className="w-9 h-9 pb-2" />
+                    ) : (
+                      <HiOutlineStar className="w-9 h-9 pb-2" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <main className="m-10 mt-0">
             <div className="">
-              <Button.Group>
-                <Button gradientDuoTone="cyanToBlue">
+              <Button.Group className="flex-wrap">
+                <Button>
                   <HiUserCircle className="mr-3 h-4 w-4" />
                   Overview
                 </Button>
@@ -273,11 +372,11 @@ function Page() {
                   </Button>
                   <Modal
                     dismissible
-                    className="bg-black/75"
+                    className="bg-black/75 w-screen"
                     show={openModal}
                     onClose={() => setOpenModal(false)}
                   >
-                    <Modal.Header className="w-">
+                    <Modal.Header className="bg-black border-2">
                       <form action="" onSubmit={handleUploadComment}>
                         <div className="w-full">
                           <div className="mb-2 ">
@@ -307,7 +406,7 @@ function Page() {
                         </div>
                       </form>
                     </Modal.Header>
-                    <Modal.Body className="max-h-[400px] overflow-y-auto">
+                    <Modal.Body className="max-h-[400px] overflow-y-auto bg-black border-2 border-white/30">
                       <div className="space-y-6">
                         <h3 className="text-xl font-bold">
                           Comments: ({projectComments?.length})
@@ -479,7 +578,7 @@ function Page() {
                   </Modal>
                 </>
 
-                <Button color="">
+                <Button className="" color="">
                   <HiAdjustments className="mr-3 h-4 w-4" />
                   Settings
                 </Button>
@@ -498,7 +597,68 @@ function Page() {
                 )}
               </Button.Group>
             </div>
+
             <div className="m-10"> {project?.content}</div>
+
+            <>
+              <Button
+                className="w-1/2 h-32 bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
+                onClick={() => setUploadModal(true)}
+              >
+                <div className="flex gap-10 align-middle">
+                  <span>
+                    <FaPlus className="text-white text-4xl" />{" "}
+                  </span>
+                  <p className="text-2xl"> Upload a request</p>
+                </div>
+              </Button>
+              <Modal
+                className="bg-black/75"
+                show={uploadModal}
+                onClose={() => setUploadModal(false)}
+              >
+                <Modal.Header>Upload Request:</Modal.Header>
+                <Modal.Body>
+                  <p className="mx-10">
+                    Here you can upload your request in order to propose a
+                    change to the project, if the owner accept, your changes
+                    will be authorizated
+                  </p>
+                  <div className="overflow-y-auto max-h-[70vh]">
+                    <div className="col-span-2 sm:col-span-1 ml-3">
+                      <div className="mb-2 mt-6  block">
+                        <Label htmlFor="type" value="type" />
+                      </div>
+                      <Select
+                        id="type"
+                        type="type"
+                        name="type"
+                        required
+                        onChange={handleProjectTypeChange}
+                      >
+                        <option value="current">
+                          current: {project?.projectType}
+                        </option>
+
+                        <option value="ZIP">Application / Game</option>
+                        <option value="Art">Art</option>
+                        <option value="General discussion">
+                          General discussion
+                        </option>
+                        <option value="Audio">Audio</option>
+                        <option value="Video">Video</option>
+                      </Select>
+                    </div>
+                    <div className="text-left text-md font-semibold p-5">
+                      File:
+                    </div>
+                    <div>
+                      <FileInput id="multiple-file-upload" multiple />
+                    </div>
+                  </div>
+                </Modal.Body>
+              </Modal>
+            </>
           </main>
         </div>
       </div>

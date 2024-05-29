@@ -16,7 +16,7 @@ function Navbar({ using }) {
               className="hover:text-fuchsia-500 transition-colors text-xs sm:text-base"
               href="/"
             >
-              Insightful
+              Projectfully
             </Link>
             <ul className="flex gap-8 ">
               <li>

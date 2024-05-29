@@ -13,7 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 
 import { useSession } from "next-auth/react";
-import { Label, FileInput, Button, Modal, Select } from "flowbite-react";
+import { Label, FileInput, Button, Modal, Select, Textarea } from "flowbite-react";
 import { HiSave, HiStar } from "react-icons/hi";
 
 function Page() {
@@ -26,7 +26,16 @@ function Page() {
   const [lastWord, setLastWord] = useState("");
   const [project, setProject] = useState({});
   const author = session?.user?.email;
+  const [error, setError] = useState("");
   const [formFilled, setFormFilled] = useState(false);
+  const [commentText, setCommentText] = useState("");
+
+
+  const handleCommentInputChange = (e) => {
+    const text = e.target.value;
+    setCommentText(text);
+    setShowUploadButton(text.trim().length > 0); // Mostrar el botón si hay texto en el área de comentario
+  };
 
   const handleProjectTypeChange = (e) => {
     setSelectedProjectType(e.target.value);
@@ -210,6 +219,7 @@ function Page() {
       "image/png",
       "image/jpeg",
       "image/gif",
+      "application/x-msdownload" // This MIME type is commonly used for .exe files
     ];
     if (
       archivoSeleccionado &&
@@ -288,7 +298,7 @@ function Page() {
                   </div>
                 </Button>
                 <Modal
-                  className="bg-black/75"
+                  className="bg-black/75 w-screen"
                   show={editModal}
                   onClose={() => setEditModal(false)}
                 >
@@ -298,6 +308,7 @@ function Page() {
                       <div className="text-left text-md font-semibold p-5">
                         Banner:
                       </div>
+                      
                       <div className="flex w-full items-center justify-center">
                         <Label
                           htmlFor="dropzone-file"
@@ -329,6 +340,7 @@ function Page() {
                               SVG, PNG, JPG or GIF (MAX. 800x400px)
                             </p>
                           </div>
+                          {error}
                           <FileInput
                             onChange={(e) => handleUploadImage(e)}
                             id="dropzone-file"
@@ -545,128 +557,72 @@ function Page() {
                 className="w-1/2 h-32 bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
                 onClick={() => setUploadModal(true)}
               >
-                <FaPlus className="text-white text-4xl" />
+                <div className="flex gap-10 align-middle">
+                  <span>
+                    <FaPlus className="text-white text-4xl" />{" "}
+                  </span>
+                  <p className="text-2xl"> Upload Box:</p>
+                </div>
               </Button>
               <Modal
-                className="bg-black/75"
+                className="bg-black/75 w-screen"
                 show={uploadModal}
                 onClose={() => setUploadModal(false)}
               >
-                <Modal.Header>Upload Box:</Modal.Header>
+                <Modal.Header>Upload a Box:</Modal.Header>
                 <Modal.Body>
+                  <p className="mx-10">
+                    You can upload piceas of your project in boxes, upload
+                    something and give it a brief description.
+                  </p>
                   <div className="overflow-y-auto max-h-[70vh]">
-                    <p className="text-xs">
-                      You can upload piceas of your project in boxes, upload
-                      something and give it a brief description.
-                    </p>
-                    <div className="text-left text-md font-semibold p-5">
-                      Banner:
-                    </div>
-                    <div className="flex w-full items-center justify-center">
-                      <Label
-                        htmlFor="dropzone-file"
-                        className="flex h-34 w-full mb-3 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                      >
-                        <div className="flex flex-col items-center justify-center pb-6 pt-5">
-                          <svg
-                            className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 20 16"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                            />
-                          </svg>
-                          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-semibold">
-                              Click to upload
-                            </span>{" "}
-                            or drag and drop
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            SVG, PNG, JPG or GIF (MAX. 800x400px)
-                          </p>
-                        </div>
-                        <FileInput
-                          onChange={(e) => handleUploadImage(e)}
-                          id="dropzone-file"
-                          className="hidden"
-                        />
-                      </Label>
-                    </div>
-                    <div className="w-full self-center">
-                      {imagePreview && (
-                        <div className="flex flex-col items-center justify-center">
-                          <div className="text-left text-md font-semibold p-5">
-                            Your Uploaded Banner
-                          </div>
-                          <img
-                            src={imagePreview}
-                            alt="Vista previa de la imagen"
-                            className="max-w-full max-h-[400px] mr-10"
-                          />
-                          <div className="mt-4 w-full flex flex-row justify-start">
-                            <Button.Group>
-                              <Button
-                                onClick={(e) => handleSaveImage(e)}
-                                className="hover:border-white bg-blue-600"
-                              >
-                                <HiSave className="mr-3 h-4 w-4" />
-                                Save
-                              </Button>
-
-                              <Button
-                                onClick={() => handleDeleteImagePreview()}
-                                className="hover:border-white"
-                              >
-                                Remove Banner
-                              </Button>
-                            </Button.Group>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <form
-                      onSubmit={handleEditSubmit}
-                      onChange={handleChange}
-                      className="p-4 md:p-5"
-                    >
-                      <div className="grid gap-4 mb-4 grid-cols-2">
-                        <div className="col-span-2">
-                          <label
-                            htmlFor="content"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                          >
-                            Content
-                          </label>
-                          <textarea
-                            id="content"
-                            name="content"
-                            rows={4}
-                            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder={project?.content}
-                            defaultValue={""}
-                          />
-                        </div>
+                    <div className="col-span-2 sm:col-span-1 ml-3">
+                      <div className="mb-2 mt-6  block">
+                        <Label htmlFor="type" value="type" />
                       </div>
-                      <button
-                        type="submit"
-                        disabled={!formFilled}
-                        className={`text-white focus:outline-none focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ${
-                          formFilled
-                            ? "bg-indigo-700 hover:bg-indigo-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-                            : "bg-gray-500 cursor-not-allowed"
-                        }`}
+                      <Select
+                        id="type"
+                        type="type"
+                        name="type"
+                        required
+                        onChange={handleProjectTypeChange}
                       >
-                        Save
-                      </button>
-                    </form>
+                        <option value="current">
+                          current: {project?.projectType}
+                        </option>
+
+                        <option value="ZIP">Application / Game</option>
+                        <option value="Art">Art</option>
+                        <option value="General discussion">
+                          General discussion
+                        </option>
+                        <option value="Audio">Audio</option>
+                        <option value="Video">Video</option>
+                      </Select>
+                    </div>
+                    <div className="text-left text-md font-semibold p-5">
+                      File:
+                    </div>
+                    <div>
+                      <FileInput id="multiple-file-upload" multiple />
+                    </div>
+                    <div className="mb-2 mt-5 ">
+                      <Label
+                        className="text-xl"
+                        htmlFor="comment"
+                        value="Leave a description:"
+                      />
+                    </div>
+                    <Textarea
+                      className="mt-5"
+                      id="comment"
+                      name="comment"
+                      placeholder="give an opinion about the project..."
+                      required
+                      rows={4}
+                      value={commentText}
+                      onChange={handleCommentInputChange}
+                    />
                   </div>
                 </Modal.Body>
               </Modal>

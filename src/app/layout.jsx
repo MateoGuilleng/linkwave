@@ -38,8 +38,8 @@ export default async function RootLayout({ children }) {
       </head>
       <body className={inter.className}>
         <SessionProvider session={session}>{children}</SessionProvider>
-        <Footer bgDark className="mt-20">
-          <div className="w-full">
+        <Footer className="mt-20 ">
+          <div className="w-full bg-black border-t-2">
             <div className="grid w-full grid-cols-2 gap-8 px-6 py-8 md:grid-cols-4">
               <div>
                 <Footer.Title title="Company" />
@@ -77,9 +77,9 @@ export default async function RootLayout({ children }) {
                 </Footer.LinkGroup>
               </div>
             </div>
-            <div className="w-full bg-gray-700 px-4 py-6 sm:flex sm:items-center sm:justify-between">
-              <Footer.Copyright href="#" by="Flowbite™" year={2022} />
-              <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
+            <div className="w-full bg-black px-4 border-t-2 py-6 sm:flex sm:items-center sm:justify-between">
+              <Footer.Copyright href="#" by="Projectfully" year={2024} />
+              <div className="mt-4 flex space-x-6 sm:mt-0  sm:justify-center">
                 <Footer.Icon href="#" icon={BsFacebook} />
                 <Footer.Icon href="#" icon={BsInstagram} />
                 <Footer.Icon href="#" icon={BsTwitter} />
