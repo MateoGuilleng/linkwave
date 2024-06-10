@@ -131,16 +131,12 @@ export const PUT = async (request, { params }) => {
       });
 
       writestream.on("error", (err) => {
-        console.error("Error uploading file to MongoDB:", err);
-        reject(
-          NextResponse.json(
-            { message: "Upload failed", error: err.message },
-            { status: 500 }
-          )
-        );
+        console.error("Error occurred during writestream:", err);
       });
 
-      writestream.end(buffer);
+      writestream.end(buffer, () => {
+        console.log("Buffer has been written to GridFS");
+      });
     });
   } catch (error) {
     console.error("Error handling upload request:", error);
