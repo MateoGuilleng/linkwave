@@ -42,7 +42,15 @@ const projectSchema = new Schema(
     starredBy: {
       type: Array,
       required: false,
-    }
+    },
+    files: {
+      type: Array,
+      required: false,
+    },
+    boxes: {
+      type: Array,
+      required: false,
+    },
   },
   { timestamps: true }
 );

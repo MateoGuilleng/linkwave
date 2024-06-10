@@ -10,7 +10,7 @@ cloudinary.config({
 
 export async function POST(request) {
   const data = await request.formData();
-  const image = data.get("file");
+  const image = data.get("image");
   if (image) {
     const bytes = await image.arrayBuffer();
     const buffer = Buffer.from(bytes);

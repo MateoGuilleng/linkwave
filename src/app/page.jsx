@@ -49,7 +49,7 @@ export default function Home() {
         </div>
 
         <div className="w-max h-2/4 md:h-full md:w-3/5 items-center justify-center relative -z-10">
-          <img src="@/public/next.svg" alt="Imagen" />
+          <img src="https://cdn3d.iconscout.com/3d/premium/thumb/abstract-shape-7161374-5818776.png?f=webp" alt="Imagen" />
         </div>
       </header>
 
