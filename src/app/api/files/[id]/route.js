@@ -29,54 +29,6 @@ const connectToDatabase = async () => {
   }
 };
 
-export const DELETE = async (request, { params }) => {
-  await connect();
-
-  const fileId = params.id;
-
-  // Aquí obtenemos el cuerpo de la solicitud de manera diferente
-  const { projectTitle } = JSON.parse(await request.text());
-
-  console.log(fileId, projectTitle); // Asegúrate de que projectTitle se imprima correctamente
-
-  try {
-    // Eliminar referencias del fileId en el array boxFiles de todos los proyectos que coincidan con el projectTitle
-    const updatedProjects = await Project.updateMany(
-      { title: projectTitle, "boxes.boxFiles.fileId": fileId },
-      { $pull: { "boxes.$[].boxFiles": { fileId } } }
-    );
-
-    // Eliminar fileId del array files de todos los proyectos que coincidan con el projectTitle
-    const updateFiles = await Project.updateMany(
-      { title: projectTitle },
-      { $pull: { files: fileId } }
-    );
-
-    if (
-      updatedProjects.modifiedCount === 0 &&
-      updateFiles.modifiedCount === 0
-    ) {
-      return new NextResponse(
-        "No projects found with references to this file",
-        {
-          status: 404,
-        }
-      );
-    }
-
-    return new NextResponse("File references deleted successfully", {
-      status: 200,
-    });
-  } catch (error) {
-    if (error.name === "CastError") {
-      return new NextResponse("Invalid data format", { status: 400 });
-    } else {
-      console.error("Error deleting file references:", error);
-      return new NextResponse("Internal server error", { status: 500 });
-    }
-  }
-};
-
 export const PUT = async (request, { params }) => {
   try {
     await connectToDatabase();
@@ -196,5 +148,53 @@ export const PUT = async (request, { params }) => {
       { message: "Internal server error", error: error.message },
       { status: 500 }
     );
+  }
+};
+
+export const DELETE = async (request, { params }) => {
+  await connect();
+
+  const fileId = params.id;
+
+  // Aquí obtenemos el cuerpo de la solicitud de manera diferente
+  const { projectTitle } = JSON.parse(await request.text());
+
+  console.log(fileId, projectTitle); // Asegúrate de que projectTitle se imprima correctamente
+
+  try {
+    // Eliminar referencias del fileId en el array boxFiles de todos los proyectos que coincidan con el projectTitle
+    const updatedProjects = await Project.updateMany(
+      { title: projectTitle, "boxes.boxFiles.fileId": fileId },
+      { $pull: { "boxes.$[].boxFiles": { fileId } } }
+    );
+
+    // Eliminar fileId del array files de todos los proyectos que coincidan con el projectTitle
+    const updateFiles = await Project.updateMany(
+      { title: projectTitle },
+      { $pull: { files: fileId } }
+    );
+
+    if (
+      updatedProjects.modifiedCount === 0 &&
+      updateFiles.modifiedCount === 0
+    ) {
+      return new NextResponse(
+        "No projects found with references to this file",
+        {
+          status: 404,
+        }
+      );
+    }
+
+    return new NextResponse("File references deleted successfully", {
+      status: 200,
+    });
+  } catch (error) {
+    if (error.name === "CastError") {
+      return new NextResponse("Invalid data format", { status: 400 });
+    } else {
+      console.error("Error deleting file references:", error);
+      return new NextResponse("Internal server error", { status: 500 });
+    }
   }
 };
