@@ -1,4 +1,3 @@
-// "api/files/uploadFile/route.js";
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Grid from "gridfs-stream";
@@ -52,6 +51,12 @@ export async function POST(request) {
       );
     }
 
+    console.log("Uploading file:", {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+    });
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
@@ -63,18 +68,16 @@ export async function POST(request) {
       });
 
       writestream.on("finish", async () => {
-        // File uploaded successfully, now retrieve the file ID
         const fileId = writestream.id.toString();
 
         try {
-          const projectId = projectID; // Usar el ID del proyecto proporcionado
-          const project = await Project.findById(projectId);
+          const project = await Project.findById(projectID);
 
           if (!project) {
             throw new Error("Project not found");
           }
 
-          const nextBoxId = project.boxes.length + 1; // Incrementar el ID de box
+          const nextBoxId = project.boxes.length + 1;
 
           const update = {
             $push: {
@@ -84,7 +87,7 @@ export async function POST(request) {
                 title,
                 category,
                 description,
-                column: "main", // Añadir la propiedad column con valor 'main'
+                column: "main",
                 boxFiles: [
                   {
                     filename: file.name,
@@ -97,7 +100,7 @@ export async function POST(request) {
           };
 
           const updatedProject = await Project.findByIdAndUpdate(
-            projectId,
+            projectID,
             update,
             { new: true }
           );
@@ -126,16 +129,12 @@ export async function POST(request) {
       });
 
       writestream.on("error", (err) => {
-        console.error("Error uploading file to MongoDB:", err);
-        reject(
-          NextResponse.json(
-            { message: "Upload failed", error: err.message },
-            { status: 500 }
-          )
-        );
+        console.error("Error occurred during writestream:", err);
       });
 
-      writestream.end(buffer);
+      writestream.end(buffer, () => {
+        console.log("Buffer has been written to GridFS");
+      });
     });
   } catch (error) {
     console.error("Error handling upload request:", error);

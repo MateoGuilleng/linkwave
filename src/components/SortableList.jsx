@@ -58,7 +58,6 @@ const SortableList = ({ items = [], projectName }) => {
         body: formData,
       });
 
-      
       const result = await response.json();
       if (response.ok) {
         console.log("File uploaded successfully", result);
@@ -413,9 +412,12 @@ const SortableList = ({ items = [], projectName }) => {
     <DndProvider backend={HTML5Backend}>
       <div>
         <ul className="w-full p-10 ">
-          {sortedItems.map((item, index) => (
-            <Item key={item.id} item={item} index={index} />
-          ))}
+          {
+            /* Corrige la advertencia de "Each child in a list should have a unique 'key' prop." */
+            sortedItems.map((item, index) => (
+              <Item key={item.id} item={item} index={index} />
+            ))
+          }
         </ul>
         <Modal
           className="bg-black/75"
@@ -513,7 +515,6 @@ const SortableList = ({ items = [], projectName }) => {
                       <FaUpload className="mr-2" size={20} />
                       Upload
                     </button>
-                   
                   </div>
                   {message && <p>{message}</p>}
                   <div className="mt-5 w-full">
