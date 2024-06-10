@@ -24,6 +24,7 @@ import {
   FaFileImage,
   FaFileVideo,
   FaFileAudio,
+  FaSave,
   FaEdit,
   FaFileWord,
   FaFileCode,
@@ -599,7 +600,7 @@ function Page() {
                                         onClick={(e) => handleSaveImage(e)}
                                         className="hover:border-white bg-blue-600"
                                       >
-                                        <HiSave className="mr-3 h-4 w-4" />
+                                        <FaSave className="mr-3 h-4 w-4" />
                                         Save
                                       </Button>
 
