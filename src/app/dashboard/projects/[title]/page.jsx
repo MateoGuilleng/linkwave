@@ -43,6 +43,7 @@ import {
   DropdownLabel,
   Dropdown,
   Select,
+  Radio,
   Checkbox,
   Textarea,
 } from "flowbite-react";
@@ -126,7 +127,7 @@ function Page() {
     formData.append("description", boxDescription);
 
     try {
-      const response = await fetch("/api/files/uploadBox", {
+      const response = await fetch("/api/boxes/uploadBox", {
         method: "POST",
         body: formData,
       });
@@ -312,6 +313,7 @@ function Page() {
         const title = project.title;
         const description = project.description;
         const content = project.content;
+        const projectType = project.projectType;
 
         const proyectResponse = await fetch(
           `/api/project/specificProject/projectAdmin/${lastWord}`,
@@ -325,6 +327,7 @@ function Page() {
               description,
               content,
               imageLink,
+              projectType,
             }),
           }
         );
@@ -377,6 +380,7 @@ function Page() {
       content = e.target.querySelector("#content").getAttribute("placeholder");
     }
 
+    const imageLink = project.banner;
     try {
       const res = await fetch(
         `/api/project/specificProject/projectAdmin/${lastWord}`,
@@ -390,6 +394,7 @@ function Page() {
             description,
             content,
             projectType: selectedProjectType,
+            imageLink,
           }),
         }
       );
@@ -512,6 +517,7 @@ function Page() {
             src={project?.banner}
             alt="Bordered avatar"
           />
+
           <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
             <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
               <div className="flex flex-wrap sm:w-fit">
@@ -634,7 +640,7 @@ function Page() {
                                     type="text"
                                     name="title"
                                     id="title"
-                                    className="bg-black border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black   dark:focus:ring-primary-500 d"
+                                    className="bg-black border border-gray-300 text-white  text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black   dark:focus:ring-primary-500 d"
                                     placeholder={project?.title}
                                   />
                                 </div>
@@ -997,7 +1003,15 @@ function Page() {
 
             <div className="m-10"> {project?.content}</div>
 
-            <h1 className="text-2xl font-bold">Boxes:</h1>
+            <div className="flex">
+              <h1 className="text-2xl font-bold">Boxes:</h1>
+              <Button
+                className="bg-gray-700 ml-4 hover:bg-gray-600 flex items-center justify-center"
+                onClick={() => setUploadModal(true)}
+              >
+                <FaPlus />
+              </Button>
+            </div>
             <div className="App text-black w-full ">
               <div className="w-full">
                 {items?.length == 0 ? (
@@ -1008,17 +1022,6 @@ function Page() {
               </div>
             </div>
             <>
-              <Button
-                className="w-1/2 h-32 bg-gray-700 hover:bg-gray-600 flex items-center justify-center"
-                onClick={() => setUploadModal(true)}
-              >
-                <div className="flex gap-10 align-middle">
-                  <span>
-                    <FaPlus className="text-white text-4xl" />{" "}
-                  </span>
-                  <p className="text-2xl"> Upload box</p>
-                </div>
-              </Button>
               <Modal
                 className="bg-black/75"
                 show={uploadModal}
@@ -1066,13 +1069,14 @@ function Page() {
                         </div>
                       </div>
 
-                      <div id="fileUpload" className="max-w-md mt-4">
+                      <div id="fileUpload" className="w-full mt-4">
                         <div className="mb-2 block">
                           <Label htmlFor="file" value="Upload file" />
                         </div>
                         <FileInput
                           id="file"
                           name="file"
+                          className="w-full"
                           onChange={handleFileChange}
                           helperText="Add a file to your box"
                         />
@@ -1094,6 +1098,7 @@ function Page() {
                         required
                         rows={4}
                       />
+
                       <button type="submit">Upload</button>
                       {message && <p>{message}</p>}
                     </div>

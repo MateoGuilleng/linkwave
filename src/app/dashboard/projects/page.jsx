@@ -54,7 +54,6 @@ function ProjectsPage() {
 
     const title = formData.get("title");
     const description = formData.get("description");
-    const projectType = formData.get("type");
     const content = formData.get("content");
 
     if (!title || !content) {
@@ -276,10 +275,14 @@ function ProjectsPage() {
                             <Select
                               id="type"
                               type="type"
-                              name="type"
                               required
+                              name="type"
+                              value={selectedProjectType}
                               onChange={handleProjectTypeChange}
                             >
+                              <option value="" disabled>
+                                Choose a category
+                              </option>
                               <option value="Aplication">
                                 Application / Game
                               </option>

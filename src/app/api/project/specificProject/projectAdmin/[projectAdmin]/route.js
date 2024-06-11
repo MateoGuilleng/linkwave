@@ -6,13 +6,14 @@ import { NextResponse } from "next/server";
 export const PUT = async (request, { params }) => {
   await connect();
 
-  const { title, description, content, imageLink, projectType } =
+  const { title, description, content, projectType, imageLink } =
     await request.json();
 
   const projectTitle = params.projectAdmin;
 
   console.log("project title:", projectTitle);
 
+  console.log("banner", imageLink);
   const projectToUpdate = await project.findOneAndUpdate(
     { title: projectTitle },
     {
@@ -25,7 +26,6 @@ export const PUT = async (request, { params }) => {
     }
   );
 
-  console.log(projectToUpdate);
   try {
     return new NextResponse(JSON.stringify(projectToUpdate), { status: 200 });
   } catch (error) {

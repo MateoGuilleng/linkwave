@@ -9,7 +9,9 @@ export const PUT = async (request, { params }) => {
   const projectTitle = params.title;
 
   try {
-    const { itemId, newPosition, newId } = await request.json();
+    const { itemId, newPosition } = await request.json();
+
+    console.log("desde api", itemId, newPosition);
 
     // Encuentra el proyecto que contiene el box con el ID específico
     const project = await Project.findOne({ title: projectTitle });
@@ -25,11 +27,10 @@ export const PUT = async (request, { params }) => {
     const updatedProject = await Project.findOneAndUpdate(
       {
         title: projectTitle,
-        "boxes.id": itemId, // Busca el box con el ID específico dentro del array `boxes`
+        "boxes.identifier": itemId, // Busca el box con el ID específico dentro del array `boxes`
       },
       {
         $set: {
-          "boxes.$.id": newId, // Actualiza el ID del box específico
           "boxes.$.position": newPosition, // Actualiza la posición del box específico
         },
       },
@@ -48,7 +49,9 @@ export const PUT = async (request, { params }) => {
     );
 
     // Muestra el box actualizado en la consola
-    const updatedBox = updatedProject.boxes.find((box) => box.id === newId);
+    const updatedBox = updatedProject.boxes.find(
+      (box) => box.id === newPosition
+    );
     console.log("Updated Box:", updatedBox);
 
     return NextResponse.json({
