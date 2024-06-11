@@ -1017,7 +1017,7 @@ function Page() {
                 {items?.length == 0 ? (
                   "There are no boxes in the list"
                 ) : (
-                  <SortableListWithDnd items={items} projectName={lastWord} />
+                  <SortableListWithDnd items={items} projectName={project.title} />
                 )}
               </div>
             </div>
