@@ -47,6 +47,8 @@ export async function POST(request) {
     const title = data.get("title");
     const category = data.get("category");
 
+    console.log("file desde api:", file);
+
     const project = await Project.findById(projectID);
 
     if (!project) {

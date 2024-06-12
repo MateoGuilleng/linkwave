@@ -380,7 +380,7 @@ const SortableList = ({ items = [], projectName }) => {
   };
 
   const Item = ({ item, index }) => {
-    const descriptionLength = item.description.length;
+    const descriptionLength = item?.description?.length;
     const isDescriptionLong = descriptionLength > 400; // Cambiar 100 según sea necesario
 
     const [{ isDragging }, drag] = useDrag({
@@ -434,7 +434,7 @@ const SortableList = ({ items = [], projectName }) => {
       };
 
       return (
-        <div className="box-description w-full">
+        <div className="box-description w-full border-t-2 pt-2 border-white/45">
           {/* Renderización segura del contenido HTML */}
           <div dangerouslySetInnerHTML={createMarkup(description)} />
         </div>
@@ -452,19 +452,22 @@ const SortableList = ({ items = [], projectName }) => {
         style={{ cursor: "move", opacity }}
       >
         <div className="ml-4 w-full">
-          <h2 className="text-2xl mb-2">
-            <div className="flex">
+          <h2 className="text-2xl mb-2 items-center">
+            <div className="flex items-center">
               <span className="text-gray-500 mr-2 self-center">
                 {item.position}.
               </span>
               <span className="text-3xl font-bold">{item.title}</span>{" "}
+              <p className="text-sm ml-5">
+                Uploaded by: {item.author ? item.author : "Admin"}
+              </p>
               <span className="text-4xl ml-10">
-                {item?.category === "fileVanilla" && <FaFile />}
-                {item?.category === "File" && <FaFileCode />}
-                {item?.category === "Picture" && <FaFileImage />}
-                {item?.category === "Video" && <FaFileVideo />}
-                {item?.category === "Text" && <FaFileWord />}
-                {item?.category === "Audio" && <FaFileAudio />}
+                {item.category === "fileVanilla" && <FaFile />}
+                {item.category === "File" && <FaFileCode />}
+                {item.category === "Picture" && <FaFileImage />}
+                {item.category === "Video" && <FaFileVideo />}
+                {item.category === "Text" && <FaFilePdf />}
+                {item.category === "Audio" && <FaFileAudio />}
               </span>
             </div>
           </h2>
@@ -485,25 +488,27 @@ const SortableList = ({ items = [], projectName }) => {
             </a>
           </div>
 
-          <div className="mt-2 w-full">
-            <Label className="text-lg font-semibold" value="Files:" />
-            <ul className="mt-2">
-              {item?.boxFiles?.map((file) => (
-                <li
-                  key={file.fileId}
-                  className="flex items-center gap-2 hover:border-b-2"
-                >
-                  <a href={`/api/files/downloadFile/${file.fileId}`}>
-                    {file.filename}
-                  </a>
-                  {file?.filetype === "application/pdf" && <FaFilePdf />}
-                  {file?.filetype?.startsWith("image/") && <FaFileImage />}
-                  {file?.filetype?.startsWith("video/") && <FaFileVideo />}
-                  {file?.filetype?.startsWith("audio/") && <FaFileAudio />}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {item?.boxFiles?.length > 0 && (
+            <div className="my-2 w-full">
+              <Label className="text-lg font-semibold" value="Files:" />
+              <ul className="mt-2">
+                {item.boxFiles.map((file) => (
+                  <li
+                    key={file.fileId}
+                    className="flex items-center gap-2 hover:border-b-2"
+                  >
+                    <a href={`/api/files/downloadFile/${file.fileId}`}>
+                      {file.filename}
+                    </a>
+                    {file.filetype === "application/pdf" && <FaFilePdf />}
+                    {file.filetype?.startsWith("image/") && <FaFileImage />}
+                    {file.filetype?.startsWith("video/") && <FaFileVideo />}
+                    {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <BoxDescription description={item.description} />
 

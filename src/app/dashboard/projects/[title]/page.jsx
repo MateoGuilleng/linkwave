@@ -126,6 +126,7 @@ function Page() {
     formData.append("category", boxCategory);
     formData.append("description", boxDescription);
 
+    console.log(file, typeof file);
     try {
       const response = await fetch("/api/boxes/uploadBox", {
         method: "POST",
@@ -769,7 +770,7 @@ function Page() {
           <main className="m-10 mt-0">
             <div className="">
               <Button.Group className="flex-wrap">
-                <Button>
+                <Button onClick={()=> router.replace(`/${project.author}/${project.title}`)}>
                   <HiUserCircle className="mr-3 h-4 w-4" />
                   Overview
                 </Button>

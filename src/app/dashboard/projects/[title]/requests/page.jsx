@@ -338,7 +338,7 @@ function Page() {
               <Button.Group className="flex-wrap">
                 <Button
                   onClick={() =>
-                    router.replace(`/${project.author}/${project.title}`)
+                    router.replace(`/${project?.author}/${project?.title}`)
                   }
                 >
                   <HiUserCircle className="mr-3 h-4 w-4" />
@@ -590,6 +590,7 @@ function Page() {
                   <SortableRequestList
                     items={reqItems}
                     projectName={project.title}
+                    projectId={project._id}
                   />
                 )}
               </div>

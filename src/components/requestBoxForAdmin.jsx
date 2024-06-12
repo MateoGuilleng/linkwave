@@ -11,30 +11,34 @@ import {
 } from "react-icons/fa";
 import { Label, Textarea } from "flowbite-react";
 
-const SortableRequestList = ({ items = [], projectName }) => {
-  console.log("items", items);
+
+const SortableRequestList = ({ items = [], projectName, projectId }) => {
+  console.log("projectName", projectName);
   const BoxDescription = ({ description }) => {
     const createMarkup = (htmlContent) => ({ __html: htmlContent });
 
     return (
-      <div className="box-description w-full">
+      <div className="box-description w-full border-t-2 pt-2 border-white/45">
         <div dangerouslySetInnerHTML={createMarkup(description)} />
       </div>
     );
   };
 
   const handleAccept = async (item) => {
-    const formData = new FormData();
-    formData.append("projectID", item.projectID);
-    formData.append("title", item.title);
-    formData.append("category", item.category);
-    formData.append("description", item.description);
-    formData.append("file", item); // Aquí podrías incluir el archivo si es necesario
-
     try {
-      const response = await fetch("/api/boxes/uploadBox", {
+      // Clonar el objeto item y cambiar el nombre de la propiedad
+      const box = {
+        ...item,
+        boxFiles: item.requestBoxFiles,
+      };
+      delete box.requestBoxFiles;
+
+      const response = await fetch("/api/boxes/request/manageBox", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ box, projectId }),
       });
 
       if (!response.ok) {
@@ -51,9 +55,67 @@ const SortableRequestList = ({ items = [], projectName }) => {
     }
   };
 
-  const handleDeny = (item) => {
-    console.log("Denied:", item);
-    // Aquí podrías implementar la lógica para denegar el item
+  const handleDeleteFile = async (fileId) => {
+    try {
+      const response = await fetch(`/api/files/${fileId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          projectTitle: projectName, // Asegúrate de que esta clave coincida con la que esperas en el backend
+        }),
+      });
+
+      if (response.ok) {
+        console.log("File deleted successfully");
+        return true;
+      } else {
+        console.error("Failed to delete file:", await response.text());
+        return false;
+      }
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      return false;
+    }
+  };
+
+  const handleDeny = async (item) => {
+    console.log("Desde deny", item.requestBoxFiles); // devuelve un array con objetos, cada objeto tiene un fileId
+    const requestBoxId = item.identifier;
+
+    try {
+      // Eliminar cada archivo de requestBoxFiles antes de eliminar la box
+      for (const file of item.requestBoxFiles) {
+        const deleted = await handleDeleteFile(file.fileId);
+        console.log("deleted", deleted);
+        if (!deleted) {
+          throw new Error(`Failed to delete file with ID ${file.fileId}`);
+        }
+      }
+
+      const projectTitle = await projectName
+      // Después de eliminar los archivos, proceder a eliminar la box
+      const response = await fetch("/api/boxes/request/manageBox", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ projectTitle, requestBoxId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to deny box");
+      }
+
+      const data = await response.json();
+      console.log(data.message); // Mensaje de éxito del servidor
+
+      // Aquí podrías manejar la actualización de estado o cualquier otra lógica necesaria después de denegar
+    } catch (error) {
+      console.error("Error denying item:", error);
+      // Aquí podrías manejar el error, por ejemplo, mostrar un mensaje al usuario
+    }
   };
 
   const Item = ({ item }) => (
@@ -65,7 +127,9 @@ const SortableRequestList = ({ items = [], projectName }) => {
               {item.position}.
             </span>
             <span className="text-3xl font-bold">{item.title}</span>{" "}
-            <p className="text-sm ml-5">(Request Box Only)</p>
+            <p className="text-sm ml-5">
+              Uploaded by: {item.author ? item.author : "Admin"}
+            </p>
             <span className="text-4xl ml-10">
               {item.category === "fileVanilla" && <FaFile />}
               {item.category === "File" && <FaFileCode />}
@@ -93,25 +157,27 @@ const SortableRequestList = ({ items = [], projectName }) => {
           </a>
         </div>
 
-        <div className="mt-2 w-full">
-          <Label className="text-lg font-semibold" value="Files:" />
-          <ul className="mt-2">
-            {item.boxFiles?.map((file) => (
-              <li
-                key={file.fileId}
-                className="flex items-center gap-2 hover:border-b-2"
-              >
-                <a href={`/api/files/downloadFile/${file.fileId}`}>
-                  {file.filename}
-                </a>
-                {file.filetype === "application/pdf" && <FaFilePdf />}
-                {file.filetype?.startsWith("image/") && <FaFileImage />}
-                {file.filetype?.startsWith("video/") && <FaFileVideo />}
-                {file.filetype?.startsWith("audio/") && <FaFileAudio />}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {item?.requestBoxFiles?.length > 0 && (
+          <div className="mt-2 w-full">
+            <Label className="text-lg font-semibold" value="Files:" />
+            <ul className="mt-2">
+              {item.requestBoxFiles.map((file) => (
+                <li
+                  key={file.fileId}
+                  className="flex items-center gap-2 hover:border-b-2"
+                >
+                  <a href={`/api/files/downloadFile/${file.fileId}`}>
+                    {file.filename}
+                  </a>
+                  {file.filetype === "application/pdf" && <FaFilePdf />}
+                  {file.filetype?.startsWith("image/") && <FaFileImage />}
+                  {file.filetype?.startsWith("video/") && <FaFileVideo />}
+                  {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <BoxDescription description={item.description} />
 

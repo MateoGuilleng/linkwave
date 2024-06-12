@@ -31,6 +31,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const { data: session, status } = useSession();
+
   const handleTitleChange = (e) => setBoxTitle(e.target.value);
   const handleCategoryChange = (e) => setBoxCategory(e.target.value);
   const handleBoxDescriptionChange = (e) => {
@@ -85,7 +86,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
     console.log("identifier", currentBoxId);
 
     try {
-      const response = await fetch(`/api/files/${currentBoxId}`, {
+      const response = await fetch(`/api/files/requestFiles/${currentBoxId}`, {
         method: "PUT",
         body: formData,
       });
@@ -103,7 +104,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
     const createMarkup = (htmlContent) => ({ __html: htmlContent });
 
     return (
-      <div className="box-description w-full">
+      <div className="box-description w-full border-t-2 pt-2 border-white/45">
         <div dangerouslySetInnerHTML={createMarkup(description)} />
       </div>
     );
@@ -263,7 +264,9 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
               {item.position}.
             </span>
             <span className="text-3xl font-bold">{item.title}</span>{" "}
-            <p className="text-sm ml-5">Requested by: {item.author}</p>
+            <p className="text-sm ml-5">
+              Uploaded by: {item.author ? item.author : "Admin"}
+            </p>
             <span className="text-4xl ml-10">
               {item.category === "fileVanilla" && <FaFile />}
               {item.category === "File" && <FaFileCode />}
@@ -291,29 +294,31 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
           </a>
         </div>
 
-        <div className="mt-2 w-full">
-          <Label className="text-lg font-semibold" value="Files:" />
-          <ul className="mt-2">
-            {item.requestBoxFiles?.map((file) => (
-              <li
-                key={file.fileId}
-                className="flex items-center gap-2 hover:border-b-2"
-              >
-                <a href={`/api/files/downloadFile/${file.fileId}`}>
-                  {file.filename}
-                </a>
-                {file.filetype === "application/pdf" && <FaFilePdf />}
-                {file.filetype?.startsWith("image/") && <FaFileImage />}
-                {file.filetype?.startsWith("video/") && <FaFileVideo />}
-                {file.filetype?.startsWith("audio/") && <FaFileAudio />}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {item?.requestBoxFiles?.length > 0 && (
+          <div className="mt-2 w-full">
+            <Label className="text-lg font-semibold" value="Files:" />
+            <ul className="mt-2">
+              {item.requestBoxFiles.map((file) => (
+                <li
+                  key={file.fileId}
+                  className="flex items-center gap-2 hover:border-b-2"
+                >
+                  <a href={`/api/files/downloadFile/${file.fileId}`}>
+                    {file.filename}
+                  </a>
+                  {file.filetype === "application/pdf" && <FaFilePdf />}
+                  {file.filetype?.startsWith("image/") && <FaFileImage />}
+                  {file.filetype?.startsWith("video/") && <FaFileVideo />}
+                  {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <BoxDescription description={item.description} />
         {message}
-        {session.user.email === item.author && (
+        {session?.user?.email === item?.author && (
           <div>
             <button
               className="hover:border-white bg-green-700 mt-5 p-2 rounded-md"
