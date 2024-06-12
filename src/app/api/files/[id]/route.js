@@ -148,7 +148,7 @@ export const PUT = async (request, { params }) => {
 };
 
 export const DELETE = async (request, { params }) => {
-  await connect();
+  await connectToDatabase();
 
   const fileId = params.id;
 

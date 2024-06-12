@@ -36,7 +36,7 @@ function Dashboard() {
   const [showModal, setShowModal] = useState(false);
   const [archivo, setArchivo] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-
+  const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClose = () => setIsOpen(false);
@@ -180,7 +180,8 @@ function Dashboard() {
     const formImageData = new FormData();
     try {
       if (archivo ?? false) {
-        formImageData.append("file", archivo);
+        formImageData.append("image", archivo);
+        console.log(archivo);
         const uploadResponse = await fetch(`/api/uploadImage`, {
           method: "POST",
 
@@ -195,7 +196,7 @@ function Dashboard() {
 
         const uploadResult = await uploadResponse.json();
         console.log(uploadResult.message);
-        console.log("Proyecto subido con éxito!");
+        console.log("Foto de perfil actualizada con exito!");
         const imageLink = await uploadResult.url;
         console.log(imageLink);
 
@@ -391,6 +392,7 @@ function Dashboard() {
                                 />
                               </Label>
                             </div>
+                            {error}
                             <div className="w-full self-center">
                               {imagePreview && (
                                 <div className="flex flex-col items-center justify-center">

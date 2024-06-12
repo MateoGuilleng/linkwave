@@ -1,10 +1,8 @@
-// /api/boxes/uploadBox
-
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Grid from "gridfs-stream";
 import Project from "@/models/project";
-import { v4 as uuidv4 } from "uuid"; // Importar uuid para generar identificadores únicos
+import { v4 as uuidv4 } from "uuid";
 
 if (!process.env.MONGO_URL) {
   throw new Error(
@@ -24,7 +22,6 @@ const connectToDatabase = async () => {
       useUnifiedTopology: true,
     });
 
-    // Asegurar que GridFS esté inicializado
     gfs = Grid(conn.db, mongoose.mongo);
     gfs.collection("uploads");
     console.log("GridFS initialized successfully");
@@ -35,7 +32,6 @@ export async function POST(request) {
   try {
     await connectToDatabase();
 
-    // Verificar si gfs está inicializado
     if (!gfs) {
       throw new Error("GridFS not initialized");
     }
@@ -46,6 +42,7 @@ export async function POST(request) {
     const projectID = data.get("projectID");
     const title = data.get("title");
     const category = data.get("category");
+    const author = data.get("author");
 
     const project = await Project.findById(projectID);
 
@@ -56,21 +53,22 @@ export async function POST(request) {
       );
     }
 
-    const nextBoxId = project.boxes.length + 1;
+    const nextRequestBoxId = project.requestBoxes.length + 1;
     const identifier = uuidv4();
 
     if (!file || typeof file.arrayBuffer !== "function") {
-      // Crear una caja sin archivo
       const update = {
         $push: {
-          boxes: {
-            position: nextBoxId,
+          requestBoxes: {
+            position: nextRequestBoxId,
             identifier: identifier,
-            title,
-            category,
-            description,
+            title: title,
+            author: author,
+            category: category,
+            description: description,
+            accepted: false,
             column: "main",
-            boxFiles: [],
+            requestBoxFiles: [],
           },
         },
       };
@@ -89,10 +87,9 @@ export async function POST(request) {
       }
 
       return NextResponse.json({
-        message: "Box created successfully without file",
+        message: "RequestBox created successfully without file",
       });
     } else {
-      // Procesar la subida del archivo
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
@@ -110,14 +107,15 @@ export async function POST(request) {
             const update = {
               $push: {
                 files: fileId,
-                boxes: {
-                  position: nextBoxId,
+                requestBoxes: {
+                  position: nextRequestBoxId,
                   identifier: identifier,
-                  title,
-                  category,
-                  description,
+                  title: title,
+                  author: author,
+                  category: category,
+                  description: description,
                   column: "main",
-                  boxFiles: [
+                  requestBoxFiles: [
                     {
                       filename: file.name,
                       filetype: file.type,
@@ -141,6 +139,9 @@ export async function POST(request) {
             resolve(
               NextResponse.json({
                 message: "File uploaded and project updated successfully",
+                fileId: fileId,
+                filename: file.name,
+                filetype: file.type,
               })
             );
           } catch (error) {
@@ -189,18 +190,21 @@ export async function DELETE(request) {
     }
 
     const project = await Project.findOneAndUpdate(
-      { "boxes.identifier": identifier },
+      { "requestBoxes.identifier": identifier },
       {
-        $pull: { boxes: { identifier: identifier } },
+        $pull: { requestBoxes: { identifier: identifier } },
       },
       { new: true }
     );
 
     if (!project) {
-      return NextResponse.json({ message: "Box not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "RequestBox not found" },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json({ message: "Box deleted successfully" });
+    return NextResponse.json({ message: "RequestBox deleted successfully" });
   } catch (error) {
     console.error("Error handling delete request:", error);
     return NextResponse.json(

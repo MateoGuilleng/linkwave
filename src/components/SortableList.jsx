@@ -36,7 +36,7 @@ const SortableList = ({ items = [], projectName }) => {
   const [boxDescription, setBoxDescription] = useState("");
   const [boxTitle, setBoxTitle] = useState("");
   const [boxCategory, setBoxCategory] = useState("");
-  const [boxType, setBoxType] = useState(""); // Nuevo estado para type
+
   const [currentBoxId, setCurrentBoxId] = useState(null); // Nuevo estado para almacenar el ID del box actualmente editado
   const [editBoxModal, setEditBoxModal] = useState(false);
   const [hoverIndex, setHoverIndex] = useState(null);
@@ -365,16 +365,6 @@ const SortableList = ({ items = [], projectName }) => {
     setBoxDescription(text);
   };
 
-  console.log("file preview", filesPreview);
-
-  useEffect(() => {
-    setSortedItems(
-      Array.isArray(items)
-        ? [...items].sort((a, b) => a.position - b.position)
-        : []
-    );
-  }, [items]);
-
   const moveItem = (dragIndex, hoverIndex) => {
     const draggedItem = sortedItems[dragIndex];
     const newSortedItems = [...sortedItems];
@@ -515,7 +505,6 @@ const SortableList = ({ items = [], projectName }) => {
             </ul>
           </div>
 
-          
           <BoxDescription description={item.description} />
 
           {message}
@@ -692,7 +681,10 @@ const SortableList = ({ items = [], projectName }) => {
                   </div>
                   <div className="mt-5 w-full">
                     <div className="mb-2 block">
-                      <Label htmlFor="Description" value="Description: (Description Suports HTML Embeded!)" />
+                      <Label
+                        htmlFor="Description"
+                        value="Description: (Description Suports HTML Embeded!)"
+                      />
                     </div>
                     <Textarea
                       id="Description"

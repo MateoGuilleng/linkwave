@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import Navbar from "@/components/Navbar";
 
-import SortableListReadOnly from "@/components/boxesForClient";
-import SortableRequestListReadOnly from "@/components/requestBoxesForClient";
-
+import SortableRequestList from "@/components/requestBoxForAdmin";
 import {
   HiAdjustments,
   HiCloudDownload,
@@ -63,11 +61,19 @@ function Page() {
   console.log("itens", items);
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const pathParts = currentPath.split("/");
-    const last = pathParts.filter((part) => part.trim() !== "").pop() || "";
-    setLastWord(last);
+    const pathParts = currentPath
+      .split("/")
+      .filter((part) => part.trim() !== "");
+
+    // Obtener la penúltima palabra
+    const penultimateWord =
+      pathParts.length >= 2 ? pathParts[pathParts.length - 2] : "";
+
+    // Establecer el estado lastWord con la penúltima palabra
+    setLastWord(penultimateWord);
   }, []);
 
+  console.log(lastWord);
   useEffect(() => {
     if (status === "authenticated") {
       getProject();
@@ -308,11 +314,6 @@ function Page() {
 
       <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
         <div className="w-full">
-          <img
-            className="object-cover w-full h-72 p-1 ring-2 ring-indigo-300 dark:ring-indigo-500"
-            src={project?.banner}
-            alt="Bordered avatar"
-          />
           <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
             <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
               <div className="flex flex-wrap sm:w-full">
@@ -323,46 +324,11 @@ function Page() {
                         <FaArrowLeft />{" "}
                       </button>{" "}
                       <h2 className="sm:text-4xl sm:w-fit align-middle">
-                        {project?.title}
-                      </h2>{" "}
+                        Requests: {project?.title}
+                      </h2>
                     </div>
-                    <div className="sm:flex sm:gap-3 mt-4 sm:flex-col sm:items-end w-full justify-end ml-4 mb-4 lg:max-w-72">
-                      <div className="text-xl flex sm:w-fit border-2 rounded-lg w-full pt-2 px-2 align-middle justify-between">
-                        <div>Stars: {project?.stars}</div>
-                        <button onClick={handleStarClick}>
-                          {starIsClicked ? (
-                            <HiStar className="w-9 h-9 pb-2" />
-                          ) : (
-                            <HiOutlineStar className="w-9 h-9 pb-2" />
-                          )}
-                        </button>
-                      </div>
-                      <div className="text-xl flex w-full sm:w-1/2 border-2 rounded-lg pt-2 px-2 align-middle justify-between">
-                        <div>Following: {project?.stars}</div>
-                        <button onClick={handleStarClick}>
-                          {starIsClicked ? (
-                            <HiStar className="w-9 h-9 pb-2" />
-                          ) : (
-                            <HiOutlineStar className="w-9 h-9 pb-2" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <p className="text-lg mr-4">Author:</p>
-                    <a
-                      className="text-sm border-b-2 sm:text-xl "
-                      href={`/${project?.author}`}
-                    >
-                      {" "}
-                      {project?.author}{" "}
-                    </a>
                   </div>
                 </div>
-                <h3 className="text-gray-400 text-xl mt-4 sm:mt-5 sm:order-first">
-                  Description: {project?.description}{" "}
-                </h3>
               </div>
             </div>
           </div>
@@ -370,7 +336,11 @@ function Page() {
           <main className="m-10 mt-0">
             <div className="">
               <Button.Group className="flex-wrap">
-                <Button>
+                <Button
+                  onClick={() =>
+                    router.replace(`/${project.author}/${project.title}`)
+                  }
+                >
                   <HiUserCircle className="mr-3 h-4 w-4" />
                   Overview
                 </Button>
@@ -593,7 +563,7 @@ function Page() {
                   onClick={() => router.push(`${lastWord}/requests`)}
                 >
                   <HiAdjustments className="mr-3 h-4 w-4" />
-                  Requests
+                  Settings
                 </Button>
                 {project?.author == author ? (
                   <Button
@@ -610,109 +580,20 @@ function Page() {
                 )}
               </Button.Group>
             </div>
+            <h1 className="text-2xl font-bold mt-10">Request Boxes:</h1>
 
-            <div className="m-10"> {project?.content}</div>
-            <div className="flex">
-              <h1 className="text-2xl font-bold">Boxes:</h1>
-            </div>
             <div className="App text-black w-full ">
               <div className="w-full">
-                {items?.length == 0 ? (
+                {reqItems?.length == 0 ? (
                   "There are no boxes in the list"
                 ) : (
-                  <SortableListReadOnly
-                    items={items}
+                  <SortableRequestList
+                    items={reqItems}
                     projectName={project.title}
                   />
                 )}
               </div>
             </div>
-
-            <>
-              <Modal
-                className="bg-black/75"
-                show={uploadModal}
-                onClose={() => setUploadModal(false)}
-              >
-                <Modal.Header>Upload Request:</Modal.Header>
-                <Modal.Body>
-                  <form onSubmit={handleRequestBoxSubmit}>
-                    <div className="overflow-y-auto max-h-[70vh]">
-                      <div className="flex gap-10">
-                        <div className="mt-5 w-full ">
-                          <div className="mb-2 block">
-                            <Label htmlFor="Title" value="Title (optional)" />
-                          </div>
-                          <TextInput
-                            id="Title"
-                            type="Title"
-                            placeholder="Title of the box"
-                            name="title"
-                            autoComplete="off"
-                            onChange={handleRequestTitleChange}
-                          />
-                        </div>
-                        <div className="w-full">
-                          <div className="mb-2 mt-6  block">
-                            <Label htmlFor="Category" value="Category:" />
-                          </div>
-                          <Select
-                            id="type"
-                            type="type"
-                            required
-                            name="category"
-                            onChange={handleRequestCategoryChange}
-                          >
-                            <option value="FileVanilla">
-                              {" "}
-                              File vanilla (default)
-                            </option>
-                            <option value="File">File</option>
-                            <option value="Text"> Text </option>
-                            <option value="Picture">Picture</option>
-                            <option value="Audio">Audio</option>
-                            <option value="Video">Video</option>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div id="fileUpload" className="w-full mt-4">
-                        <div className="mb-2 block">
-                          <Label htmlFor="file" value="Upload file" />
-                        </div>
-                        <FileInput
-                          id="file"
-                          name="file"
-                          className="w-full"
-                          onChange={handleRequestFileChange}
-                          helperText="Add a file to your box"
-                        />
-                      </div>
-
-                      <label
-                        htmlFor="Description"
-                        className="block mt-4 ml-5 text-sm font-medium text-indigo-900 dark:text-white"
-                      >
-                        Description: (Description Suports HTML Embeded!)
-                      </label>
-
-                      <Textarea
-                        className="mt-5"
-                        id="description"
-                        name="description"
-                        onChange={handleRequestBoxDescriptionChange}
-                        placeholder="give a description about the box:"
-                        required
-                        rows={4}
-                      />
-
-                      <button type="submit">Upload</button>
-                      {message && <p>{message}</p>}
-                    </div>
-                  </form>
-                </Modal.Body>
-              </Modal>
-            </>
           </main>
         </div>
         <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">

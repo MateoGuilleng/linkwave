@@ -80,7 +80,7 @@ function Page() {
   const [items, setItems] = useState([]);
 
   const [commentId, setCommentId] = useState();
-  console.log(typeof items);
+
   const handleDeleteComment = async () => {
     console.log(commentId);
     try {
@@ -158,7 +158,7 @@ function Page() {
       console.error("Error uploading file:", error);
     }
   };
-  console.log("items", items);
+
   const formatCreatedAt = (createdAt) => {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
   };
@@ -988,9 +988,15 @@ function Page() {
                     </Modal.Body>
                   </Modal>
                 </>
-                <Button className="" color="">
+                <Button
+                  className=""
+                  color=""
+                  onClick={() => {
+                    router.push(`${lastWord}/requests`);
+                  }}
+                >
                   <HiAdjustments className="mr-3 h-4 w-4" />
-                  Settings
+                  Requests
                 </Button>
                 {project?.author == author ? (
                   <Button

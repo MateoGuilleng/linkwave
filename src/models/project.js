@@ -51,6 +51,10 @@ const projectSchema = new Schema(
       type: Array,
       required: false,
     },
+    requestBoxes: {
+      type: Array,
+      required: false,
+    }
   },
   { timestamps: true }
 );

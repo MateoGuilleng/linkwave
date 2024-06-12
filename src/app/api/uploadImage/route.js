@@ -1,3 +1,4 @@
+// /api/uploadImage
 import { NextResponse } from "next/server";
 
 import { v2 as cloudinary } from "cloudinary";
@@ -11,14 +12,11 @@ cloudinary.config({
 export async function POST(request) {
   const data = await request.formData();
   const image = data.get("image");
+
+  console.log("desde api upload image", image);
   if (image) {
     const bytes = await image.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // guardar en un archivo
-    // const filePath = path.join(process.cwd(), "public", image.name);
-    // await writeFile(filePath, buffer);
-
     const response = await new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream({}, (err, result) => {
