@@ -437,6 +437,20 @@ const SortableList = ({ items = [], projectName }) => {
     });
     const opacity = isDragging ? 0.5 : 1;
 
+    const BoxDescription = ({ description }) => {
+      // Función para renderizar el contenido HTML de manera segura
+      const createMarkup = (htmlContent) => {
+        return { __html: htmlContent };
+      };
+
+      return (
+        <div className="box-description w-full">
+          {/* Renderización segura del contenido HTML */}
+          <div dangerouslySetInnerHTML={createMarkup(description)} />
+        </div>
+      );
+    };
+
     return (
       <li
         ref={(node) => drag(drop(node))}
@@ -447,7 +461,7 @@ const SortableList = ({ items = [], projectName }) => {
         }`}
         style={{ cursor: "move", opacity }}
       >
-        <div className="ml-4">
+        <div className="ml-4 w-full">
           <h2 className="text-2xl mb-2">
             <div className="flex">
               <span className="text-gray-500 mr-2 self-center">
@@ -500,7 +514,10 @@ const SortableList = ({ items = [], projectName }) => {
               ))}
             </ul>
           </div>
-          <p className="mt-4">{item.description}</p>
+
+          
+          <BoxDescription description={item.description} />
+
           {message}
           <button
             className="hover:border-white bg-green-700 mt-5 p-2 rounded-md"
@@ -675,7 +692,7 @@ const SortableList = ({ items = [], projectName }) => {
                   </div>
                   <div className="mt-5 w-full">
                     <div className="mb-2 block">
-                      <Label htmlFor="Description" value="Description" />
+                      <Label htmlFor="Description" value="Description: (Description Suports HTML Embeded!)" />
                     </div>
                     <Textarea
                       id="Description"

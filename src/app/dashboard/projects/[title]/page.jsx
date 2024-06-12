@@ -520,241 +520,248 @@ function Page() {
 
           <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
             <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
-              <div className="flex flex-wrap sm:w-fit">
+              <div className="flex flex-wrap sm:w-full">
                 <div className="text-3xl sm:text-5xl sm:w-fit  w-full sm:order-first">
-                  <div className="flex gap-3">
-                    <button onClick={router.back}>
-                      <FaArrowLeft />{" "}
-                    </button>{" "}
-                    <h2 className="sm:text-4xl sm:w-fit">{project?.title}</h2>{" "}
-                    <>
-                      <Button
-                        className="hover:border-white bg-green-700"
-                        onClick={() => setEditModal(true)}
-                      >
-                        <div className="flex gap-5 align-middle">
-                          <FaEdit />
-                        </div>
-                      </Button>
-                      <Modal
-                        className="bg-black/75 w-screen"
-                        show={editModal}
-                        onClose={() => setEditModal(false)}
-                      >
-                        <Modal.Header className="bg-black">
-                          Edit Project:
-                        </Modal.Header>
-                        <Modal.Body className="bg-black">
-                          <div className="overflow-y-auto max-h-[70vh]">
-                            <div className="text-left text-md font-semibold p-5">
-                              Banner:
-                            </div>
-
-                            <div className="flex w-full items-center justify-center">
-                              <Label
-                                htmlFor="dropzone-file"
-                                className="flex h-34 w-full bg-black mb-3 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 hover:bg-gray-900 "
-                              >
-                                <div className="flex flex-col items-center justify-center pb-6 pt-5">
-                                  <svg
-                                    className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 20 16"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                                    />
-                                  </svg>
-                                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <span className="font-semibold">
-                                      Click to upload
-                                    </span>{" "}
-                                    or drag and drop
-                                  </p>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    SVG, PNG, JPG or GIF (MAX. 800x400px)
-                                  </p>
-                                </div>
-                                {error}
-                                <FileInput
-                                  onChange={(e) => handleUploadImage(e)}
-                                  id="dropzone-file"
-                                  className="hidden"
-                                />
-                              </Label>
-                            </div>
-                            <div className="w-full self-center">
-                              {imagePreview && (
-                                <div className="flex flex-col items-center justify-center">
-                                  <div className="text-left text-md font-semibold p-5">
-                                    Your Uploaded Banner
-                                  </div>
-                                  <img
-                                    src={imagePreview}
-                                    alt="Vista previa de la imagen"
-                                    className="max-w-full max-h-[400px] mr-10"
-                                  />
-                                  <div className="mt-4 w-full flex flex-row justify-start">
-                                    <Button.Group>
-                                      <Button
-                                        onClick={(e) => handleSaveImage(e)}
-                                        className="hover:border-white bg-blue-600"
-                                      >
-                                        <FaSave className="mr-3 h-4 w-4" />
-                                        Save
-                                      </Button>
-
-                                      <Button
-                                        onClick={() =>
-                                          handleDeleteImagePreview()
-                                        }
-                                        className="hover:border-white"
-                                      >
-                                        Remove Banner
-                                      </Button>
-                                    </Button.Group>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                            <form
-                              onSubmit={handleEditSubmit}
-                              onChange={handleChange}
-                              className="p-4 md:p-5"
-                            >
-                              <div className="grid gap-4 mb-4 grid-cols-2">
-                                <div className="col-span-2">
-                                  <label
-                                    htmlFor="title"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                  >
-                                    Title
-                                  </label>
-                                  <input
-                                    type="text"
-                                    name="title"
-                                    id="title"
-                                    className="bg-black border border-gray-300 text-white  text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black   dark:focus:ring-primary-500 d"
-                                    placeholder={project?.title}
-                                  />
-                                </div>
-                                <div className="col-span-2 sm:col-span-1">
-                                  <label
-                                    htmlFor="price"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                  >
-                                    Description
-                                  </label>
-                                  <input
-                                    type="text"
-                                    name="description"
-                                    id="description"
-                                    className="bg-black border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    placeholder={project?.description}
-                                  />
-                                </div>
-                                <div className="col-span-2 sm:col-span-1">
-                                  <div className="mb-2 block">
-                                    <Label htmlFor="type" value="type" />
-                                  </div>
-                                  <Select
-                                    id="type"
-                                    type="type"
-                                    name="type"
-                                    required
-                                    onChange={handleProjectTypeChange}
-                                  >
-                                    <option
-                                      className="dark:bg-black bg-black"
-                                      value="current"
-                                    >
-                                      current: {project?.projectType}
-                                    </option>
-
-                                    <option value="Aplication">
-                                      Application / Game
-                                    </option>
-                                    <option value="Art">Art</option>
-                                    <option value="General discussion">
-                                      General discussion
-                                    </option>
-                                    <option value="Audio">Audio</option>
-                                    <option value="Video">Video</option>
-                                  </Select>
-                                </div>
-                                <div className="col-span-2">
-                                  <label
-                                    htmlFor="content"
-                                    className="block mb-2 text-sm font-medium dark:bg-black text-gray-900 dark:text-white"
-                                  >
-                                    Content
-                                  </label>
-                                  <textarea
-                                    id="content"
-                                    name="content"
-                                    rows={4}
-                                    className="block p-2.5 w-full text-sm dark:bg-black text-gray-900  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500  dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder={project?.content}
-                                    defaultValue={""}
-                                  />
-                                </div>
-                              </div>
-                              <button
-                                type="submit"
-                                disabled={!formFilled}
-                                className={`text-white focus:outline-none focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ${
-                                  formFilled
-                                    ? "bg-indigo-700 hover:bg-indigo-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-                                    : "bg-gray-500 cursor-not-allowed"
-                                }`}
-                              >
-                                Save
-                              </button>
-                            </form>
+                  <div className="flex flex-wrap align-middle items-center justify-between">
+                    <div className="flex gap-3">
+                      <button className="align-middle" onClick={router.back}>
+                        <FaArrowLeft />{" "}
+                      </button>{" "}
+                      <h2 className="sm:text-4xl sm:w-fit align-middle">
+                        {project?.title}
+                      </h2>{" "}
+                      <>
+                        <Button
+                          className="hover:border-white bg-green-700"
+                          onClick={() => setEditModal(true)}
+                        >
+                          <div className="flex gap-5 align-middle">
+                            <FaEdit />
                           </div>
-                        </Modal.Body>
-                      </Modal>
-                    </>
+                        </Button>
+                        <Modal
+                          className="bg-black/75 w-screen"
+                          show={editModal}
+                          onClose={() => setEditModal(false)}
+                        >
+                          <Modal.Header className="bg-black">
+                            Edit Project:
+                          </Modal.Header>
+                          <Modal.Body className="bg-black">
+                            <div className="overflow-y-auto max-h-[70vh]">
+                              <div className="text-left text-md font-semibold p-5">
+                                Banner:
+                              </div>
+
+                              <div className="flex w-full items-center justify-center">
+                                <Label
+                                  htmlFor="dropzone-file"
+                                  className="flex h-34 w-full bg-black mb-3 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 hover:bg-gray-900 "
+                                >
+                                  <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                                    <svg
+                                      className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 20 16"
+                                    >
+                                      <path
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                                      />
+                                    </svg>
+                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                      <span className="font-semibold">
+                                        Click to upload
+                                      </span>{" "}
+                                      or drag and drop
+                                    </p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                      SVG, PNG, JPG or GIF (MAX. 800x400px)
+                                    </p>
+                                  </div>
+                                  {error}
+                                  <FileInput
+                                    onChange={(e) => handleUploadImage(e)}
+                                    id="dropzone-file"
+                                    className="hidden"
+                                  />
+                                </Label>
+                              </div>
+                              <div className="w-full self-center">
+                                {imagePreview && (
+                                  <div className="flex flex-col items-center justify-center">
+                                    <div className="text-left text-md font-semibold p-5">
+                                      Your Uploaded Banner
+                                    </div>
+                                    <img
+                                      src={imagePreview}
+                                      alt="Vista previa de la imagen"
+                                      className="max-w-full max-h-[400px] mr-10"
+                                    />
+                                    <div className="mt-4 w-full flex flex-row justify-start">
+                                      <Button.Group>
+                                        <Button
+                                          onClick={(e) => handleSaveImage(e)}
+                                          className="hover:border-white bg-blue-600"
+                                        >
+                                          <FaSave className="mr-3 h-4 w-4" />
+                                          Save
+                                        </Button>
+
+                                        <Button
+                                          onClick={() =>
+                                            handleDeleteImagePreview()
+                                          }
+                                          className="hover:border-white"
+                                        >
+                                          Remove Banner
+                                        </Button>
+                                      </Button.Group>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                              <form
+                                onSubmit={handleEditSubmit}
+                                onChange={handleChange}
+                                className="p-4 md:p-5"
+                              >
+                                <div className="grid gap-4 mb-4 grid-cols-2">
+                                  <div className="col-span-2">
+                                    <label
+                                      htmlFor="title"
+                                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                    >
+                                      Title
+                                    </label>
+                                    <input
+                                      type="text"
+                                      name="title"
+                                      id="title"
+                                      className="bg-black border border-gray-300 text-white  text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black   dark:focus:ring-primary-500 d"
+                                      placeholder={project?.title}
+                                    />
+                                  </div>
+                                  <div className="col-span-2 sm:col-span-1">
+                                    <label
+                                      htmlFor="price"
+                                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                    >
+                                      Description
+                                    </label>
+                                    <input
+                                      type="text"
+                                      name="description"
+                                      id="description"
+                                      className="bg-black border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                      placeholder={project?.description}
+                                    />
+                                  </div>
+                                  <div className="col-span-2 sm:col-span-1">
+                                    <div className="mb-2 block">
+                                      <Label htmlFor="type" value="type" />
+                                    </div>
+                                    <Select
+                                      id="type"
+                                      type="type"
+                                      name="type"
+                                      required
+                                      onChange={handleProjectTypeChange}
+                                    >
+                                      <option
+                                        className="dark:bg-black bg-black"
+                                        value="current"
+                                      >
+                                        current: {project?.projectType}
+                                      </option>
+
+                                      <option value="Aplication">
+                                        Application / Game
+                                      </option>
+                                      <option value="Art">Art</option>
+                                      <option value="General discussion">
+                                        General discussion
+                                      </option>
+                                      <option value="Audio">Audio</option>
+                                      <option value="Video">Video</option>
+                                    </Select>
+                                  </div>
+                                  <div className="col-span-2">
+                                    <label
+                                      htmlFor="content"
+                                      className="block mb-2 text-sm font-medium dark:bg-black text-gray-900 dark:text-white"
+                                    >
+                                      Content
+                                    </label>
+                                    <textarea
+                                      id="content"
+                                      name="content"
+                                      rows={4}
+                                      className="block p-2.5 w-full text-sm dark:bg-black text-gray-900  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500  dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                      placeholder={project?.content}
+                                      defaultValue={""}
+                                    />
+                                  </div>
+                                </div>
+                                <button
+                                  type="submit"
+                                  disabled={!formFilled}
+                                  className={`text-white focus:outline-none focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ${
+                                    formFilled
+                                      ? "bg-indigo-700 hover:bg-indigo-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                                      : "bg-gray-500 cursor-not-allowed"
+                                  }`}
+                                >
+                                  Save
+                                </button>
+                              </form>
+                            </div>
+                          </Modal.Body>
+                        </Modal>
+                      </>
+                    </div>
+                    <div className="sm:flex sm:gap-3 mt-4 sm:flex-col sm:items-end w-full justify-end ml-4 mb-4 lg:max-w-72">
+                      <div className="text-xl flex sm:w-fit border-2 rounded-lg w-full pt-2 px-2 align-middle justify-between">
+                        <div>Stars: {project?.stars}</div>
+                        <button onClick={handleStarClick}>
+                          {starIsClicked ? (
+                            <HiStar className="w-9 h-9 pb-2" />
+                          ) : (
+                            <HiOutlineStar className="w-9 h-9 pb-2" />
+                          )}
+                        </button>
+                      </div>
+                      <div className="text-xl flex w-full sm:w-1/2 border-2 rounded-lg pt-2 px-2 align-middle justify-between">
+                        <div>Following: {project?.stars}</div>
+                        <button onClick={handleStarClick}>
+                          {starIsClicked ? (
+                            <HiStar className="w-9 h-9 pb-2" />
+                          ) : (
+                            <HiOutlineStar className="w-9 h-9 pb-2" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <a
-                    className="text-sm border-b-2 sm:text-xl "
-                    href={`/${project?.author}`}
-                  >
-                    {" "}
-                    {project?.author}{" "}
-                  </a>
+                  <div className="flex">
+                    <p className="text-lg mr-4">Author:</p>
+                    <a
+                      className="text-sm border-b-2 sm:text-xl "
+                      href={`/${project?.author}`}
+                    >
+                      {" "}
+                      {project?.author}{" "}
+                    </a>
+                  </div>
                 </div>
                 <h3 className="text-gray-400 text-xl mt-4 sm:mt-5 sm:order-first">
                   Description: {project?.description}{" "}
                 </h3>
-              </div>
-              <div className="sm:flex sm:gap-3 sm:flex-col sm:items-end w-full lg:max-w-72">
-                <div className="text-xl flex sm:w-fit border-2 rounded-lg w-full pt-2 px-2 align-middle justify-between">
-                  <div>Stars: {project?.stars}</div>
-                  <button onClick={handleStarClick}>
-                    {starIsClicked ? (
-                      <HiStar className="w-9 h-9 pb-2" />
-                    ) : (
-                      <HiOutlineStar className="w-9 h-9 pb-2" />
-                    )}
-                  </button>
-                </div>
-                <div className="text-xl flex w-full sm:w-1/2 border-2 rounded-lg pt-2 px-2 align-middle justify-between">
-                  <div>Following: {project?.stars}</div>
-                  <button onClick={handleStarClick}>
-                    {starIsClicked ? (
-                      <HiStar className="w-9 h-9 pb-2" />
-                    ) : (
-                      <HiOutlineStar className="w-9 h-9 pb-2" />
-                    )}
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -1017,7 +1024,10 @@ function Page() {
                 {items?.length == 0 ? (
                   "There are no boxes in the list"
                 ) : (
-                  <SortableListWithDnd items={items} projectName={project.title} />
+                  <SortableListWithDnd
+                    items={items}
+                    projectName={project.title}
+                  />
                 )}
               </div>
             </div>
@@ -1086,7 +1096,7 @@ function Page() {
                         htmlFor="Description"
                         className="block mt-4 ml-5 text-sm font-medium text-indigo-900 dark:text-white"
                       >
-                        Description:
+                        Description: (Description Suports HTML Embeded!)
                       </label>
 
                       <Textarea
