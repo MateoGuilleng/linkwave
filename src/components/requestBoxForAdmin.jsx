@@ -11,7 +11,6 @@ import {
 } from "react-icons/fa";
 import { Label, Textarea } from "flowbite-react";
 
-
 const SortableRequestList = ({ items = [], projectName, projectId }) => {
   console.log("projectName", projectName);
   const BoxDescription = ({ description }) => {
@@ -32,13 +31,13 @@ const SortableRequestList = ({ items = [], projectName, projectId }) => {
         boxFiles: item.requestBoxFiles,
       };
       delete box.requestBoxFiles;
-
+      const requestBoxId = item.identifier;
       const response = await fetch("/api/boxes/request/manageBox", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ box, projectId }),
+        body: JSON.stringify({ box, projectId, requestBoxId }),
       });
 
       if (!response.ok) {
@@ -94,7 +93,7 @@ const SortableRequestList = ({ items = [], projectName, projectId }) => {
         }
       }
 
-      const projectTitle = await projectName
+      const projectTitle = await projectName;
       // Después de eliminar los archivos, proceder a eliminar la box
       const response = await fetch("/api/boxes/request/manageBox", {
         method: "DELETE",

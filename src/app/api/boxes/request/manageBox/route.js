@@ -33,7 +33,7 @@ export async function POST(request) {
     await connectToDatabase();
 
     const data = await request.json();
-    const { box, projectId } = data;
+    const { box, projectId, requestBoxId } = data; // yo agregue los valores projectTitle y requestBoxId
 
     if (!projectId || !box) {
       return NextResponse.json(
@@ -53,6 +53,12 @@ export async function POST(request) {
     }
 
     project.boxes.push(box);
+
+    // Eliminar el objeto del array requestBoxes con requestBoxId
+    project.requestBoxes = project.requestBoxes.filter(
+      (reqBox) => reqBox.identifier.toString() !== requestBoxId
+    );
+
     await project.save();
 
     return NextResponse.json(
