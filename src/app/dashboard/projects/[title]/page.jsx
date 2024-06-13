@@ -76,6 +76,7 @@ function Page() {
   const [boxTitle, setBoxTitle] = useState("");
   const [boxCategory, setBoxCategory] = useState("fileVanilla");
 
+  const [categoryChanged, setCateogoryChanged] = useState(false);
   const [boxInfo, setBoxInfo] = useState(null);
   const [items, setItems] = useState([]);
 
@@ -208,18 +209,10 @@ function Page() {
     setCommentText(text);
     setShowUploadButton(text.trim().length > 0); // Mostrar el botón si hay texto en el área de comentario
   };
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
 
-    const updatedBoxes = Array.from(project.boxes);
-    const [movedBox] = updatedBoxes.splice(result.source.index, 1);
-    updatedBoxes.splice(result.destination.index, 0, movedBox);
-
-    // Assuming you have a method to update the boxes in your project
-    // updateProjectBoxes(updatedBoxes);
-  };
   const handleProjectTypeChange = (e) => {
     setSelectedProjectType(e.target.value);
+    setCateogoryChanged(true);
     console.log(selectedProjectType);
   };
   const handleUploadComment = async (e) => {
@@ -381,7 +374,15 @@ function Page() {
       content = e.target.querySelector("#content").getAttribute("placeholder");
     }
 
-    const imageLink = project.banner;
+    const imageLink = await project.banner;
+
+    let categoryToSend = await project.projectType;
+
+    if (categoryChanged) {
+      categoryToSend = selectedProjectType;
+    }
+
+
     try {
       const res = await fetch(
         `/api/project/specificProject/projectAdmin/${lastWord}`,
@@ -394,7 +395,7 @@ function Page() {
             title,
             description,
             content,
-            projectType: selectedProjectType,
+            projectType: categoryToSend,
             imageLink,
           }),
         }
@@ -668,9 +669,8 @@ function Page() {
                                       <Label htmlFor="type" value="type" />
                                     </div>
                                     <Select
-                                      id="type"
-                                      type="type"
-                                      name="type"
+                                      id="category"
+                                      name="category"
                                       required
                                       onChange={handleProjectTypeChange}
                                     >
@@ -770,7 +770,11 @@ function Page() {
           <main className="m-10 mt-0">
             <div className="">
               <Button.Group className="flex-wrap">
-                <Button onClick={()=> router.replace(`/${project.author}/${project.title}`)}>
+                <Button
+                  onClick={() =>
+                    router.replace(`/${project.author}/${project.title}`)
+                  }
+                >
                   <HiUserCircle className="mr-3 h-4 w-4" />
                   Overview
                 </Button>

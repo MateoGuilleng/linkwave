@@ -1,11 +1,8 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import { initFlowbite } from "flowbite";
-import Link from "next/link";
-import { FaPlus, FaInfo } from "react-icons/fa";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { FaPlus } from "react-icons/fa";
 import {
   HiMenu,
   HiChartPie,
@@ -23,8 +20,6 @@ import {
   Select,
   Sidebar,
   Button,
-  FileInput,
-  DarkThemeToggle,
   Drawer,
 } from "flowbite-react";
 
@@ -47,8 +42,6 @@ function ProjectsPage() {
   const handleProjectSubmit = async (e) => {
     const author = session?.user?.email;
     e.preventDefault();
-
-    console.log("hol");
 
     const formData = new FormData(e.target.closest("form"));
 
@@ -80,7 +73,7 @@ function ProjectsPage() {
       }
       if (res.status === 200) {
         setError("");
-        router.push(`/dashboard/projects/${title}`);
+        router.push(`/dashboard/projects/${encodeURIComponent(title)}`);
       }
     } catch (error) {
       setError("Something went wrong, try again");
@@ -324,7 +317,9 @@ function ProjectsPage() {
                     <button
                       className="relative text-white px-4 py-2 rounded transition transform hover:-translate-y-1 hover:shadow-lg hover:shadow-white"
                       onClick={() => {
-                        router.push(`projects/${project.title}`);
+                        router.push(
+                          `projects/${encodeURIComponent(project.title)}`
+                        );
                       }}
                       key={project._id}
                     >
