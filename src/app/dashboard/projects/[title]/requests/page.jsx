@@ -71,6 +71,7 @@ function Page() {
 
     // Establecer el estado lastWord con la penúltima palabra
     setLastWord(penultimateWord);
+    console.log("last word", lastWord);
   }, []);
 
   console.log(lastWord);
@@ -338,7 +339,11 @@ function Page() {
               <Button.Group className="flex-wrap">
                 <Button
                   onClick={() =>
-                    router.replace(`/${project?.author}/${project?.title}`)
+                    router.replace(
+                      `/${project?.author}/${encodeURIComponent(
+                        project?.title
+                      )}`
+                    )
                   }
                 >
                   <HiUserCircle className="mr-3 h-4 w-4" />
@@ -569,7 +574,11 @@ function Page() {
                   <Button
                     color=""
                     onClick={() =>
-                      router.push(`/dashboard/projects/${project?.title}`)
+                      router.push(
+                        `/dashboard/projects/${encodeURIComponent(
+                          project?.title
+                        )}`
+                      )
                     }
                   >
                     <HiAdjustments className="mr-3 h-4 w-4" />

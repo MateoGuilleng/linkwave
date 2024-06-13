@@ -346,6 +346,7 @@ function Page() {
     const pathParts = currentPath.split("/");
     const last = pathParts.filter((part) => part.trim() !== "").pop() || "";
     setLastWord(last);
+    console.log(last);
   }, []);
 
   const handleDeleteImagePreview = async (e) => {
@@ -1037,7 +1038,7 @@ function Page() {
                 ) : (
                   <SortableListWithDnd
                     items={items}
-                    projectName={project.title}
+                    projectName={encodeURIComponent(project.title)}
                   />
                 )}
               </div>

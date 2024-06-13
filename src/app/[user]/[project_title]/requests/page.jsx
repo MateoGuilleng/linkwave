@@ -71,10 +71,10 @@ function Page() {
       pathParts.length >= 2 ? pathParts[pathParts.length - 2] : "";
 
     // Establecer el estado lastWord con la penúltima palabra
-    setLastWord(penultimateWord);
+    setLastWord(decodeURIComponent(penultimateWord));
+    console.log("last word", lastWord);
   }, []);
 
-  console.log(lastWord);
   useEffect(() => {
     if (status === "authenticated") {
       getProject();
@@ -151,49 +151,20 @@ function Page() {
     }
   }, [project, session]);
 
-  const handleStarClick = async () => {
-    console.log("loco");
-    const newStarIsClicked = !starIsClicked;
-    setStarIsClicked(newStarIsClicked); // Cambia el estado de clicado a no clicado y viceversa
-
-    const newBinaryStar = newStarIsClicked ? 1 : 0;
-
-    console.log("binary Star: ", newBinaryStar, typeof newBinaryStar); //binary Star:  1 number
-    console.log("lastWord: ", lastWord, typeof lastWord); // Añade un log para lastWord
-
-    const starredBy = await session?.user?.email;
-    try {
-      const res = await fetch(`/api/stars/project/${lastWord}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          binaryStar: newBinaryStar,
-          starredBy,
-        }),
-      });
-
-      if (res.status === 200) {
-        setError("");
-      } else {
-        setError("Failed to update the star status");
-        console.log("Response status: ", res.status);
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
-  };
-
   const router = useRouter();
 
   const getProject = async () => {
-    console.log("last word", lastWord);
+    console.log("last word desde get project", lastWord);
     try {
-      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await fetch(
+        `/api/project/specificProject/${encodeURIComponent(lastWord)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (res.ok) {
         const data = await res.json();
         console.log("data", data);
@@ -231,16 +202,19 @@ function Page() {
 
     const comment = formData.get("comment");
     try {
-      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          comment,
-          author,
-        }),
-      });
+      const res = await fetch(
+        `/api/project/specificProject/${encodeURIComponent(lastWord)}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            comment,
+            author,
+          }),
+        }
+      );
 
       if (res.status === 200) {
         setError("");
@@ -258,7 +232,7 @@ function Page() {
   const handleDeleteComment = async () => {
     console.log(commentId);
     try {
-      const res = await fetch(`/api/comments/${lastWord}`, {
+      const res = await fetch(`/api/comments/${encodeURIComponent(lastWord)}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -286,7 +260,7 @@ function Page() {
     const newComment = formData.get("newComment");
 
     try {
-      const res = await fetch(`/api/comments/${lastWord}`, {
+      const res = await fetch(`/api/comments/${encodeURIComponent(lastWord)}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -561,19 +535,19 @@ function Page() {
                   </Modal>
                 </>
 
-                <Button
-                  className=""
-                  color=""
-                  onClick={() => router.push(`${lastWord}/requests`)}
-                >
+                <Button className="" color="" onClick={() => router.refresh()}>
                   <HiAdjustments className="mr-3 h-4 w-4" />
-                  Settings
+                  Requests
                 </Button>
                 {project?.author == author ? (
                   <Button
                     color=""
                     onClick={() =>
-                      router.push(`/dashboard/projects/${project?.title}`)
+                      router.push(
+                        `/dashboard/projects/${encodeURIComponent(
+                          project?.title
+                        )}`
+                      )
                     }
                   >
                     <HiAdjustments className="mr-3 h-4 w-4" />
@@ -603,7 +577,7 @@ function Page() {
                 ) : (
                   <SortableRequestListReadOnly
                     items={reqItems}
-                    projectName={project.title}
+                    projectName={encodeURIComponent(project.title)}
                   />
                 )}
               </div>
@@ -705,7 +679,7 @@ function Page() {
             </a>
 
             <a
-              href={`${lastWord}/social`}
+              href={`${encodeURIComponent(lastWord)}/social`}
               className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
             >
               People
