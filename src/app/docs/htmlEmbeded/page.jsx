@@ -242,7 +242,7 @@ function Page() {
                           ></iframe>
                         </div>
                         <p className="">
-                          From any regitered location in the modal of "share":
+                          From any regitered location in the modal of share:
                         </p>
                         <img
                           className="w-full h-auto max-w-full mx-auto mt-5"
