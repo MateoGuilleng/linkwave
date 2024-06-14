@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import Navbar from "@/components/Navbar";
+import { toast } from "sonner";
 
 import SortableRequestListReadOnly from "@/components/requestBoxesForClient";
 
@@ -100,7 +101,7 @@ function Page() {
     e.preventDefault();
     const author = await project.author;
 
-    console.log("authora", author);
+    console.log("author", author);
     const formData = new FormData();
     formData.append("file", requestFile);
     formData.append("author", author);
@@ -109,38 +110,54 @@ function Page() {
     formData.append("category", requestBoxCategory);
     formData.append("description", requestBoxDescription);
 
-    try {
-      const response = await fetch("/api/boxes/request/uploadRequest", {
-        method: "POST",
-        body: formData,
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const response = await fetch("/api/boxes/request/uploadRequest", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+          if (response.ok) {
+            console.log("File uploaded successfully", result);
+
+            toast.success("Box uploaded successfully", result);
+
+            const newBox = {
+              id: result.fileId,
+              title: requestBoxTitle,
+              category: requestBoxCategory,
+              description: requestBoxDescription,
+              filename: result.filename,
+              filetype: result.filetype,
+            };
+            setBoxInfo(newBox);
+            setItems((prevItems) => {
+              const updatedItems = [...prevItems, newBox];
+              console.log("Updated items:", updatedItems);
+              return updatedItems;
+            });
+
+            resolve({ filename: result.filename });
+          } else {
+            console.error("Error uploading file:", result);
+            reject(new Error("Error uploading file"));
+          }
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          reject(error);
+        }
       });
 
-      const result = await response.json();
-      if (response.ok) {
-        console.log("File uploaded successfully", result);
-        setMessage("Box uploaded successfully");
-
-        const newBox = {
-          id: result.fileId,
-          title: boxTitle,
-          category: boxCategory,
-          description: boxDescription,
-          filename: result.filename,
-          filetype: result.filetype,
-        };
-        setBoxInfo(newBox);
-        setItems((prevItems) => {
-          const updatedItems = [...prevItems, newBox];
-          console.log("Updated items:", updatedItems);
-          return updatedItems;
-        });
-      } else {
-        console.error("Error uploading file:", result);
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
+    toast.promise(promise(), {
+      loading: "Uploading...",
+      success: (data) => {
+        return `File uploaded successfully: ${data.filename}`;
+      },
+    });
   };
+
   useEffect(() => {
     if (project?.starredBy?.includes(session?.user?.email)) {
       setStarIsClicked(true);
@@ -661,7 +678,6 @@ function Page() {
                       />
 
                       <button type="submit">Upload</button>
-                      {message && <p>{message}</p>}
                     </div>
                   </form>
                 </Modal.Body>

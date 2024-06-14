@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   FaFilePdf,
   FaFileImage,
@@ -47,10 +48,14 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
     if (item.requestBoxFiles && item.requestBoxFiles.length > 0) {
       console.error("Cannot delete box with existing files");
       setMessage("Cannot delete box with existing files");
-      return; // Salir de la función si hay archivos en boxFiles
+      toast.error("Cannot delete box with existing files", {
+        description:
+          "Please delete all existing files in order to delete the box.",
+      });
+      return; // Exit the function if there are files in requestBoxFiles
     }
 
-    setCurrentBoxId(item.identifier); // Establecer el ID del box actual
+    setCurrentBoxId(item.identifier); // Set the ID of the current box
 
     try {
       const response = await fetch(`/api/boxes/request/edit/${projectName}`, {
@@ -67,39 +72,61 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
 
       const result = await response.json();
       console.log("Box deleted successfully:", result);
-      // Aquí puedes manejar la eliminación del box en el estado del cliente si es necesario
+      toast.success("Box deleted successfully");
+      // Handle client-side state update for box deletion if needed
     } catch (error) {
       console.error("Error deleting box:", error);
+      toast.error("Error deleting box", {
+        description: error.message,
+      });
     }
   };
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
 
-    console.log("project name", projectName, boxTitle);
-
     const formData = new FormData();
     formData.append("file", file);
     formData.append("projectName", projectName);
     formData.append("title", boxTitle);
 
-    console.log("identifier", currentBoxId);
-
     try {
-      const response = await fetch(`/api/files/requestFiles/${currentBoxId}`, {
-        method: "PUT",
-        body: formData,
-      });
+      const promise = () =>
+        new Promise(async (resolve, reject) => {
+          try {
+            const response = await fetch(
+              `/api/files/requestFiles/${currentBoxId}`,
+              {
+                method: "PUT",
+                body: formData,
+              }
+            );
 
-      const result = await response.json();
-      if (response.ok) {
-        console.log("File uploaded successfully", result);
-        setMessage("File uploaded successfully");
-      }
+            const result = await response.json();
+            if (response.ok) {
+              console.log("File uploaded successfully", result);
+              setMessage("File uploaded successfully");
+              resolve(result);
+            } else {
+              console.error("Error uploading file:", result);
+              reject(new Error("Error uploading file"));
+            }
+          } catch (error) {
+            console.error("Error uploading file:", error);
+            reject(error);
+          }
+        });
+
+      toast.promise(promise(), {
+        loading: "Uploading file...",
+        success: "File uploaded successfully",
+        error: "Error uploading file",
+      });
     } catch (error) {
       console.error("Error uploading file:", error);
     }
   };
+
   const BoxDescription = ({ description }) => {
     const createMarkup = (htmlContent) => ({ __html: htmlContent });
 
@@ -127,15 +154,13 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
-    formData.append("projectID", currentBoxId); // Asegurarse de añadir el ID del box actualmente editado
-
-    console.log("Project ID: " + typeof currentBoxId);
+    formData.append("projectID", currentBoxId); // Ensure to add the ID of the currently edited box
 
     let title = formData.get("title");
     let description = formData.get("description");
     let category = formData.get("type");
 
-    // Verificar si el campo está vacío y reemplazar con el valor del placeholder
+    // Check if the field is empty and replace with the placeholder value
     if (!title.trim()) {
       title = e.target.querySelector("#Title").getAttribute("placeholder");
     }
@@ -144,7 +169,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
         .querySelector("#Description")
         .getAttribute("placeholder");
     }
-    if (!category.trim()) {
+    if (!category?.trim()) {
       category = e.target.querySelector("#type").getAttribute("placeholder");
     }
 
@@ -153,33 +178,51 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
     formData.set("category", category);
 
     try {
-      const response = await fetch(`/api/boxes/request/edit/${projectName}`, {
-        method: "PUT",
-        body: formData,
+      const promise = () =>
+        new Promise(async (resolve, reject) => {
+          try {
+            const response = await fetch(
+              `/api/boxes/request/edit/${projectName}`,
+              {
+                method: "PUT",
+                body: formData,
+              }
+            );
+
+            const result = await response.json();
+            if (response.ok) {
+              console.log("Box updated successfully", result);
+              setMessage("Box updated successfully");
+
+              const newBox = {
+                id: currentBoxId,
+                title,
+                category,
+                description,
+                filename: result.filename,
+                filetype: result.filetype,
+              };
+              resolve(result);
+            } else {
+              console.error("Error updating box:", result);
+              reject(new Error("Error updating box"));
+            }
+          } catch (error) {
+            console.error("Error updating box:", error);
+            reject(error);
+          }
+        });
+
+      toast.promise(promise(), {
+        loading: "Updating box...",
+        success: "Box updated successfully",
+        error: "Error updating box",
       });
-
-      const result = await response.json();
-      if (response.ok) {
-        console.log("File updated successfully", result);
-        setMessage("Box updated successfully");
-
-        const newBox = {
-          id: currentBoxId,
-          title,
-          category,
-          description,
-          filename: result.filename,
-          filetype: result.filetype,
-        };
-      } else {
-        console.error("Error updating box:", result);
-        const error = JSON.stringify(result);
-        setMessage(`Error updating box ${error}`);
-      }
     } catch (error) {
       console.error("Error updating box:", error);
     }
   };
+
   const handleEditRequestBoxClick = async (item) => {
     setCurrentBoxId(item.identifier); // Establecer el ID del box actual
 
@@ -210,51 +253,79 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
 
   const handleDeleteFile = async (fileId) => {
     console.log("file Id", fileId);
-    try {
-      console.log(projectName); // Imprime el nombre correctamente
 
-      const response = await fetch(`/api/files/requestFiles/${fileId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          projectTitle: projectName, // Asegúrate de que esta clave coincida con la que esperas en el backend
-        }),
-      });
+    const deleteFileFromProject = async () => {
+      try {
+        console.log(projectName);
 
-      if (response.ok) {
-        console.log("File deleted successfully");
-      } else {
-        console.error("Failed to delete file:", await response.text());
+        const response = await fetch(`/api/files/requestFiles/${fileId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            projectTitle: projectName,
+          }),
+        });
+
+        if (response.ok) {
+          console.log("File deleted successfully from project and box");
+          return { success: true };
+        } else {
+          console.error(
+            "Failed to delete file from project and box:",
+            await response.text()
+          );
+          return { success: false };
+        }
+      } catch (error) {
+        console.error("Failed to delete file from project and box", error);
+        throw error;
       }
-    } catch (error) {
-      console.error("Failed to delete file from project and box", error);
-    }
-    try {
-      const response = await fetch(`/api/files/uploadFile`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fileId,
-        }),
-      });
+    };
 
-      if (response.ok) {
-        console.log("File deleted successfully");
-        setFilesPreview((prevFiles) =>
-          prevFiles.filter((file) => file.id !== fileId)
-        ); // Cambio: eliminar el archivo del estado de vista previa
-        setFile(null);
-      } else {
-        console.error("Failed to delete file");
+    const deleteFileFromUploads = async () => {
+      try {
+        const response = await fetch(`/api/files/uploadFile`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fileId,
+          }),
+        });
+
+        if (response.ok) {
+          console.log("File deleted successfully from uploads");
+          return { success: true };
+        } else {
+          console.error("Failed to delete file:", await response.text());
+          return { success: false };
+        }
+      } catch (error) {
+        console.error("Error deleting file:", error);
+        throw error;
       }
-    } catch (error) {
-      console.error("Error deleting file:", error);
-    }
+    };
+
+    toast.promise(
+      Promise.all([deleteFileFromProject(), deleteFileFromUploads()]),
+      {
+        loading: "Deleting file...",
+        success: (results) => {
+          const [projectResult, uploadsResult] = results;
+          if (projectResult.success && uploadsResult.success) {
+            return "File deleted successfully";
+          } else {
+            return "File deleted from project and box, but failed to delete from uploads";
+          }
+        },
+        error: "Failed to delete file",
+      }
+    );
   };
+
   const Item = ({ item }) => (
     <li className="h-fit w-full lg:w-fit max-w-full p-5 bg-black text-white border-2 border-blue-700 rounded-lg flex items-center mb-2">
       <div className="ml-4 w-full">
@@ -333,7 +404,15 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
             <button
               className="hover:border-white ml-4 bg-red-700 mt-5 p-2 rounded-md"
               onClick={() => {
-                handleDeleteBox(item);
+                toast.warning(
+                  "Are you sure you want to delete this request box?",
+                  {
+                    action: {
+                      label: "Confirm Delete",
+                      onClick: () => handleDeleteBox(item),
+                    },
+                  }
+                );
               }}
             >
               <div className="flex gap-5 align-middle">
@@ -492,8 +571,6 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
                     }}
                   />
                 </div>
-
-                {message && <p>{message}</p>}
 
                 <div className="mt-5 w-full">
                   <Button type="submit" className="bg-slate-800">

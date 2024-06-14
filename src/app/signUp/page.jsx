@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { toast } from "sonner";
 export default function Page() {
   const [error, setError] = useState("");
   const router = useRouter();
@@ -57,30 +57,45 @@ export default function Page() {
       return;
     }
 
-    try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-        }),
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch("/api/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              firstName,
+              lastName,
+              email,
+              password,
+            }),
+          });
+
+          if (res.status === 400) {
+            setError("This email is already in use");
+            reject(new Error("This email is already in use"));
+          }
+
+          if (res.status === 201) {
+            setError("");
+            router.push("/dashboard");
+            resolve();
+          } else {
+            reject(new Error("Failed to register user"));
+          }
+        } catch (error) {
+          setError("Something went wrong, try again");
+          reject(error);
+        }
       });
-      if (res.status === 400) {
-        setError("This email is already in use");
-      }
-      if (res.status == 201) {
-        setError("");
-        router.push("/dashboard");
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
+
+    toast.promise(promise(), {
+      loading: "Registering...",
+      success: "User registered successfully",
+      error: "Failed to register user",
+    });
   };
 
   function Form() {

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import Navbar from "@/components/Navbar";
+import { toast } from "sonner";
 
 import SortableListReadOnly from "@/components/boxesForClient";
 import SortableRequestListReadOnly from "@/components/requestBoxesForClient";
@@ -217,88 +218,140 @@ function Page() {
     const author = session?.user?.email;
     e.preventDefault();
 
-    const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
+    const formData = new FormData(e.target.closest("form")); // Access the closest form element to the event trigger
 
     const comment = formData.get("comment");
-    try {
-      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          comment,
-          author,
-        }),
+
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch(`/api/project/specificProject/${lastWord}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              comment,
+              author,
+            }),
+          });
+
+          if (res.status === 200) {
+            setError("");
+            window.location.reload(); // Reload the page after successful comment upload (consider using React state update instead)
+            const { comments } = await res.json();
+            console.log("Comment added successfully!");
+            console.log("Comments:", comments);
+
+            resolve({ comment });
+          } else {
+            setError("Something went wrong, try again");
+            console.log("Error adding comment:", res.statusText);
+            reject(new Error("Error adding comment"));
+          }
+        } catch (error) {
+          setError("Something went wrong, try again");
+          console.error("Error adding comment:", error);
+          reject(error);
+        }
       });
 
-      if (res.status === 200) {
-        setError("");
-        window.location.reload();
-        const { comments } = await res.json();
-        console.log("¡Comentario agregado con éxito!");
-        console.log("Comentarios:", comments);
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
+    toast.promise(promise(), {
+      loading: "Uploading comment...",
+      success: (data) => {
+        return `Comment added successfully: ${data.comment}`;
+      },
+      error: "Error adding comment",
+    });
   };
 
   const handleDeleteComment = async () => {
     console.log(commentId);
-    try {
-      const res = await fetch(`/api/comments/${lastWord}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          commentId,
-        }),
+
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch(`/api/comments/${lastWord}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              commentId,
+            }),
+          });
+
+          if (res.ok) {
+            console.log("Comment deleted successfully");
+            // Optionally, update your local state or UI after deletion
+            window.location.reload(); // Reload the page after successful comment deletion (consider using React state update instead)
+            resolve();
+          } else {
+            console.error("Failed to delete comment:", res.statusText);
+            reject(new Error("Failed to delete comment"));
+          }
+        } catch (error) {
+          console.error("Error deleting comment:", error.message);
+          reject(error);
+        }
       });
-      if (res.ok) {
-        // Redirige a la misma página para refrescar
-        window.location.reload();
-      } else {
-        console.error("Failed to delete comment:", res.statusText);
-      }
-    } catch (error) {
-      console.error("Error deleting comment:", error.message);
-    }
+
+    toast.promise(promise(), {
+      loading: "Deleting comment...",
+      success: "Comment deleted successfully",
+      error: "Failed to delete comment",
+    });
   };
 
   const handleUploadEditComment = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
+    const formData = new FormData(e.target.closest("form")); // Access the closest form element to the event trigger
 
     const newComment = formData.get("newComment");
 
-    try {
-      const res = await fetch(`/api/comments/${lastWord}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          commentId,
-          newComment,
-        }),
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch(`/api/comments/${lastWord}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              commentId,
+              newComment,
+            }),
+          });
+
+          if (res.ok) {
+            setError("");
+
+            const { comments } = await res.json();
+            console.log("Comment updated successfully!");
+            console.log("Comments:", comments);
+            window.location.reload(); // Reload the page after successful comment update (consider using React state update instead)
+
+            resolve({ comment: newComment });
+          } else {
+            setError("Something went wrong, try again");
+            console.log("Error updating comment:", res.statusText);
+            reject(new Error("Error updating comment"));
+          }
+        } catch (error) {
+          setError("Something went wrong, try again");
+          console.error("Error updating comment:", error);
+          reject(error);
+        }
       });
 
-      if (res.ok) {
-        setError("");
-
-        const { comments } = await res.json();
-        console.log("¡Comentario agregado con éxito!");
-        console.log("Comentarios:", comments);
-        window.location.reload();
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
+    toast.promise(promise(), {
+      loading: "Updating comment...",
+      success: (data) => {
+        return `Comment updated successfully: ${data.comment}`;
+      },
+      error: "Error updating comment",
+    });
   };
 
   const projectComments = project?.comments;
@@ -326,25 +379,27 @@ function Page() {
                         {project?.title}
                       </h2>{" "}
                     </div>
-                    <div className="sm:flex sm:gap-3 mt-4 sm:flex-col sm:items-end w-full justify-end ml-4 mb-4 lg:max-w-72">
-                      <div className="text-xl flex sm:w-fit border-2 rounded-lg w-full pt-2 px-2 align-middle justify-between">
+                    <div className="flex items-center w-full gap-5 my-5 text-lg">
+                      <div className="border-2 text-sm sm:text-lg rounded-lg w-full items-center flex p-3">
                         <div>Stars: {project?.stars}</div>
-                        <button onClick={handleStarClick}>
+                        <button
+                          className="w-9 h-9 ml-2 align-middle self-end"
+                          onClick={handleStarClick}
+                        >
                           {starIsClicked ? (
-                            <HiStar className="w-9 h-9 pb-2" />
+                            <HiStar className="" />
                           ) : (
-                            <HiOutlineStar className="w-9 h-9 pb-2" />
+                            <HiOutlineStar />
                           )}
                         </button>
                       </div>
-                      <div className="text-xl flex w-full sm:w-1/2 border-2 rounded-lg pt-2 px-2 align-middle justify-between">
+                      <div className="border-2 text-sm sm:text-lg rounded-lg w-full items-center flex p-3">
                         <div>Following: {project?.stars}</div>
-                        <button onClick={handleStarClick}>
-                          {starIsClicked ? (
-                            <HiStar className="w-9 h-9 pb-2" />
-                          ) : (
-                            <HiOutlineStar className="w-9 h-9 pb-2" />
-                          )}
+                        <button
+                          className="w-9 h-9 ml-2 align-middle"
+                          onClick={handleStarClick}
+                        >
+                          {starIsClicked ? <HiStar /> : <HiOutlineStar />}
                         </button>
                       </div>
                     </div>

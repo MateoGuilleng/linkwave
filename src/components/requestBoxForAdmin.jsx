@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   FaFilePdf,
   FaFileImage,
@@ -24,34 +25,45 @@ const SortableRequestList = ({ items = [], projectName, projectId }) => {
   };
 
   const handleAccept = async (item) => {
-    try {
-      // Clonar el objeto item y cambiar el nombre de la propiedad
-      const box = {
-        ...item,
-        boxFiles: item.requestBoxFiles,
-      };
-      delete box.requestBoxFiles;
-      const requestBoxId = item.identifier;
-      const response = await fetch("/api/boxes/request/manageBox", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    return toast.promise(
+      async () => {
+        try {
+          // Clone the item object and change the property name
+          const box = {
+            ...item,
+            boxFiles: item.requestBoxFiles,
+          };
+          delete box.requestBoxFiles;
+          const requestBoxId = item.identifier;
+          const response = await fetch("/api/boxes/request/manageBox", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ box, projectId, requestBoxId }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to create box");
+          }
+
+          const data = await response.json();
+          console.log(data.message); // Server success message
+
+          return data;
+        } catch (error) {
+          console.error("Error accepting item:", error);
+          throw error;
+        }
+      },
+      {
+        loading: "Creating box...",
+        success: (data) => {
+          return `Box created successfully: ${data.message}`;
         },
-        body: JSON.stringify({ box, projectId, requestBoxId }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create box");
+        error: "Error accepting box",
       }
-
-      const data = await response.json();
-      console.log(data.message); // Mensaje de éxito del servidor
-
-      // Aquí podrías manejar la actualización de estado o cualquier otra lógica necesaria después de aceptar
-    } catch (error) {
-      console.error("Error accepting item:", error);
-      // Aquí podrías manejar el error, por ejemplo, mostrar un mensaje al usuario
-    }
+    );
   };
 
   const handleDeleteFile = async (fileId) => {
@@ -80,11 +92,11 @@ const SortableRequestList = ({ items = [], projectName, projectId }) => {
   };
 
   const handleDeny = async (item) => {
-    console.log("Desde deny", item.requestBoxFiles); // devuelve un array con objetos, cada objeto tiene un fileId
+    console.log("Desde deny", item.requestBoxFiles); // Returns an array with objects, each object has a fileId
     const requestBoxId = item.identifier;
 
     try {
-      // Eliminar cada archivo de requestBoxFiles antes de eliminar la box
+      // Delete each file from requestBoxFiles before deleting the box
       for (const file of item.requestBoxFiles) {
         const deleted = await handleDeleteFile(file.fileId);
         console.log("deleted", deleted);
@@ -94,26 +106,38 @@ const SortableRequestList = ({ items = [], projectName, projectId }) => {
       }
 
       const projectTitle = await projectName;
-      // Después de eliminar los archivos, proceder a eliminar la box
-      const response = await fetch("/api/boxes/request/manageBox", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ projectTitle, requestBoxId }),
+      // After deleting the files, proceed to delete the box
+      const promise = () =>
+        new Promise(async (resolve, reject) => {
+          try {
+            const response = await fetch("/api/boxes/request/manageBox", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ projectTitle, requestBoxId }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to deny box");
+            }
+
+            const data = await response.json();
+            console.log(data.message); // Server success message
+            resolve(data.message);
+          } catch (error) {
+            reject(error);
+          }
+        });
+
+      toast.promise(promise(), {
+        loading: "Denying box...",
+        success: "Box denied successfully",
+        error: "Error denying box",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to deny box");
-      }
-
-      const data = await response.json();
-      console.log(data.message); // Mensaje de éxito del servidor
-
-      // Aquí podrías manejar la actualización de estado o cualquier otra lógica necesaria después de denegar
     } catch (error) {
       console.error("Error denying item:", error);
-      // Aquí podrías manejar el error, por ejemplo, mostrar un mensaje al usuario
+      toast.error("Error denying box");
     }
   };
 
@@ -183,13 +207,27 @@ const SortableRequestList = ({ items = [], projectName, projectId }) => {
         <div className="flex gap-2 mt-3">
           <button
             className="flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            onClick={() => handleAccept(item)}
+            onClick={() => {
+              toast.warning("Are you sure you want to accept this request?", {
+                action: {
+                  label: "Confirm",
+                  onClick: () => handleAccept(item),
+                },
+              });
+            }}
           >
             <FaCheck className="mr-1" /> Accept
           </button>
           <button
             className="flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={() => handleDeny(item)}
+            onClick={() => {
+              toast.warning("Are you sure you want to deny this request?", {
+                action: {
+                  label: "Confirm",
+                  onClick: () => handleDeny(item),
+                },
+              });
+            }}
           >
             <FaTimes className="mr-1" /> Deny
           </button>

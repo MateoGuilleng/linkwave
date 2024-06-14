@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { toast } from "sonner";
+
 import Navbar from "@/components/Navbar";
 import SortableListWithDnd from "@/components/SortableList";
 import {
@@ -36,6 +37,7 @@ import { useSession } from "next-auth/react";
 
 import {
   Label,
+  Popover,
   TextInput,
   FileInput,
   Button,
@@ -81,28 +83,60 @@ function Page() {
   const [items, setItems] = useState([]);
 
   const [commentId, setCommentId] = useState();
-
+  const content = (
+    <div className="w-64 text-sm text-gray-500 dark:text-gray-400">
+      <div className="border-b  px-3 py-2 border-gray-600 bg-gray-700">
+        <h3 className="font-semibold text-white">Use your own HTML!</h3>
+      </div>
+      <div className="px-3 py-2 bg-black">
+        <p>
+          In the description of any box, you can paste any HTML code, that
+          means, you can upload and resize images, put Iframes from spotify,
+          youtube or even Instagram posts! If you want to know how to do it
+          click{" "}
+          <a className="border-b-2" href="/docs/htmlEmbeded">
+            here!
+          </a>
+        </p>
+      </div>
+    </div>
+  );
   const handleDeleteComment = async () => {
     console.log(commentId);
-    try {
-      const res = await fetch(`/api/comments/${lastWord}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          commentId,
-        }),
+
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch(`/api/comments/${lastWord}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              commentId,
+            }),
+          });
+
+          if (res.ok) {
+            console.log("Comment deleted successfully");
+            // Optionally, update your local state or UI after deletion
+            window.location.reload(); // Reload the page after successful comment deletion (consider using React state update instead)
+            resolve();
+          } else {
+            console.error("Failed to delete comment:", res.statusText);
+            reject(new Error("Failed to delete comment"));
+          }
+        } catch (error) {
+          console.error("Error deleting comment:", error.message);
+          reject(error);
+        }
       });
-      if (res.ok) {
-        // Redirige a la misma página para refrescar
-        window.location.reload();
-      } else {
-        console.error("Failed to delete comment:", res.statusText);
-      }
-    } catch (error) {
-      console.error("Error deleting comment:", error.message);
-    }
+
+    toast.promise(promise(), {
+      loading: "Deleting comment...",
+      success: "Comment deleted successfully",
+      error: "Failed to delete comment",
+    });
   };
 
   const handleTitleChange = (e) => setBoxTitle(e.target.value);
@@ -128,37 +162,60 @@ function Page() {
     formData.append("description", boxDescription);
 
     console.log(file, typeof file);
-    try {
-      const response = await fetch("/api/boxes/uploadBox", {
-        method: "POST",
-        body: formData,
+
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        const timer = setTimeout(() => {
+          toast("Please be patient, the uploading box is big", {
+            icon: "⌛",
+          });
+        }, 5000); // 10 seconds
+
+        try {
+          const response = await fetch("/api/boxes/uploadBox", {
+            method: "POST",
+            body: formData,
+          });
+
+          clearTimeout(timer);
+
+          const result = await response.json();
+          if (response.ok) {
+            setMessage("Box uploaded successfully");
+
+            const newBox = {
+              id: result.fileId,
+              title: boxTitle,
+              category: boxCategory,
+              description: boxDescription,
+              filename: result.filename,
+              filetype: result.filetype,
+            };
+            setBoxInfo(newBox);
+            setItems((prevItems) => {
+              const updatedItems = [...prevItems, newBox];
+              console.log("Updated items:", updatedItems);
+              return updatedItems;
+            });
+
+            resolve({ name: result.filename });
+          } else {
+            console.error("Error uploading file:", result);
+            reject(new Error("Error uploading file"));
+          }
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          reject(error);
+        }
       });
 
-      const result = await response.json();
-      if (response.ok) {
-        console.log("File uploaded successfully", result);
-        setMessage("Box uploaded successfully");
-
-        const newBox = {
-          id: result.fileId,
-          title: boxTitle,
-          category: boxCategory,
-          description: boxDescription,
-          filename: result.filename,
-          filetype: result.filetype,
-        };
-        setBoxInfo(newBox);
-        setItems((prevItems) => {
-          const updatedItems = [...prevItems, newBox];
-          console.log("Updated items:", updatedItems);
-          return updatedItems;
-        });
-      } else {
-        console.error("Error uploading file:", result);
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
+    toast.promise(promise(), {
+      loading: "Uploading...",
+      success: (data) => {
+        return `${data.name} uploaded successfully`;
+      },
+      error: "Error uploading file",
+    });
   };
 
   const formatCreatedAt = (createdAt) => {
@@ -168,34 +225,52 @@ function Page() {
   const handleUploadEditComment = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
+    const formData = new FormData(e.target.closest("form")); // Access the closest form element to the event trigger
 
     const newComment = formData.get("newComment");
 
-    try {
-      const res = await fetch(`/api/comments/${lastWord}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          commentId,
-          newComment,
-        }),
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch(`/api/comments/${lastWord}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              commentId,
+              newComment,
+            }),
+          });
+
+          if (res.ok) {
+            setError("");
+
+            const { comments } = await res.json();
+            console.log("Comment updated successfully!");
+            console.log("Comments:", comments);
+            window.location.reload(); // Reload the page after successful comment update (consider using React state update instead)
+
+            resolve({ comment: newComment });
+          } else {
+            setError("Something went wrong, try again");
+            console.log("Error updating comment:", res.statusText);
+            reject(new Error("Error updating comment"));
+          }
+        } catch (error) {
+          setError("Something went wrong, try again");
+          console.error("Error updating comment:", error);
+          reject(error);
+        }
       });
 
-      if (res.ok) {
-        setError("");
-
-        const { comments } = await res.json();
-        console.log("¡Comentario agregado con éxito!");
-        console.log("Comentarios:", comments);
-        window.location.reload();
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
+    toast.promise(promise(), {
+      loading: "Updating comment...",
+      success: (data) => {
+        return `Comment updated successfully: ${data.comment}`;
+      },
+      error: "Error updating comment",
+    });
   };
 
   const handleEditCommentInputChange = (e) => {
@@ -219,33 +294,53 @@ function Page() {
     const author = session?.user?.email;
     e.preventDefault();
 
-    const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
+    const formData = new FormData(e.target.closest("form")); // Access the closest form element to the event trigger
 
     const comment = formData.get("comment");
-    try {
-      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          comment,
-          author,
-        }),
+
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch(`/api/project/specificProject/${lastWord}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              comment,
+              author,
+            }),
+          });
+
+          if (res.status === 200) {
+            setError("");
+            window.location.reload(); // Reload the page after successful comment upload (consider using React state update instead)
+            const { comments } = await res.json();
+            console.log("Comment added successfully!");
+            console.log("Comments:", comments);
+
+            resolve({ comment });
+          } else {
+            setError("Something went wrong, try again");
+            console.log("Error adding comment:", res.statusText);
+            reject(new Error("Error adding comment"));
+          }
+        } catch (error) {
+          setError("Something went wrong, try again");
+          console.error("Error adding comment:", error);
+          reject(error);
+        }
       });
 
-      if (res.status === 200) {
-        setError("");
-        window.location.reload();
-        const { comments } = await res.json();
-        console.log("¡Comentario agregado con éxito!");
-        console.log("Comentarios:", comments);
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
+    toast.promise(promise(), {
+      loading: "Uploading comment...",
+      success: (data) => {
+        return `Comment added successfully: ${data.comment}`;
+      },
+      error: "Error adding comment",
+    });
   };
+
   const handleStarClick = async () => {
     console.log("loco");
     const newStarIsClicked = !starIsClicked;
@@ -280,65 +375,76 @@ function Page() {
 
   const handleSaveImage = async (e) => {
     e.preventDefault();
-    const email = session?.user?.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
+    const email = session?.user?.email; // Ensure you have access to the user's email
 
     const formImageData = new FormData();
-    try {
-      if (archivo ?? false) {
-        formImageData.append("image", archivo);
-        const uploadResponse = await fetch(`/api/uploadImage`, {
-          method: "POST",
 
-          body: formImageData,
-        });
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          if (archivo) {
+            formImageData.append("image", archivo);
+            const uploadResponse = await fetch(`/api/uploadImage`, {
+              method: "POST",
+              body: formImageData,
+            });
 
-        if (!uploadResponse.ok) {
-          throw new Error(
-            `Error al subir la imagen: ${uploadResponse.statusText}`
-          );
-        }
+            if (!uploadResponse.ok) {
+              throw new Error(
+                `Error uploading image: ${uploadResponse.statusText}`
+              );
+            }
 
-        const uploadResult = await uploadResponse.json();
-        console.log(uploadResult.message);
-        console.log("Proyecto subido con éxito!");
-        const imageLink = await uploadResult.url;
-        console.log("image link:", imageLink);
+            const uploadResult = await uploadResponse.json();
+            const imageLink = uploadResult.url;
 
-        const title = project.title;
-        const description = project.description;
-        const content = project.content;
-        const projectType = project.projectType;
+            const title = project.title;
+            const description = project.description;
+            const content = project.content;
+            const projectType = project.projectType;
 
-        const proyectResponse = await fetch(
-          `/api/project/specificProject/projectAdmin/${lastWord}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              title,
-              description,
-              content,
-              imageLink,
-              projectType,
-            }),
+            const projectResponse = await fetch(
+              `/api/project/specificProject/projectAdmin/${lastWord}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  title,
+                  description,
+                  content,
+                  imageLink,
+                  projectType,
+                }),
+              }
+            );
+
+            if (!projectResponse.ok) {
+              throw new Error(
+                `Error updating project: ${projectResponse.statusText}`
+              );
+            }
+
+            const resProject = await projectResponse.json();
+            console.log("resProject", resProject);
+            router.refresh();
+
+            resolve({ name: "Image" });
           }
-        );
-
-        if (!proyectResponse.ok) {
-          throw new Error(
-            `Error al subir el repositorio: ${proyectResponse.statusText}`
-          );
+        } catch (error) {
+          console.error(`Error in request: ${error.message}`);
+          reject(error);
         }
+      });
 
-        const resProyect = await proyectResponse.json();
-        console.log("resProyect", resProyect);
-        router.refresh();
-      }
-    } catch (error) {
-      console.error(`Error al enviar la solicitud: ${error.message}`);
-    }
+    toast.promise(promise(), {
+      loading: "Uploading image...",
+      success: (data) => {
+        return `${data.name} uploaded successfully`;
+      },
+      error: "Error uploading image",
+    });
   };
 
   useEffect(() => {
@@ -376,48 +482,62 @@ function Page() {
     }
 
     const imageLink = await project.banner;
-
     let categoryToSend = await project.projectType;
 
     if (categoryChanged) {
       categoryToSend = selectedProjectType;
     }
 
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch(
+            `/api/project/specificProject/projectAdmin/${lastWord}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                title,
+                description,
+                content,
+                projectType: categoryToSend,
+                imageLink,
+              }),
+            }
+          );
 
-    try {
-      const res = await fetch(
-        `/api/project/specificProject/projectAdmin/${lastWord}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title,
-            description,
-            content,
-            projectType: categoryToSend,
-            imageLink,
-          }),
+          // Comprobar si la solicitud fue exitosa
+          if (res.ok) {
+            // Convertir la respuesta a formato JSON
+            const data = await res.json();
+            // Imprimir la respuesta en la consola
+            console.log("Respuesta del servidor:", data);
+
+            router.refresh();
+            router.replace("/dashboard/projects");
+            resolve({ name: title });
+          } else {
+            // Imprimir un mensaje de error si la solicitud no fue exitosa
+            console.error("Error en la solicitud:", res.statusText);
+            reject(new Error(res.statusText));
+          }
+        } catch (error) {
+          console.log("Error de red:", error);
+          reject(error);
         }
-      );
-      router.refresh();
-      // Comprobar si la solicitud fue exitosa
-      if (res.ok) {
-        // Convertir la respuesta a formato JSON
-        const data = await res.json();
-        // Imprimir la respuesta en la consola
-        console.log("Respuesta del servidor:", data);
+      });
 
-        router.replace("/dashboard/projects");
-      } else {
-        // Imprimir un mensaje de error si la solicitud no fue exitosa
-        console.error("Error en la solicitud:", res.statusText);
-      }
-    } catch (error) {
-      console.log("Error de red:", error);
-    }
+    toast.promise(promise(), {
+      loading: "Submitting...",
+      success: (data) => {
+        return `${data.name} updated successfully`;
+      },
+      error: "Error updating project",
+    });
   };
+
   const handleChange = () => {
     const formFields = document.querySelectorAll("form input, form textarea");
     for (const field of formFields) {
@@ -524,19 +644,24 @@ function Page() {
           <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
             <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
               <div className="flex flex-wrap sm:w-full">
-                <div className="text-3xl sm:text-5xl sm:w-fit  w-full sm:order-first">
+                <div className="sm:w-fit  w-full sm:order-first">
                   <div className="flex flex-wrap align-middle items-center justify-between">
                     <div className="flex gap-3">
                       <button className="align-middle" onClick={router.back}>
                         <FaArrowLeft />{" "}
                       </button>{" "}
-                      <h2 className="sm:text-4xl sm:w-fit align-middle">
+                      <h2 className="sm:text-6xl text-center text-3xl sm:w-fit align-middle">
                         {project?.title}
                       </h2>{" "}
                       <>
                         <Button
-                          className="hover:border-white bg-green-700"
-                          onClick={() => setEditModal(true)}
+                          className="hover:border-white bg-black/35 h-fit bg-green-700"
+                          onClick={() => {
+                            setEditModal(true);
+                            toast.info(
+                              "You will be returned to your projects after the changes have been made"
+                            );
+                          }}
                         >
                           <div className="flex gap-5 align-middle">
                             <FaEdit />
@@ -727,25 +852,27 @@ function Page() {
                         </Modal>
                       </>
                     </div>
-                    <div className="sm:flex sm:gap-3 mt-4 sm:flex-col sm:items-end w-full justify-end ml-4 mb-4 lg:max-w-72">
-                      <div className="text-xl flex sm:w-fit border-2 rounded-lg w-full pt-2 px-2 align-middle justify-between">
+                    <div className="flex items-center w-full gap-5 my-5 text-lg">
+                      <div className="border-2 text-sm sm:text-lg rounded-lg w-full items-center flex p-3">
                         <div>Stars: {project?.stars}</div>
-                        <button onClick={handleStarClick}>
+                        <button
+                          className="w-9 h-9 ml-2 align-middle self-end"
+                          onClick={handleStarClick}
+                        >
                           {starIsClicked ? (
-                            <HiStar className="w-9 h-9 pb-2" />
+                            <HiStar className="" />
                           ) : (
-                            <HiOutlineStar className="w-9 h-9 pb-2" />
+                            <HiOutlineStar />
                           )}
                         </button>
                       </div>
-                      <div className="text-xl flex w-full sm:w-1/2 border-2 rounded-lg pt-2 px-2 align-middle justify-between">
+                      <div className="border-2 text-sm sm:text-lg rounded-lg w-full items-center flex p-3">
                         <div>Following: {project?.stars}</div>
-                        <button onClick={handleStarClick}>
-                          {starIsClicked ? (
-                            <HiStar className="w-9 h-9 pb-2" />
-                          ) : (
-                            <HiOutlineStar className="w-9 h-9 pb-2" />
-                          )}
+                        <button
+                          className="w-9 h-9 ml-2 align-middle"
+                          onClick={handleStarClick}
+                        >
+                          {starIsClicked ? <HiStar /> : <HiOutlineStar />}
                         </button>
                       </div>
                     </div>
@@ -761,7 +888,7 @@ function Page() {
                     </a>
                   </div>
                 </div>
-                <h3 className="text-gray-400 text-xl mt-4 sm:mt-5 sm:order-first">
+                <h3 className="text-gray-400 text-lg sm:text-xl mt-4 sm:mt-5 sm:order-first">
                   Description: {project?.description}{" "}
                 </h3>
               </div>
@@ -1049,8 +1176,8 @@ function Page() {
                 show={uploadModal}
                 onClose={() => setUploadModal(false)}
               >
-                <Modal.Header>Upload Box:</Modal.Header>
-                <Modal.Body>
+                <Modal.Header className="bg-black">Upload Box:</Modal.Header>
+                <Modal.Body className="bg-black">
                   <form onSubmit={handleBoxSubmit}>
                     <div className="overflow-y-auto max-h-[70vh]">
                       <div className="flex gap-10">
@@ -1104,12 +1231,24 @@ function Page() {
                         />
                       </div>
 
-                      <label
-                        htmlFor="Description"
-                        className="block mt-4 ml-5 text-sm font-medium text-indigo-900 dark:text-white"
-                      >
-                        Description: (Description Suports HTML Embeded!)
-                      </label>
+                      <div className="flex items-center">
+                        <label
+                          htmlFor="Description"
+                          className="block mt-4 ml-5 text-sm font-medium text-indigo-900 dark:text-white"
+                        >
+                          Description: (Description Suports HTML Embeded!)
+                        </label>
+
+                        <Popover
+                          content={content}
+                          className=""
+                          placement="right"
+                        >
+                          <Button className="align-middle mb-2 border-2 ml-3 border-white/35">
+                            Learn More
+                          </Button>
+                        </Popover>
+                      </div>
 
                       <Textarea
                         className="mt-5"
@@ -1122,7 +1261,6 @@ function Page() {
                       />
 
                       <button type="submit">Upload</button>
-                      {message && <p>{message}</p>}
                     </div>
                   </form>
                 </Modal.Body>

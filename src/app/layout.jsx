@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/utils/SessionProvider";
@@ -89,6 +90,7 @@ export default async function RootLayout({ children }) {
             </div>
           </div>
         </Footer>
+        <Toaster richColors position="bottom-center" theme="system" closeButton visibleToasts={2}/>
       </body>
     </html>
   );

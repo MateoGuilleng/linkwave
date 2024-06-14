@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import {
   Button,
@@ -111,6 +112,7 @@ function Dashboard() {
     let lastName = formData.get("lastName");
     let profession = formData.get("profession");
     let bio = formData.get("bio");
+    let imageLink = await userData.profile_image
 
     // Verificar si el campo está vacío y reemplazar con el valor del placeholder
     if (!firstName.trim()) {
@@ -130,42 +132,45 @@ function Dashboard() {
       bio = "unknown";
     }
 
-    try {
-      const res = await fetch(`/api/${email}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          profession,
-          bio,
-        }),
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch(`/api/${email}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              firstName,
+              lastName,
+              profession,
+              bio,
+              imageLink,
+            }),
+          });
+
+          // Comprobar si la solicitud fue exitosa
+          if (res.ok) {
+            // Convertir la respuesta a formato JSON
+            const data = await res.json();
+            router.refresh();
+            resolve(data); // Resuelve la promesa con los datos de respuesta
+          } else {
+            // Rechazar la promesa si la solicitud no fue exitosa
+            console.error("Error en la solicitud:", res.statusText);
+            reject(new Error("Failed to update profile"));
+          }
+        } catch (error) {
+          console.error("Error de red:", error);
+          reject(error);
+        }
       });
 
-      // Comprobar si la solicitud fue exitosa
-      if (res.ok) {
-        // Convertir la respuesta a formato JSON
-        const data = await res.json();
-        // Imprimir la respuesta en la consola
-        console.log("Respuesta del servidor:", data);
-        // Mostrar el modal
-        setShowModal(true);
-        // Reiniciar la página después de 2 segundos
-        setTimeout(() => {
-          router.refresh();
-        }, 2000);
-        setTimeout(() => {
-          setShowModal(false);
-        }, 2000);
-      } else {
-        // Imprimir un mensaje de error si la solicitud no fue exitosa
-        console.error("Error en la solicitud:", res.statusText);
-      }
-    } catch (error) {
-      console.log("Error de red:", error);
-    }
+    toast.promise(promise(), {
+      loading: "Updating profile...",
+      success: "Profile updated successfully",
+      error: "Failed to update profile",
+    });
   };
 
   const handleDeleteImagePreview = async (e) => {
@@ -175,59 +180,80 @@ function Dashboard() {
 
   const handleSaveImage = async (e) => {
     e.preventDefault();
-    const email = session?.user?.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
+    const email = session?.user?.email; // Ensure access to the user's email address
 
     const formImageData = new FormData();
     try {
       if (archivo ?? false) {
         formImageData.append("image", archivo);
         console.log(archivo);
-        const uploadResponse = await fetch(`/api/uploadImage`, {
-          method: "POST",
 
-          body: formImageData,
-        });
+        return toast.promise(
+          async () => {
+            try {
+              const uploadResponse = await fetch(`/api/uploadImage`, {
+                method: "POST",
+                body: formImageData,
+              });
 
-        if (!uploadResponse.ok) {
-          throw new Error(
-            `Error al subir la imagen: ${uploadResponse.statusText}`
-          );
-        }
+              if (!uploadResponse.ok) {
+                throw new Error(
+                  `Error uploading image: ${uploadResponse.statusText}`
+                );
+              }
 
-        const uploadResult = await uploadResponse.json();
-        console.log(uploadResult.message);
-        console.log("Foto de perfil actualizada con exito!");
-        const imageLink = await uploadResult.url;
-        console.log(imageLink);
+              const uploadResult = await uploadResponse.json();
+              console.log(uploadResult.message);
+              console.log("Profile photo updated successfully!");
+              const imageLink = await uploadResult.url;
+              console.log(imageLink);
 
-        const firstName = await userData.firstName;
-        const lastName = await userData.lastName;
-        const profession = await userData.profession;
-        const bio = await userData.bio;
+              const firstName = await userData.firstName;
+              const lastName = await userData.lastName;
+              const profession = await userData.profession;
+              const bio = await userData.bio;
 
-        const proyectResponse = await fetch(`/api/${email}`, {
-          method: "PUT",
-          body: JSON.stringify({
-            firstName,
-            lastName,
-            profession,
-            bio,
-            imageLink,
-          }),
-        });
+              const proyectResponse = await fetch(`/api/${email}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                  firstName,
+                  lastName,
+                  profession,
+                  bio,
+                  imageLink,
+                }),
+              });
 
-        if (!proyectResponse.ok) {
-          throw new Error(
-            `Error al subir el repositorio: ${proyectResponse.statusText}`
-          );
-        }
+              if (!proyectResponse.ok) {
+                throw new Error(
+                  `Error updating profile: ${proyectResponse.statusText}`
+                );
+              }
 
-        const resProyect = await proyectResponse.json();
-        console.log("resProyect", resProyect);
-        router.refresh();
+              const resProyect = await proyectResponse.json();
+              console.log("resProyect", resProyect);
+              router.refresh();
+
+              return imageLink; // Return the image link for the success handler
+            } catch (error) {
+              throw error; // Throw the error to be caught by the error handler in toast.promise
+            }
+          },
+          {
+            loading: "Uploading image...", // Displayed while the image is being uploaded
+            success: (imageLink) => {
+              console.log(`Image uploaded successfully. Link: ${imageLink}`);
+              return `Profile photo updated successfully`;
+            },
+            error: (error) => {
+              console.error(`Error uploading image: ${error.message}`);
+              return "Failed to update profile photo";
+            },
+          }
+        );
       }
     } catch (error) {
-      console.error(`Error al enviar la solicitud: ${error.message}`);
+      console.error(`Error sending request: ${error.message}`);
     }
   };
 
@@ -639,15 +665,6 @@ function Dashboard() {
           </div>
         </main>
       </div>
-      {showModal && (
-        <div className="fixed bottom-0 right-0 z-50">
-          <div className="bg-green-500 text-white rounded-lg p-4 shadow-lg m-10">
-            <p className="text-lg font-semibold">
-              Datos de usuario actualizados
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

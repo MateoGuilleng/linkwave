@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { useDrag, useDrop, DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+
 import {
   FaFilePdf,
   FaFileImage,
@@ -22,6 +24,7 @@ import {
   Modal,
   Select,
   Textarea,
+  Popover,
 } from "flowbite-react";
 
 const ItemTypes = {
@@ -42,7 +45,24 @@ const SortableList = ({ items = [], projectName }) => {
   const [hoverIndex, setHoverIndex] = useState(null);
   const [dragIndex, setDragIndex] = useState(null);
   const [hoverIdentifier, setHoverIdentifier] = useState(null);
-
+  const content = (
+    <div className="w-64 text-sm text-gray-500 dark:text-gray-400">
+      <div className="border-b  px-3 py-2 border-gray-600 bg-gray-700">
+        <h3 className="font-semibold text-white">Use your own HTML!</h3>
+      </div>
+      <div className="px-3 py-2 bg-black">
+        <p>
+          In the description of any box, you can paste any HTML code, that
+          means, you can upload and resize images, put Iframes from spotify,
+          youtube or even Instagram posts! If you want to know how to do it
+          click{" "}
+          <a className="border-b-2" href="/docs/htmlEmbeded">
+            here!
+          </a>
+        </p>
+      </div>
+    </div>
+  );
   const [sortedItems, setSortedItems] = useState(
     Array.isArray(items)
       ? [...items].sort((a, b) => a.position - b.position)
@@ -64,37 +84,55 @@ const SortableList = ({ items = [], projectName }) => {
     if (item.boxFiles && item.boxFiles.length > 0) {
       console.error("Cannot delete box with existing files");
       setMessage("Cannot delete box with existing files");
-      return; // Salir de la función si hay archivos en boxFiles
+      toast.error("Cannot delete box with existing files", {
+        description:
+          "Please delete all existing files in order to delete the box",
+      });
+      return; // Exit function if there are files in boxFiles
     }
 
-    setCurrentBoxId(item.identifier); // Establecer el ID del box actual
+    setCurrentBoxId(item.identifier); // Set current box ID
 
-    try {
-      const response = await fetch(`/api/boxes/edit/${projectName}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ identifier: item.identifier }),
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const response = await fetch(`/api/boxes/edit/${projectName}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ identifier: item.identifier }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to delete the box");
+          }
+
+          const result = await response.json();
+          console.log("Box deleted successfully:", result);
+          // Handle box deletion in client-side state if necessary
+
+          resolve({ name: item.title });
+        } catch (error) {
+          console.error("Error deleting box:", error);
+          reject(error);
+        }
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete the box");
-      }
-
-      const result = await response.json();
-      console.log("Box deleted successfully:", result);
-      // Aquí puedes manejar la eliminación del box en el estado del cliente si es necesario
-    } catch (error) {
-      console.error("Error deleting box:", error);
-    }
+    toast.promise(promise(), {
+      loading: "Deleting...",
+      success: (data) => {
+        return `${data.name} deleted successfully`;
+      },
+      error: "Error deleting box",
+    });
   };
 
   const handleUpdateBoxSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
-    formData.append("projectID", currentBoxId); // Asegurarse de añadir el ID del box actualmente editado
+    formData.append("projectID", currentBoxId); // Ensure to add the ID of the currently edited box
 
     console.log("Project ID: " + typeof currentBoxId);
 
@@ -102,7 +140,7 @@ const SortableList = ({ items = [], projectName }) => {
     let description = formData.get("description");
     let category = formData.get("type");
 
-    // Verificar si el campo está vacío y reemplazar con el valor del placeholder
+    // Verify if the field is empty and replace with placeholder value
     if (!title.trim()) {
       title = e.target.querySelector("#Title").getAttribute("placeholder");
     }
@@ -119,33 +157,46 @@ const SortableList = ({ items = [], projectName }) => {
     formData.set("description", description);
     formData.set("category", category);
 
-    try {
-      const response = await fetch(`/api/boxes/edit/${projectName}`, {
-        method: "PUT",
-        body: formData,
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const response = await fetch(`/api/boxes/edit/${projectName}`, {
+            method: "PUT",
+            body: formData,
+          });
+
+          const result = await response.json();
+          if (response.ok) {
+            console.log("File updated successfully", result);
+            setMessage("Box updated successfully");
+
+            const newBox = {
+              id: currentBoxId,
+              title,
+              category,
+              description,
+              filename: result.filename,
+              filetype: result.filetype,
+            };
+
+            resolve({ name: title });
+          } else {
+            console.error("Error updating box:", result);
+            reject(new Error("Error updating box"));
+          }
+        } catch (error) {
+          console.error("Error updating box:", error);
+          reject(error);
+        }
       });
 
-      const result = await response.json();
-      if (response.ok) {
-        console.log("File updated successfully", result);
-        setMessage("Box updated successfully");
-
-        const newBox = {
-          id: currentBoxId,
-          title,
-          category,
-          description,
-          filename: result.filename,
-          filetype: result.filetype,
-        };
-      } else {
-        console.error("Error updating box:", result);
-        const error = JSON.stringify(result);
-        setMessage(`Error updating box ${error}`);
-      }
-    } catch (error) {
-      console.error("Error updating box:", error);
-    }
+    toast.promise(promise(), {
+      loading: "Updating...",
+      success: (data) => {
+        return `${data.name} updated successfully`;
+      },
+      error: "Error updating box",
+    });
   };
 
   const handleEditBoxClick = async (item) => {
@@ -188,20 +239,43 @@ const SortableList = ({ items = [], projectName }) => {
 
     console.log("identifier", currentBoxId);
 
-    try {
-      const response = await fetch(`/api/files/${currentBoxId}`, {
-        method: "PUT",
-        body: formData,
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const timer = setTimeout(() => {
+            toast("Please be patient, the uploading file is big", {
+              icon: "⌛",
+            });
+          }, 5000); // 5 seconds
+
+          const response = await fetch(`/api/files/${currentBoxId}`, {
+            method: "PUT",
+            body: formData,
+          });
+
+          clearTimeout(timer);
+
+          const result = await response.json();
+          if (response.ok) {
+            console.log("File uploaded successfully", result);
+            setMessage("File uploaded successfully");
+            resolve({ name: result.filename });
+          } else {
+            throw new Error(`Error uploading file: ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          reject(error);
+        }
       });
 
-      const result = await response.json();
-      if (response.ok) {
-        console.log("File uploaded successfully", result);
-        setMessage("File uploaded successfully");
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
+    toast.promise(promise(), {
+      loading: "Uploading file...",
+      success: (data) => {
+        return `${data.name} uploaded successfully`;
+      },
+      error: "Error uploading file",
+    });
   };
 
   const handleFileChange = (e) => {
@@ -512,7 +586,6 @@ const SortableList = ({ items = [], projectName }) => {
 
           <BoxDescription description={item.description} />
 
-          {message}
           <button
             className="hover:border-white bg-green-700 mt-5 p-2 rounded-md"
             onClick={() => {
@@ -526,7 +599,12 @@ const SortableList = ({ items = [], projectName }) => {
           <button
             className="hover:border-white ml-4 bg-red-700 mt-5 p-2 rounded-md"
             onClick={() => {
-              handleDeleteBox(item);
+              toast.warning("Are you sure you want to delete this box?", {
+                action: {
+                  label: "Confirm Delete",
+                  onClick: () => handleDeleteBox(item),
+                },
+              });
             }}
           >
             <div className="flex gap-5 align-middle">
@@ -685,11 +763,18 @@ const SortableList = ({ items = [], projectName }) => {
                     </div>
                   </div>
                   <div className="mt-5 w-full">
-                    <div className="mb-2 block">
-                      <Label
-                        htmlFor="Description"
-                        value="Description: (Description Suports HTML Embeded!)"
-                      />
+                    <div className="flex items-center">
+                      <div className="mb-2 block">
+                        <Label
+                          htmlFor="Description"
+                          value="Description: (Description Suports HTML Embeded!)"
+                        />
+                      </div>
+                      <Popover content={content} className="" placement="right">
+                        <Button className="align-middle mb-2 border-2 ml-3 border-white/35">
+                          Learn More
+                        </Button>
+                      </Popover>
                     </div>
                     <Textarea
                       id="Description"
@@ -708,8 +793,6 @@ const SortableList = ({ items = [], projectName }) => {
                       }}
                     />
                   </div>
-
-                  {message && <p>{message}</p>}
 
                   <div className="mt-5 w-full">
                     <Button type="submit" className="bg-slate-800">
