@@ -242,7 +242,7 @@ function Page() {
                           ></iframe>
                         </div>
                         <p className="">
-                          From any regitered location in the modal of 'share':
+                          From any regitered location in the modal of "share":
                         </p>
                         <img
                           className="w-full h-auto max-w-full mx-auto mt-5"
@@ -432,7 +432,7 @@ function Page() {
                       2. Sanitizing Input
                     </h3>
                     <p className="mb-4">
-                      To mitigate these risks, it's crucial to sanitize any HTML
+                      To mitigate these risks, its crucial to sanitize any HTML
                       input before rendering it on your site. This process
                       involves removing or escaping potentially harmful content,
                       ensuring that only safe HTML is displayed.
