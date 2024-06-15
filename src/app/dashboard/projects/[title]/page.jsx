@@ -83,6 +83,39 @@ function Page() {
   const [items, setItems] = useState([]);
 
   const [commentId, setCommentId] = useState();
+
+  const getProject = async () => {
+    try {
+      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProject(data);
+        setItems(data.boxes);
+      } else {
+        console.error("Failed to fetch projects:", res.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error.message);
+    }
+  };
+
+  console.log("itens", items);
+  if (items == undefined) {
+    console.log("jajaja");
+    getProject();
+  } else {
+    console.log("jejee");
+  }
+
+  useEffect(() => {
+    getProject();
+  }, []);
+
   const content = (
     <div className="w-64 text-sm text-gray-500 dark:text-gray-400">
       <div className="border-b  px-3 py-2 border-gray-600 bg-gray-700">
@@ -552,32 +585,6 @@ function Page() {
     }
   };
 
-  const getProject = async () => {
-    try {
-      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setProject(data);
-        setItems(data.boxes);
-      } else {
-        console.error("Failed to fetch projects:", res.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching projects:", error.message);
-    }
-  };
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      getProject();
-    }
-  }, [status]);
-
   const router = useRouter();
 
   const handleUploadImage = (e) => {
@@ -879,6 +886,11 @@ function Page() {
                   </div>
                   <div className="flex">
                     <p className="text-lg mr-4">Author:</p>
+                    <img
+                      src={project?.authorImage}
+                      alt={`${project?.author}'s profile`}
+                      className="w-10 h-10 mr-4 rounded-full object-cover"
+                    />
                     <a
                       className="text-sm border-b-2 sm:text-xl "
                       href={`/${project?.author}`}

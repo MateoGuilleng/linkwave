@@ -48,7 +48,7 @@ function Page() {
   const [showUpEditCommentButton, setShowUpEditCommentButton] = useState(false);
   const [showUploadButton, setShowUploadButton] = useState(false); // Estado para controlar la visibilidad del botón de carga de comentarios
   const [formFilled, setFormFilled] = useState(false);
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(undefined);
   const [reqItems, setReqItems] = useState([]);
 
   const [message, setMessage] = useState("");
@@ -58,7 +58,37 @@ function Page() {
   const [requestFile, setRequestFile] = useState(null);
   const [requestBoxDescription, setRequestBoxDescription] = useState("");
 
+  const getProject = async () => {
+    try {
+      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProject(data);
+        setItems(data.boxes);
+      } else {
+        console.error("Failed to fetch projects:", res.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error.message);
+    }
+  };
+
   console.log("itens", items);
+
+  if (items == undefined) {
+    console.log("jajaja");
+    getProject();
+  } else {
+    console.log("jejee");
+  }
+  useEffect(() => {
+    getProject();
+  }, []);
   useEffect(() => {
     const currentPath = window.location.pathname;
     const pathParts = currentPath
@@ -74,70 +104,6 @@ function Page() {
     console.log("last word", lastWord);
   }, []);
 
-  console.log(lastWord);
-  useEffect(() => {
-    if (status === "authenticated") {
-      getProject();
-    }
-  }, [status]);
-
-  const handleRequestTitleChange = (e) => {
-    setRequestBoxTitle(e.target.value);
-  };
-
-  const handleRequestCategoryChange = (e) => {
-    setRequestBoxCategory(e.target.value);
-  };
-  const handleRequestFileChange = (e) => {
-    setRequestFile(e.target.value);
-  };
-
-  const handleRequestBoxDescriptionChange = (e) => {
-    setRequestBoxDescription(e.target.value);
-  };
-
-  const handleRequestBoxSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("file", requestFile);
-    formData.append("projectID", project._id);
-    formData.append("title", requestBoxTitle);
-    formData.append("category", requestBoxCategory);
-    formData.append("description", requestBoxDescription);
-
-    try {
-      const response = await fetch("/api/boxes/request/uploadRequest", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        console.log("File uploaded successfully", result);
-        setMessage("Box uploaded successfully");
-
-        const newBox = {
-          id: result.fileId,
-          title: boxTitle,
-          category: boxCategory,
-          description: boxDescription,
-          filename: result.filename,
-          filetype: result.filetype,
-        };
-        setBoxInfo(newBox);
-        setItems((prevItems) => {
-          const updatedItems = [...prevItems, newBox];
-          console.log("Updated items:", updatedItems);
-          return updatedItems;
-        });
-      } else {
-        console.error("Error uploading file:", result);
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
-  };
   useEffect(() => {
     if (project?.starredBy?.includes(session?.user?.email)) {
       setStarIsClicked(true);
@@ -181,29 +147,6 @@ function Page() {
   };
 
   const router = useRouter();
-
-  const getProject = async () => {
-    console.log("last word", lastWord);
-    try {
-      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        console.log("data", data);
-        setProject(data);
-        setItems(data.boxes);
-        setReqItems(data.requestBoxes);
-      } else {
-        console.error("Failed to fetch projects:", res.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching projects:", error.message);
-    }
-  };
 
   const formatCreatedAt = (createdAt) => {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: true });

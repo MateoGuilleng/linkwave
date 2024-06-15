@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 
 export const POST = async (request) => {
-  const { title, description, content, author, projectType } =
+  const { title, description, content, author, projectType, authorImage } =
     await request.json();
 
   await connect();
@@ -23,6 +23,7 @@ export const POST = async (request) => {
     author,
     projectType,
     stars,
+    authorImage
   });
 
   try {
@@ -37,21 +38,11 @@ export const GET = async (request, res) => {
   try {
     await connect();
 
-    // Verificar la URL de la solicitud para determinar la fuente
-    const isFeedRequest = request.url.includes("feed");
-
     console.log(request.HeadersList);
 
     const data = await getServerSession(authOptions);
 
-    let projects;
-    if (isFeedRequest) {
-      // Si la solicitud proviene de la ruta /feed, obtener todos los proyectos de todos los usuarios
-      projects = await project.find();
-    } else {
-      // Si la solicitud no proviene de la ruta /feed, obtener solo los proyectos del usuario de la sesión
-      projects = await project.find(); // Eliminamos la condición que filtra por autor
-    }
+    let projects = await project.find();
 
     if (!projects || projects.length === 0) {
       return new NextResponse("No projects found", {

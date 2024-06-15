@@ -59,8 +59,44 @@ function Page() {
   const [requestBoxCategory, setRequestBoxCategory] = useState("");
   const [requestFile, setRequestFile] = useState(null);
   const [requestBoxDescription, setRequestBoxDescription] = useState("");
-
+  const router = useRouter();
+  const getProject = async () => {
+    console.log("last word desde get project", lastWord);
+    try {
+      const res = await fetch(
+        `/api/project/specificProject/${encodeURIComponent(lastWord)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        console.log("data", data);
+        setProject(data);
+        setItems(data.boxes);
+        setReqItems(data.requestBoxes);
+      } else {
+        console.error("Failed to fetch projects:", res.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error.message);
+    }
+  };
   console.log("itens", items);
+  if (items == undefined) {
+    console.log("jajaja");
+    getProject();
+  } else {
+    console.log("jejee");
+  }
+
+  useEffect(() => {
+    getProject();
+  }, []);
+
   useEffect(() => {
     const currentPath = window.location.pathname;
     const pathParts = currentPath
@@ -75,12 +111,6 @@ function Page() {
     setLastWord(decodeURIComponent(penultimateWord));
     console.log("last word", lastWord);
   }, []);
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      getProject();
-    }
-  }, [status]);
 
   const handleRequestTitleChange = (e) => {
     setRequestBoxTitle(e.target.value);
@@ -167,34 +197,6 @@ function Page() {
       setBinaryStar(0);
     }
   }, [project, session]);
-
-  const router = useRouter();
-
-  const getProject = async () => {
-    console.log("last word desde get project", lastWord);
-    try {
-      const res = await fetch(
-        `/api/project/specificProject/${encodeURIComponent(lastWord)}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        console.log("data", data);
-        setProject(data);
-        setItems(data.boxes);
-        setReqItems(data.requestBoxes);
-      } else {
-        console.error("Failed to fetch projects:", res.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching projects:", error.message);
-    }
-  };
 
   const formatCreatedAt = (createdAt) => {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: true });

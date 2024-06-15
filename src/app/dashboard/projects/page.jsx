@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { FaPlus } from "react-icons/fa";
 import {
@@ -31,6 +32,7 @@ function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [error, setError] = useState();
   const [isOpen, setIsOpen] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   const handleClose = () => setIsOpen(false);
 
@@ -39,8 +41,32 @@ function ProjectsPage() {
     console.log(selectedProjectType);
   };
 
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetchData();
+    }
+  }, [session]);
+
+  const email = session?.user?.email;
+  const fetchData = async () => {
+    if (session && session.user && session.user.email) {
+      try {
+        const response = await fetch(`/api/${email}`);
+        const userData = await response.json();
+        setUserData(userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    } else {
+      console.error("Session or user is null or undefined.");
+    }
+  };
+
+  console.log("user data", userData);
+
   const handleProjectSubmit = async (e) => {
     const author = session?.user?.email;
+
     e.preventDefault();
 
     const formData = new FormData(e.target.closest("form"));
@@ -51,34 +77,49 @@ function ProjectsPage() {
 
     if (!title || !content) {
       setError("Title and content are required");
+      toast.error("Title and content are required");
       return;
     }
+    const authorImage = await userData.profile_image
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch("/api/project", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title,
+              description,
+              content,
+              author,
+              projectType: selectedProjectType,
+              authorImage
+            }),
+          });
 
-    try {
-      const res = await fetch("/api/project", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          content,
-          author,
-          projectType: selectedProjectType,
-        }),
+          if (res.status === 400) {
+            setError("The name of the project is already in use");
+            reject(new Error("The name of the project is already in use"));
+          } else if (res.status === 200) {
+            setError("");
+            router.push(`/dashboard/projects/${encodeURIComponent(title)}`);
+            resolve();
+          } else {
+            reject(new Error("Failed to submit project"));
+          }
+        } catch (error) {
+          setError("Something went wrong, try again");
+          reject(error);
+        }
       });
-      if (res.status === 400) {
-        setError("The name of the project is already in use");
-      }
-      if (res.status === 200) {
-        setError("");
-        router.push(`/dashboard/projects/${encodeURIComponent(title)}`);
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
+
+    toast.promise(promise(), {
+      loading: "Submitting project...",
+      success: "Project submitted successfully!",
+      error: "Failed to submit project",
+    });
   };
 
   useEffect(() => {
@@ -315,7 +356,7 @@ function ProjectsPage() {
                 {projects.length > 0 ? (
                   projects.map((project) => (
                     <button
-                      className="relative text-white px-4 py-2 rounded transition transform hover:-translate-y-1 hover:shadow-lg hover:shadow-white"
+                      className="relative text-white px-4 py-2 rounded transform hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300 ease-in-out shadow-md "
                       onClick={() => {
                         router.push(
                           `projects/${encodeURIComponent(project.title)}`

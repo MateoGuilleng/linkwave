@@ -51,7 +51,7 @@ function Page() {
   const [showUpEditCommentButton, setShowUpEditCommentButton] = useState(false);
   const [showUploadButton, setShowUploadButton] = useState(false); // Estado para controlar la visibilidad del botón de carga de comentarios
   const [formFilled, setFormFilled] = useState(false);
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(undefined);
   const [reqItems, setReqItems] = useState([]);
 
   const [message, setMessage] = useState("");
@@ -61,19 +61,49 @@ function Page() {
   const [requestFile, setRequestFile] = useState(null);
   const [requestBoxDescription, setRequestBoxDescription] = useState("");
 
+  const getProject = async () => {
+    console.log("last word desde get project", lastWord);
+    try {
+      const res = await fetch(
+        `/api/project/specificProject/${encodeURIComponent(lastWord)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        console.log("data", data);
+        setProject(data);
+        setItems(data.boxes);
+        setReqItems(data.requestBoxes);
+      } else {
+        console.error("Failed to fetch projects:", res.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error.message);
+    }
+  };
   console.log("itens", items);
+  if (items == undefined) {
+    console.log("jajaja");
+    getProject();
+  } else {
+    console.log("jejee");
+  }
+
+  useEffect(() => {
+    getProject();
+  }, []);
+
   useEffect(() => {
     const currentPath = window.location.pathname;
     const pathParts = currentPath.split("/");
     const last = pathParts.filter((part) => part.trim() !== "").pop() || "";
     setLastWord(last);
   }, []);
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      getProject();
-    }
-  }, [status]);
 
   const handleRequestTitleChange = (e) => {
     setRequestBoxTitle(e.target.value);
@@ -175,29 +205,6 @@ function Page() {
   };
 
   const router = useRouter();
-
-  const getProject = async () => {
-    console.log("last word", lastWord);
-    try {
-      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        console.log("data", data);
-        setProject(data);
-        setItems(data.boxes);
-        setReqItems(data.requestBoxes);
-      } else {
-        console.error("Failed to fetch projects:", res.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching projects:", error.message);
-    }
-  };
 
   const formatCreatedAt = (createdAt) => {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
@@ -406,6 +413,11 @@ function Page() {
                   </div>
                   <div className="flex">
                     <p className="text-lg mr-4">Author:</p>
+                    <img
+                      src={project?.authorImage}
+                      alt={`${project?.author}'s profile`}
+                      className="w-10 h-10 mr-4 rounded-full object-cover"
+                    />
                     <a
                       className="text-sm border-b-2 sm:text-xl "
                       href={`/${project?.author}`}

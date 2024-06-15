@@ -31,6 +31,10 @@ const projectSchema = new Schema(
       type: String,
       required: true,
     },
+    authorImage: {
+      type: String,
+      required: true,
+    },
     comments: {
       type: Array,
       required: false,

@@ -8,6 +8,7 @@ export const GET = async (request, { params }) => {
   await connect();
 
   const email = params.user;
+  console.log('desde api get', email);
 
   try {
     const userFound = await User.findOne({ email: email });
