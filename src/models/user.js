@@ -32,6 +32,10 @@ const userSchema = new Schema(
       type: String,
       required: false,
     },
+    socialProfiles: {
+      type: Array,
+      required: false,
+    }
   },
   { timestamps: true }
 );

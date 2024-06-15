@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 const ProjectCard = ({ project }) => {
-  console.log(project.authorImage);
   return (
     <Link
       key={project._id}

@@ -33,6 +33,19 @@ function ProjectsPage() {
   const [error, setError] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [title, setTitle] = useState("");
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
+
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    if (value.includes("/")) {
+      toast.error("The title cannot contain a slash '/' character.");
+      setIsSubmitDisabled(true);
+    } else {
+      setIsSubmitDisabled(false);
+    }
+    setTitle(value);
+  };
 
   const handleClose = () => setIsOpen(false);
 
@@ -80,7 +93,7 @@ function ProjectsPage() {
       toast.error("Title and content are required");
       return;
     }
-    const authorImage = await userData.profile_image
+    const authorImage = await userData.profile_image;
     const promise = () =>
       new Promise(async (resolve, reject) => {
         try {
@@ -95,7 +108,7 @@ function ProjectsPage() {
               content,
               author,
               projectType: selectedProjectType,
-              authorImage
+              authorImage,
             }),
           });
 
@@ -283,6 +296,7 @@ function ProjectsPage() {
                               placeholder="Title of my project"
                               required
                               autoComplete="off"
+                              onChange={handleTitleChange}
                             />
 
                             <div className="mt-5 w-60">
@@ -345,7 +359,9 @@ function ProjectsPage() {
                           />
                         </div>
 
-                        <Button type="submit">Submit</Button>
+                        <Button type="submit" disabled={isSubmitDisabled}>
+                          Submit
+                        </Button>
                       </form>
                     </Modal.Body>
                   </Modal>

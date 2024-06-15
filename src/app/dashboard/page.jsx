@@ -112,7 +112,7 @@ function Dashboard() {
     let lastName = formData.get("lastName");
     let profession = formData.get("profession");
     let bio = formData.get("bio");
-    let imageLink = await userData.profile_image
+    let imageLink = await userData.profile_image;
 
     // Verificar si el campo está vacío y reemplazar con el valor del placeholder
     if (!firstName.trim()) {
@@ -353,6 +353,9 @@ function Dashboard() {
                   Welcome {userData?.firstName || ""} {userData?.lastName || ""}{" "}
                   <DarkThemeToggle />
                 </h2>
+                <p className="align-middle self-center text-white/50">
+                  {userData?.email}
+                </p>
               </div>
 
               <div className="grid max-w-2xl mx-auto mt-8">
