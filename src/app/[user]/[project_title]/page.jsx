@@ -51,7 +51,6 @@ function Page() {
   const [showUpEditCommentButton, setShowUpEditCommentButton] = useState(false);
   const [showUploadButton, setShowUploadButton] = useState(false); // Estado para controlar la visibilidad del botón de carga de comentarios
   const [formFilled, setFormFilled] = useState(false);
-  const [items, setItems] = useState(undefined);
   const [reqItems, setReqItems] = useState([]);
 
   const [message, setMessage] = useState("");
@@ -61,6 +60,7 @@ function Page() {
   const [requestFile, setRequestFile] = useState(null);
   const [requestBoxDescription, setRequestBoxDescription] = useState("");
 
+  const [items, setItems] = useState([]);
   const getProject = async () => {
     console.log("last word desde get project", lastWord);
     try {
@@ -162,6 +162,7 @@ function Page() {
       console.error("Error uploading file:", error);
     }
   };
+
   useEffect(() => {
     if (project?.starredBy?.includes(session?.user?.email)) {
       setStarIsClicked(true);

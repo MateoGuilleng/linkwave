@@ -50,16 +50,18 @@ function Page() {
   const [showUpEditCommentButton, setShowUpEditCommentButton] = useState(false);
   const [showUploadButton, setShowUploadButton] = useState(false); // Estado para controlar la visibilidad del botón de carga de comentarios
   const [formFilled, setFormFilled] = useState(false);
-  const [items, setItems] = useState([]);
   const [reqItems, setReqItems] = useState([]);
-
+  
   const [message, setMessage] = useState("");
-
+  
   const [requestBoxTitle, setRequestBoxTitle] = useState("");
   const [requestBoxCategory, setRequestBoxCategory] = useState("");
   const [requestFile, setRequestFile] = useState(null);
   const [requestBoxDescription, setRequestBoxDescription] = useState("");
   const router = useRouter();
+
+  
+  const [items, setItems] = useState([]);
   const getProject = async () => {
     console.log("last word desde get project", lastWord);
     try {
