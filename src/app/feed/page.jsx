@@ -363,7 +363,7 @@ export default function UsersPage() {
             <Tabs.Item title="Settings" icon={HiAdjustments}>
               This is{" "}
               <span className="font-medium text-gray-800 dark:text-white">
-                Settings tab's associated content
+                Settings tabs associated content
               </span>
               . Clicking another tab will toggle the visibility of this one for
               the next. The tab JavaScript swaps classes to control the content
@@ -372,7 +372,7 @@ export default function UsersPage() {
             <Tabs.Item title="Contacts" icon={HiClipboardList}>
               This is{" "}
               <span className="font-medium text-gray-800 dark:text-white">
-                Contacts tab's associated content
+                Contacts tabs associated content
               </span>
               . Clicking another tab will toggle the visibility of this one for
               the next. The tab JavaScript swaps classes to control the content
