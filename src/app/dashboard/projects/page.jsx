@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
 import { FaPlus } from "react-icons/fa";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import {
   HiMenu,
   HiChartPie,
@@ -27,8 +27,8 @@ import {
 function ProjectsPage() {
   const [selectedProjectType, setSelectedProjectType] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const { user, isLoading } = useUser();
   const router = useRouter();
-  const { data: session, status } = useSession();
   const [projects, setProjects] = useState([]);
   const [error, setError] = useState();
   const [isOpen, setIsOpen] = useState(false);
@@ -55,14 +55,14 @@ function ProjectsPage() {
   };
 
   useEffect(() => {
-    if (session?.user?.email) {
+    if (user?.email) {
       fetchData();
     }
-  }, [session]);
+  }, [user]);
 
-  const email = session?.user?.email;
+  const email = user?.email;
   const fetchData = async () => {
-    if (session && session.user && session.user.email) {
+    if (user && user.email) {
       try {
         const response = await fetch(`/api/${email}`);
         const userData = await response.json();
@@ -75,10 +75,10 @@ function ProjectsPage() {
     }
   };
 
-  console.log("user data", userData);
+  console.log("user data", userData?.email);
 
   const handleProjectSubmit = async (e) => {
-    const author = session?.user?.email;
+    const author = user?.email;
 
     e.preventDefault();
 
@@ -136,13 +136,14 @@ function ProjectsPage() {
   };
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (user?.email) {
       getProjects();
     }
-  }, [status]);
+  }, [user]);
 
-  const author = session?.user?.email;
+  console.log(user);
   const getProjects = async () => {
+    const author = await user?.email;
     try {
       const res = await fetch(`/api/project/${author}`, {
         method: "GET",
@@ -161,7 +162,7 @@ function ProjectsPage() {
     }
   };
 
-  if (status === "loading") {
+  if (isLoading) {
     return <p>Loading...</p>;
   }
 
@@ -398,7 +399,7 @@ function ProjectsPage() {
                     </button>
                   ))
                 ) : (
-                  <p>Loading...</p>
+                  <p></p>
                 )}
               </div>
             </div>

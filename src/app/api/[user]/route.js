@@ -1,5 +1,4 @@
 import User from "@/models/user";
-import Project from "@/models/project";
 import connect from "@/utils/db";
 import { NextResponse } from "next/server";
 import project from "@/models/project";
@@ -8,7 +7,7 @@ export const GET = async (request, { params }) => {
   await connect();
 
   const email = params.user;
-  console.log('desde api get', email);
+  console.log("desde api get", email);
 
   try {
     const userFound = await User.findOne({ email: email });
@@ -23,13 +22,15 @@ export const PUT = async (request, { params }) => {
   await connect();
 
   const email = params.user;
-  const { firstName, lastName, profession, bio, imageLink } = await request.json();
+  const { nickName, firstName, lastName, profession, bio, imageLink } =
+    await request.json();
 
   try {
     // Actualizar el usuario en la base de datos
     const user = await User.findOneAndUpdate(
       { email: email },
       {
+        nickName: nickName,
         firstName: firstName,
         lastName: lastName,
         profession: profession,
@@ -51,8 +52,8 @@ export const PUT = async (request, { params }) => {
         $set: {
           "comments.$[elem].authorFN": firstName,
           "comments.$[elem].authorLN": lastName,
-          "comments.$[elem].authorProfileImage": imageLink
-        }
+          "comments.$[elem].authorProfileImage": imageLink,
+        },
       },
       { arrayFilters: [{ "elem.author": email }] }
     );
@@ -69,5 +70,27 @@ export const PUT = async (request, { params }) => {
       console.error("Error:", error);
       return new NextResponse("Internal Server Error", { status: 500 });
     }
+  }
+};
+
+export const POST = async (request, { params }) => {
+  await connect();
+
+  const email = params.user;
+  const { nickName, profile_image } = await request.json();
+
+  try {
+    const newUser = new User({
+      nickName,
+      email,
+      profile_image,
+    });
+
+    await newUser.save();
+    return new NextResponse("User is registered", { status: 201 });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ message: error.message }), {
+      status: 500,
+    });
   }
 };

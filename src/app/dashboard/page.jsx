@@ -1,7 +1,6 @@
 "use client";
-import Link from "next/link";
+
 import { useEffect, useState } from "react";
-import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
@@ -15,7 +14,7 @@ import {
   Sidebar,
   TextInput,
 } from "flowbite-react";
-
+import { useUser } from "@auth0/nextjs-auth0/client";
 import {
   HiOutlineExclamationCircle,
   HiSave,
@@ -31,7 +30,7 @@ function Dashboard() {
   const [openModal, setOpenModal] = useState(false);
   const [picModal, setPicModal] = useState(false);
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { user, isLoading } = useUser();
   const [userData, setUserData] = useState(null);
   const [formFilled, setFormFilled] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -40,17 +39,17 @@ function Dashboard() {
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log(userData);
   const handleClose = () => setIsOpen(false);
-
+  const email = user?.email;
   useEffect(() => {
-    if (session?.user?.email) {
+    if (email) {
       fetchData();
     }
-  }, [session]);
+  }, [user]);
 
-  const email = session?.user?.email;
   const fetchData = async () => {
-    if (session && session.user && session.user.email) {
+    if (user) {
       try {
         const response = await fetch(`/api/${email}`);
         const userData = await response.json();
@@ -107,14 +106,20 @@ function Dashboard() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const email = session?.user?.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
+    const email = user.email;
     let firstName = formData.get("firstName");
     let lastName = formData.get("lastName");
     let profession = formData.get("profession");
+    let nickName = formData.get("nickName");
     let bio = formData.get("bio");
     let imageLink = await userData.profile_image;
 
     // Verificar si el campo está vacío y reemplazar con el valor del placeholder
+    if (!nickName.trim()) {
+      nickName = e.target
+        .querySelector("#nickName")
+        .getAttribute("placeholder");
+    }
     if (!firstName.trim()) {
       firstName = e.target
         .querySelector("#first_name")
@@ -141,6 +146,7 @@ function Dashboard() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
+              nickName,
               firstName,
               lastName,
               profession,
@@ -180,7 +186,7 @@ function Dashboard() {
 
   const handleSaveImage = async (e) => {
     e.preventDefault();
-    const email = session?.user?.email; // Ensure access to the user's email address
+    const email = user.email;
 
     const formImageData = new FormData();
     try {
@@ -208,6 +214,7 @@ function Dashboard() {
               const imageLink = await uploadResult.url;
               console.log(imageLink);
 
+              const nickName = await userData.nickName;
               const firstName = await userData.firstName;
               const lastName = await userData.lastName;
               const profession = await userData.profession;
@@ -216,6 +223,7 @@ function Dashboard() {
               const proyectResponse = await fetch(`/api/${email}`, {
                 method: "PUT",
                 body: JSON.stringify({
+                  nickName,
                   firstName,
                   lastName,
                   profession,
@@ -257,7 +265,7 @@ function Dashboard() {
     }
   };
 
-  if (status === "loading") {
+  if (isLoading) {
     return <p>Loading...</p>;
   }
 
@@ -350,7 +358,7 @@ function Dashboard() {
                   <HiMenu className="w-7 h-7" />{" "}
                 </Button>
                 <h2 className="pl-6 text-2xl font-bold sm:text-xl">
-                  Welcome {userData?.firstName || ""} {userData?.lastName || ""}{" "}
+                  Welcome {userData?.nickName || ""}
                   <DarkThemeToggle />
                 </h2>
                 <p className="align-middle self-center text-white/50">
@@ -486,8 +494,7 @@ function Dashboard() {
                                 color="failure"
                                 onClick={() => {
                                   setOpenModal(false);
-                                  signOut();
-                                  router.replace("/");
+                                  router.push("/api/auth/logout");
                                 }}
                               >
                                 {"Yes, Im sure"}
@@ -582,6 +589,22 @@ function Dashboard() {
                       Edit info:
                     </h2>
                     <div className="flex flex-col items-center w-full mb-2 space-x-0 space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0 sm:mb-6">
+                      <div className="w-full">
+                        <label
+                          htmlFor="nickName"
+                          className="block mb-2 text-sm font-medium text-indigo-900 dark:text-white"
+                        >
+                          Nick Name
+                        </label>
+                        <input
+                          type="text"
+                          name="nickName"
+                          id="nickName"
+                          className="bg-black border border-indigo-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                          placeholder={userData?.nickName || ""}
+                          required=""
+                        />
+                      </div>
                       <div className="w-full">
                         <label
                           htmlFor="first_name"

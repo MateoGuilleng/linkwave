@@ -4,6 +4,10 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
+    nickName:{
+      type: 'string',
+      required: true,
+    },
     firstName: {
       type: String,
       required: false,

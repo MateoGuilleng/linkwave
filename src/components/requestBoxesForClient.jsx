@@ -20,7 +20,7 @@ import {
   Select,
   Textarea,
 } from "flowbite-react";
-import { useSession } from "next-auth/react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 const SortableRequestListReadOnly = ({ items = [], projectName }) => {
   const [currentBoxId, setCurrentBoxId] = useState(null); // Nuevo estado para almacenar el ID del box actualmente editado
@@ -31,7 +31,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
   const [editBoxModal, setEditBoxModal] = useState(false);
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
-  const { data: session, status } = useSession();
+  const {user, isLoading} = useUser()
 
   const handleTitleChange = (e) => setBoxTitle(e.target.value);
   const handleCategoryChange = (e) => setBoxCategory(e.target.value);
@@ -389,7 +389,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
 
         <BoxDescription description={item.description} />
         {message}
-        {session?.user?.email === item?.author && (
+        {user?.email === item?.author && (
           <div>
             <button
               className="hover:border-white bg-green-700 mt-5 p-2 rounded-md"

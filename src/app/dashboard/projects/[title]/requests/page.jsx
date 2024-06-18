@@ -27,7 +27,7 @@ import {
 import { FaArrowLeft, FaPlus } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { SlOptionsVertical } from "react-icons/sl";
-import { useSession } from "next-auth/react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 function Page() {
   const [starIsClicked, setStarIsClicked] = useState(false);
@@ -39,9 +39,9 @@ function Page() {
   const [commentId, setCommentId] = useState();
   const [uploadModal, setUploadModal] = useState(false);
   const [error, setError] = useState();
-  const { data: session, status } = useSession();
+  const {user, isLoading} = useUser()
   const [project, setProject] = useState({});
-  const author = session?.user?.email;
+  const author = user?.email
   const [lastWord, setLastWord] = useState("");
   const [commentText, setCommentText] = useState("");
   const [newComment, setNewComment] = useState("");
@@ -105,14 +105,14 @@ function Page() {
   }, []);
 
   useEffect(() => {
-    if (project?.starredBy?.includes(session?.user?.email)) {
+    if (project?.starredBy?.includes(user?.email)) {
       setStarIsClicked(true);
       setBinaryStar(1);
     } else {
       setStarIsClicked(false);
       setBinaryStar(0);
     }
-  }, [project, session]);
+  }, [project, isLoading]);
 
   const handleStarClick = async () => {
     console.log("loco");
@@ -124,7 +124,7 @@ function Page() {
     console.log("binary Star: ", newBinaryStar, typeof newBinaryStar); //binary Star:  1 number
     console.log("lastWord: ", lastWord, typeof lastWord); // Añade un log para lastWord
 
-    const starredBy = await session?.user?.email;
+    const starredBy = await user?.email;
     try {
       const res = await fetch(`/api/stars/project/${lastWord}`, {
         method: "PUT",
@@ -164,7 +164,7 @@ function Page() {
   };
 
   const handleUploadComment = async (e) => {
-    const author = session?.user?.email;
+    const author = user?.email
     e.preventDefault();
 
     const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
@@ -367,7 +367,7 @@ function Page() {
                                           <strong className="text-md ">
                                             {comment.authorFN}{" "}
                                             {comment.authorLN}{" "}
-                                            {session?.user?.email ==
+                                            {user?.email ==
                                             comment.author
                                               ? "(you)"
                                               : ""}
@@ -445,7 +445,7 @@ function Page() {
                                           </span>
                                         )}
                                       >
-                                        {session?.user?.email ==
+                                        {user?.email ==
                                         comment.author ? (
                                           <div>
                                             <Dropdown.Item>

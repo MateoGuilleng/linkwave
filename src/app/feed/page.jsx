@@ -8,7 +8,7 @@ import { MdDashboard } from "react-icons/md";
 import { MdAnnouncement } from "react-icons/md";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import { useSession } from "next-auth/react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import {
   HiArchive,
   HiPaperClip,
@@ -27,7 +27,7 @@ export default function UsersPage() {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(""); // Estado para la categoría seleccionada
-  const { data: session } = useSession();
+  const { user, isLoading } = useUser();
 
   useEffect(() => {
     fetch("api/project")
@@ -55,7 +55,7 @@ export default function UsersPage() {
   return (
     <div>
       <Navbar using={"feed"} />
-      {!session?.user && ( // Mostrar el Banner solo si no hay sesión activa
+      {!user && ( // Mostrar el Banner solo si no hay sesión activa
         <Banner>
           <div className="flex w-full justify-between border-b border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-700">
             <div className="mx-auto flex items-center">

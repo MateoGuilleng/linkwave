@@ -1,8 +1,6 @@
 import project from "@/models/project";
 import connect from "@/utils/db";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 
 export const POST = async (request) => {
   const { title, description, content, author, projectType, authorImage } =
@@ -23,7 +21,7 @@ export const POST = async (request) => {
     author,
     projectType,
     stars,
-    authorImage
+    authorImage,
   });
 
   try {
@@ -39,8 +37,6 @@ export const GET = async (request, res) => {
     await connect();
 
     console.log(request.HeadersList);
-
-    const data = await getServerSession(authOptions);
 
     let projects = await project.find();
 

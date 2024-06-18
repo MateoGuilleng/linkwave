@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { getServerSession } from "next-auth";
-import SessionProvider from "@/utils/SessionProvider";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { Footer } from "flowbite-react";
 import {
   BsDribbble,
@@ -38,7 +38,7 @@ export default async function RootLayout({ children }) {
         ></script>
       </head>
       <body className={inter.className}>
-        <SessionProvider session={session}>{children}</SessionProvider>
+        <UserProvider>{children}</UserProvider>
         <Footer className="mt-20 ">
           <div className="w-full bg-black border-t-2">
             <div className="grid w-full grid-cols-2 gap-8 px-6 py-8 md:grid-cols-4">
@@ -90,7 +90,13 @@ export default async function RootLayout({ children }) {
             </div>
           </div>
         </Footer>
-        <Toaster richColors position="bottom-center" theme="system" closeButton visibleToasts={2}/>
+        <Toaster
+          richColors
+          position="bottom-center"
+          theme="system"
+          closeButton
+          visibleToasts={2}
+        />
       </body>
     </html>
   );

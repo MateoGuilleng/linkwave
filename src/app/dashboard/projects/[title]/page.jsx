@@ -15,25 +15,11 @@ import {
 
 import { formatDistanceToNow } from "date-fns";
 
-import {
-  FaArrowLeft,
-  FaPlus,
-  FaWindowClose,
-  FaFile,
-  FaInfo,
-  FaFilePdf,
-  FaFileImage,
-  FaFileVideo,
-  FaFileAudio,
-  FaSave,
-  FaEdit,
-  FaFileWord,
-  FaFileCode,
-} from "react-icons/fa";
+import { FaArrowLeft, FaPlus, FaSave, FaEdit, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 import { SlOptionsVertical } from "react-icons/sl";
-import { useSession } from "next-auth/react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 import {
   Label,
@@ -42,17 +28,14 @@ import {
   FileInput,
   Button,
   Modal,
-  DropdownLabel,
   Dropdown,
   Select,
-  Radio,
-  Checkbox,
   Textarea,
 } from "flowbite-react";
 
 function Page() {
   const [editModal, setEditModal] = useState(false);
-
+  const { user, isLoading } = useUser();
   const [openModal, setOpenModal] = useState(false);
   const [starIsClicked, setStarIsClicked] = useState(false);
   const [uploadModal, setUploadModal] = useState(false);
@@ -60,11 +43,11 @@ function Page() {
   const [archivo, setArchivo] = useState(null);
   const [newComment, setNewComment] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
-  const { data: session, status } = useSession();
+
   const [lastWord, setLastWord] = useState("");
   const [project, setProject] = useState({});
   const [openCommentEditModal, setOpenCommentEditModal] = useState(false);
-  const author = session?.user?.email;
+  const author = user?.email;
   const [error, setError] = useState("");
   const [formFilled, setFormFilled] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -324,7 +307,7 @@ function Page() {
     console.log(selectedProjectType);
   };
   const handleUploadComment = async (e) => {
-    const author = session?.user?.email;
+    const author = user?.email;
     e.preventDefault();
 
     const formData = new FormData(e.target.closest("form")); // Access the closest form element to the event trigger
@@ -384,7 +367,7 @@ function Page() {
     console.log("binary Star: ", newBinaryStar, typeof newBinaryStar); //binary Star:  1 number
     console.log("lastWord: ", lastWord, typeof lastWord); // Añade un log para lastWord
 
-    const starredBy = await session?.user?.email;
+    const starredBy = await user?.email;
     try {
       const res = await fetch(`/api/stars/project/${lastWord}`, {
         method: "PUT",
@@ -408,8 +391,6 @@ function Page() {
 
   const handleSaveImage = async (e) => {
     e.preventDefault();
-    const email = session?.user?.email; // Ensure you have access to the user's email
-
     const formImageData = new FormData();
 
     const promise = () =>
@@ -496,7 +477,7 @@ function Page() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const email = session.user.email; // Asegúrate de tener acceso a la dirección de correo electrónico del usuario
+
     let title = formData.get("title");
     let description = formData.get("description");
     let content = formData.get("content");
@@ -619,7 +600,6 @@ function Page() {
   };
 
   const handleDelete = async () => {
-    console.log("lol");
     try {
       const res = await fetch(`/api/project/specificProject/${lastWord}`, {
         method: "DELETE",
@@ -627,13 +607,25 @@ function Page() {
           "Content-Type": "application/json",
         },
       });
-      if (res.ok) {
-        router.back();
-      } else {
-        console.error("Failed to fetch projects:", res.statusText);
-      }
+
+      const promise = () =>
+        new Promise((resolve, reject) => {
+          if (res.ok) {
+            router.replace("/dashboard/projects");
+            resolve();
+          } else {
+            console.error("Failed to delete project:", res.statusText);
+            reject(new Error("Failed to delete project"));
+          }
+        });
+
+      toast.promise(promise(), {
+        loading: "Deleting project...",
+        success: "Project deleted successfully",
+        error: "Failed to delete project",
+      });
     } catch (error) {
-      console.error("Error fetching projects:", error.message);
+      console.error("Error deleting project:", error.message);
     }
   };
 
@@ -996,8 +988,7 @@ function Page() {
                                           <strong className="text-md ">
                                             {comment.authorFN}{" "}
                                             {comment.authorLN}{" "}
-                                            {session?.user?.email ==
-                                            comment.author
+                                            {user?.email == comment.author
                                               ? "(you)"
                                               : ""}
                                           </strong>{" "}
@@ -1074,8 +1065,7 @@ function Page() {
                                           </span>
                                         )}
                                       >
-                                        {session?.user?.email ==
-                                        comment.author ? (
+                                        {user?.email == comment.author ? (
                                           <div>
                                             <Dropdown.Item>
                                               Copy Link
@@ -1298,8 +1288,15 @@ function Page() {
             </a>
 
             <button
-              onClick={handleDelete}
               className="flex items-center px-3 py-2.5 font-semibold hover:border-2 hover:rounded-full border-red-950  "
+              onClick={() => {
+                toast.warning("Are you sure you want to delete this proyect? If you confirm, changes will not be able to undo!", {
+                  action: {
+                    label: "Confirm Delete",
+                    onClick: () => handleDelete(),
+                  },
+                });
+              }}
             >
               delete project
             </button>
