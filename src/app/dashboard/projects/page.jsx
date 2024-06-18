@@ -392,7 +392,7 @@ function ProjectsPage() {
                         <h5 className="text-2xl font-bold tracking-tight lg:text-xl lg:pt-0 text-gray-900 dark:text-white">
                           {project.title}
                         </h5>
-                        <p className="font-normal text-gray-700 lg:pb-10 dark:text-gray-400">
+                        <p className="font-normal text-gray-700 lg:pb-10 dark:text-gray-400 ">
                           {project.description}
                         </p>
                       </Card>
