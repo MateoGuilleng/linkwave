@@ -3,9 +3,8 @@ import next from "next";
 import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
-const port = 5000;
-// when using middleware `hostname` and `port` must be provided below
+const hostname = dev ? "localhost" : "0.0.0.0";
+const port = process.env.PORT || 5000; // Usar el puerto de la variable de entorno o 5000
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
@@ -13,13 +12,17 @@ app.prepare().then(() => {
   const httpServer = createServer(handler);
 
   const io = new Server(httpServer, {
+    cors: {
+      origin: dev ? "http://localhost:3000" : "https://tu-dominio.com", // Configurar el origen permitido
+      methods: ["GET", "POST"],
+    },
     connectionStateRecovery: {},
   });
 
   io.on("connection", (socket) => {
     console.log(`Client connected: ${socket.id}`);
 
-     // Emitimos el socket.id al cliente cuando se conecta
+    // Emitimos el socket.id al cliente cuando se conecta
     socket.emit("client_id", socket.id);
 
     socket.on("chat message", (msg) => {
@@ -37,12 +40,12 @@ app.prepare().then(() => {
     });
   });
 
-  httpServer
-    .once("error", (err) => {
-      console.error(err);
-      process.exit(1);
-    })
-    .listen(port, () => {
-      console.log(`> Ready on http://${hostname}:${port}`);
-    });
+  httpServer.once("error", (err) => {
+    console.error(err);
+    process.exit(1);
+  });
+
+  httpServer.listen(port, () => {
+    console.log(`> Ready on http://${hostname}:${port}`);
+  });
 });
