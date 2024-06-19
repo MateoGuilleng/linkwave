@@ -1,56 +1,52 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import { useSession } from "next-auth/react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { FaTwitter, FaLinkedin, FaGithub } from "react-icons/fa";
 import { Button } from "flowbite-react";
 import ProjectCard from "@/components/ProjectCard";
 
 export default function Page() {
-  const { data: session, status } = useSession();
-  const [userData, setUserData] = useState();
-  const [userProjects, setUserProjects] = useState();
+  const { user, isLoading } = useUser();
+  const [userData, setUserData] = useState(null);
+  const [userProjects, setUserProjects] = useState([]);
   const [lastWord, setLastWord] = useState();
 
-  console.log(userProjects);
-  const fetchData = async () => {
-    if (session && session.user && session.user.email) {
-      try {
-        const response = await fetch(`/api/${lastWord}`);
-        const userData = await response.json();
-        setUserData(userData);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user && lastWord) {
+        try {
+          const response = await fetch(`/api/${lastWord}`);
+          const userData = await response.json();
+          setUserData(userData);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
       }
-    } else {
-      console.error("Session or user is null or undefined.");
-    }
 
-    try {
-      const response = await fetch(`/api/project/${lastWord}`);
-      const userProjects = await response.json();
-      setUserProjects(userProjects);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  if (userData == null) {
+      try {
+        const response = await fetch(`/api/project/${lastWord}`);
+        const userProjects = await response.json();
+        setUserProjects(userProjects);
+      } catch (error) {
+        console.error("Error fetching user projects:", error);
+      }
+    };
+
     fetchData();
-  }
+  }, [user, lastWord]);
 
   useEffect(() => {
     const currentPath = window.location.pathname;
     const pathParts = currentPath.split("/");
     const last = pathParts.filter((part) => part.trim() !== "").pop() || "";
-    setLastWord(last);
     console.log(last);
+    setLastWord(last);
   }, []);
 
-  useEffect(() => {
-    if (session?.user?.email) {
-      fetchData();
-    }
-  }, [session]);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="bg-gray-100 dark:bg-black min-h-screen">

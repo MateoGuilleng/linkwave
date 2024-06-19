@@ -690,7 +690,7 @@ function Page() {
                 ) : (
                   <SortableListReadOnly
                     items={items}
-                    projectName={project.title}
+                    projectName={project?.title}
                   />
                 )}
               </div>
