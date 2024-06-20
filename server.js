@@ -6,11 +6,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const dev = process.env.NODE_ENV !== "production";
-console.log(process.env.NODE_ENV); // undefined
-const hostname = dev ? "localhost" : undefined;
-const port = process.env.PORT || "5000";
+const hostname = "localhost";
+const port = process.env.PORT || 3000; // Usar puerto 3000 para desarrollo
+
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
+
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
