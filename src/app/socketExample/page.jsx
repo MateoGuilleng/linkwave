@@ -1,14 +1,15 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { socket } from "@/socket";
 
 const Chat = () => {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]);
+  const [room, setRoom] = useState("");
   const [isConnected, setIsConnected] = useState(false);
-  const [transport, setTransport] = useState("N/A");
-  const [clientId, setClientId] = useState(""); // Estado para almacenar el socket.id
+  const [clientId, setClientId] = useState("");
+  const [joinedRoom, setJoinedRoom] = useState(false); // Estado para controlar si se ha unido a una sala
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     if (socket.connected) {
@@ -17,16 +18,13 @@ const Chat = () => {
 
     function onConnect() {
       setIsConnected(true);
-      setTransport(socket.io.engine.transport.name);
-
-      socket.io.engine.on("upgrade", (transport) => {
-        setTransport(transport.name);
+      socket.on("client_id", (id) => {
+        setClientId(id);
       });
     }
 
     function onDisconnect() {
       setIsConnected(false);
-      setTransport("N/A");
     }
 
     socket.on("connect", onConnect);
@@ -39,53 +37,130 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("client_id", (id) => {
-      setClientId(id);
+    socket.on("chat_message", (msg) => {
+      setMessages((prevMessages) => [...prevMessages, msg]);
     });
-    socket.on("chat message", (data) => {
-      // Agregamos el mensaje al estado de mensajes
+
+    socket.on("message", (msg) => {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { id: data.id, message: data.message },
+        { id: "system", message: msg },
       ]);
-      window.scrollTo(0, document.body.scrollHeight);
     });
 
     return () => {
-      socket.off("chat message");
+      socket.off("chat_message");
+      socket.off("message");
     };
-  }, [socket]);
+  }, []);
+
+  const handleJoinRoom = (e) => {
+    e.preventDefault();
+    if (room) {
+      socket.emit("join_room", room);
+      setJoinedRoom(true); // Marcar como unido a la sala
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { id: "system", message: `You have joined the room: ${room}` },
+      ]);
+    }
+  };
+
+  const handleLeaveRoom = (e) => {
+    e.preventDefault();
+    if (room) {
+      socket.emit("leave_room", room);
+      setJoinedRoom(false); // Marcar como no unido a ninguna sala
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { id: "system", message: `You have left the room: ${room}` },
+      ]);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (inputValue) {
-      socket.emit("chat message", inputValue);
+    if (inputValue && room) {
+      socket.emit("chat_message", { room, message: inputValue });
       setInputValue("");
     }
   };
 
   return (
-    <div>
-      <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-      <p>Transport: {transport}</p>
+    <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-gray-800 shadow-lg rounded-lg p-6">
+        <div className="mb-4 text-white">
+          <p className="text-xl font-bold">
+            Status: {isConnected ? "Connected" : "Disconnected"}
+          </p>
+          <p>Client ID: {clientId}</p>
+        </div>
 
-      <ul id="messages">
-        {messages.map((msg, index) => (
-          <li key={index}>
-            {msg.id === clientId ? "Me: " : `${msg.id}: `}
-            {msg.message}
-          </li>
-        ))}
-      </ul>
-      <form id="form" onSubmit={handleSubmit}>
-        <input
-          className="text-black"
-          id="input"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
-        <button type="submit">Send</button>
-      </form>
+        <form onSubmit={handleJoinRoom} className="mb-4">
+          <div className="flex space-x-2">
+            <input
+              className="flex-grow p-2 border rounded text-black"
+              value={room}
+              onChange={(e) => setRoom(e.target.value)}
+              placeholder="Room name"
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white p-2 rounded"
+            >
+              Join Room
+            </button>
+          </div>
+        </form>
+
+        <form onSubmit={handleLeaveRoom} className="mb-4">
+          <button
+            type="submit"
+            className="bg-red-600 text-white p-2 w-full rounded"
+            disabled={!joinedRoom} // Deshabilitar si no se ha unido a ninguna sala
+          >
+            Leave Room
+          </button>
+        </form>
+
+        <ul className="mb-4 max-h-64 overflow-y-auto bg-gray-700 p-4 rounded shadow-inner">
+          {messages.map((msg, index) => (
+            <li
+              key={index}
+              className={`p-2 my-2 rounded ${
+                msg.id === "system"
+                  ? "bg-yellow-600 text-white"
+                  : msg.id === clientId
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-600 text-white"
+              }`}
+            >
+              {msg.id !== "system" && (
+                <strong>{msg.id === clientId ? "You" : msg.id}: </strong>
+              )}
+              {msg.message}
+            </li>
+          ))}
+          <div ref={messagesEndRef} />
+        </ul>
+
+        <form onSubmit={handleSubmit}>
+          <div className="flex space-x-2">
+            <input
+              className="flex-grow p-2 border rounded text-black"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Type your message"
+            />
+            <button
+              type="submit"
+              className="bg-green-600 text-white p-2 rounded"
+            >
+              Send
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

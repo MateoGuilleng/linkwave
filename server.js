@@ -3,8 +3,8 @@ import next from "next";
 import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = dev ? "localhost" : "0.0.0.0";
-const port = process.env.PORT || 5000; // Usar el puerto de la variable de entorno o 5000
+const hostname = "localhost";
+const port = 5000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
@@ -12,37 +12,37 @@ app.prepare().then(() => {
   const httpServer = createServer(handler);
 
   const io = new Server(httpServer, {
-    cors: {
-      origin: dev ? "http://localhost:3000" : "https://tu-dominio.com", // Configurar el origen permitido
-      methods: ["GET", "POST"],
-    },
     connectionStateRecovery: {},
   });
 
   io.on("connection", (socket) => {
     console.log(`Client connected: ${socket.id}`);
 
-    // Emitimos el socket.id al cliente cuando se conecta
+    // Emit the socket.id to the client when connected
     socket.emit("client_id", socket.id);
 
-    socket.on("chat message", (msg) => {
-      io.emit("chat message", { id: socket.id, message: msg });
+    socket.on("join_room", (room) => {
+      socket.join(room);
+      console.log(`Socket ${socket.id} joined room ${room}`);
+      socket
+        .to(room)
+        .emit("message", `${socket.id} has joined the room ${room}`);
     });
 
-    socket.on("hello", (message, callback) => {
-      console.log(`Received message from client: ${message}`);
-      socket.emit("responseEvent", "Hello client, this is the server!");
-      io.emit("sendmsg", "world");
+    socket.on("leave_room", (room) => {
+      socket.leave(room);
+      console.log(`Socket ${socket.id} left room ${room}`);
+      socket.to(room).emit("message", `${socket.id} has left the room ${room}`);
+    });
+
+    socket.on("chat_message", (data) => {
+      const { room, message } = data;
+      io.to(room).emit("chat_message", { id: socket.id, message });
     });
 
     socket.on("disconnect", () => {
       console.log(`Client disconnected: ${socket.id}`);
     });
-  });
-
-  httpServer.once("error", (err) => {
-    console.error(err);
-    process.exit(1);
   });
 
   httpServer.listen(port, () => {
