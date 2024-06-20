@@ -1,15 +1,20 @@
 import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
-const port = 5000;
+console.log(process.env.NODE_ENV); // undefined
+const hostname = dev ? "localhost" : undefined;
+const port = process.env.PORT || "5000";
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
+  console.log(process.env.NODE_ENV); //develompent
 
   const io = new Server(httpServer, {
     connectionStateRecovery: {},
