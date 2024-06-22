@@ -39,29 +39,17 @@ function Navbar({ using }) {
                   feed
                 </Link>
               </li>
+
               <li>
                 <Link
-                  className={`hover:text-fuchsia-500 transition-colors text-xs sm:text-base ${
+                  className={`hover:text-fuchsia-500 border-2 p-2 hover:border-fuchsia-500 transition-colors text-xs sm:text-base px-3 py-1 rounded  ${
                     use == "dashboard"
                       ? "border-b-4 hover:border-fuchsia-500"
                       : "text-white"
                   }`}
                   href="/dashboard"
                 >
-                  dashboard
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  className={`hover:text-fuchsia-500 border-2 p-2 hover:border-fuchsia-500 transition-colors text-xs sm:text-base px-3 py-1 rounded  ${
-                    use == "projects"
-                      ? "border-b-4 hover:border-fuchsia-500"
-                      : "text-white"
-                  }`}
-                  href="/dashboard/projects"
-                >
-                  projects
+                  Dashboard
                 </Link>
               </li>
             </ul>

@@ -2,27 +2,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import CustomAside from "@/components/SideBarPC";
+import CustomDrawer from "@/components/sideBar";
 import { FaPlus } from "react-icons/fa";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import {
-  HiMenu,
-  HiChartPie,
-  HiLogin,
-  HiPencil,
-  HiSearch,
-  HiUsers,
-} from "react-icons/hi";
 import Navbar from "@/components/Navbar";
-import {
-  Modal,
-  Label,
-  TextInput,
-  Card,
-  Select,
-  Sidebar,
-  Button,
-  Drawer,
-} from "flowbite-react";
+import { Modal, Label, TextInput, Card, Select, Button } from "flowbite-react";
 
 function ProjectsPage() {
   const [selectedProjectType, setSelectedProjectType] = useState("");
@@ -30,8 +15,7 @@ function ProjectsPage() {
   const { user, isLoading } = useUser();
   const router = useRouter();
   const [projects, setProjects] = useState([]);
-  const [error, setError] = useState();
-  const [isOpen, setIsOpen] = useState(false);
+
   const [userData, setUserData] = useState(null);
   const [title, setTitle] = useState("");
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
@@ -46,8 +30,6 @@ function ProjectsPage() {
     }
     setTitle(value);
   };
-
-  const handleClose = () => setIsOpen(false);
 
   const handleProjectTypeChange = (e) => {
     setSelectedProjectType(e.target.value);
@@ -89,7 +71,6 @@ function ProjectsPage() {
     const content = formData.get("content");
 
     if (!title || !content) {
-      setError("Title and content are required");
       toast.error("Title and content are required");
       return;
     }
@@ -113,17 +94,14 @@ function ProjectsPage() {
           });
 
           if (res.status === 400) {
-            setError("The name of the project is already in use");
             reject(new Error("The name of the project is already in use"));
           } else if (res.status === 200) {
-            setError("");
             router.push(`/dashboard/projects/${encodeURIComponent(title)}`);
             resolve();
           } else {
             reject(new Error("Failed to submit project"));
           }
         } catch (error) {
-          setError("Something went wrong, try again");
           reject(error);
         }
       });
@@ -166,99 +144,18 @@ function ProjectsPage() {
     return <p>Loading...</p>;
   }
 
-  function onCloseModal() {
-    setOpenModal(false);
-  }
-
   return (
     <div>
-      <>
-        <Drawer open={isOpen} onClose={handleClose}>
-          <Drawer.Header title="MENU" titleIcon={() => <></>} />
-          <Drawer.Items>
-            <Sidebar
-              aria-label="Sidebar with multi-level dropdown example"
-              className="[&>div]:bg-transparent [&>div]:p-0"
-            >
-              <div className="flex h-full flex-col justify-between py-2">
-                <div>
-                  <form className="pb-3 md:hidden">
-                    <TextInput
-                      icon={HiSearch}
-                      type="search"
-                      placeholder="Search"
-                      required
-                      size={32}
-                    />
-                  </form>
-                  <Sidebar.Items>
-                    <Sidebar.ItemGroup>
-                      <Sidebar.Item href="/dashboard" icon={HiChartPie}>
-                        Dashboard
-                      </Sidebar.Item>
-                      <Sidebar.Item href="/dashboard/projects" icon={HiPencil}>
-                        Projects
-                      </Sidebar.Item>
-                      <Sidebar.Item href="/users/list" icon={HiUsers}>
-                        Account Settings
-                      </Sidebar.Item>
-                      <Sidebar.Item
-                        href="/authentication/sign-in"
-                        icon={HiLogin}
-                      >
-                        Notifications
-                      </Sidebar.Item>
-                    </Sidebar.ItemGroup>
-                  </Sidebar.Items>
-                </div>
-              </div>
-            </Sidebar>
-          </Drawer.Items>
-        </Drawer>
-      </>
       <Navbar using={"projects"} />
 
       <div className="bg-black w-full flex flex-col gap-5 sm:px-5 md:px-10 md:flex-row text-[#ffffff]">
-        <aside className="hidden w-full max-w-2xs py-4 md:w-1/3 lg:w-1/4 md:block">
-          <div className="sticky flex flex-col gap-2 p-4 text-sm border-r border-indigo-100 top-12">
-            <h2 className="pl-3 mb-4 text-2xl font-semibold">Settings</h2>
-            <a
-              href="/dashboard"
-              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full"
-            >
-              Dashboard
-            </a>
-            <a
-              href=""
-              className="flex items-center px-3 py-2.5 font-bold bg-slate-200 text-black border rounded-full"
-            >
-              Projects
-            </a>
-            <a
-              href="account"
-              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full"
-            >
-              Account Settings
-            </a>
-            <a
-              href="notifications"
-              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full"
-            >
-              Notifications
-            </a>
-          </div>
-        </aside>
+        <CustomAside />
 
         <main className="w-screen min-h-screen py-1 md:w-2/3 lg:w-3/4">
           <div className="md:p-4 mr-2">
             <div className="w-full px-6 pb-8 mt-8 sm:rounded-lg">
               <div className="flex justify-between mb-10 w-full">
-                <Button
-                  className="md:hidden visible"
-                  onClick={() => setIsOpen(true)}
-                >
-                  <HiMenu className="w-7 h-7" />
-                </Button>
+                <CustomDrawer />
                 <h2 className="pl-3 mb-4 text-xl sm:text-2xl font-semibold">
                   Your projects:
                 </h2>

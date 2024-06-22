@@ -12,10 +12,11 @@ import {
   remove,
   get,
 } from "firebase/database";
-import { Button, TextInput, Dropdown, Tooltip } from "flowbite-react";
+import { Button, TextInput, Dropdown, Tooltip, Sidebar, Drawer } from "flowbite-react";
 import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import { FaQuestionCircle } from "react-icons/fa";
+import { HiMenu, HiSearch, HiChartPie, HiPencil, HiUsers, HiLogin } from "react-icons/hi";
 
 import moment from "moment";
 
@@ -33,9 +34,13 @@ function ChatPage() {
   const [chats, setChats] = useState([]);
   const [editingMessage, setEditingMessage] = useState(false);
   const [editMessageContent, setEditMessageContent] = useState("");
+
+  const [isOpen, setIsOpen] = useState(false);
   console.log(participant);
 
   console.log(chatId);
+
+  const handleClose = () => setIsOpen(false);
 
   const router = useRouter();
   useEffect(() => {
@@ -206,8 +211,52 @@ function ChatPage() {
   return (
     <div>
       <Navbar />
+      <>
+        <Drawer open={isOpen} onClose={handleClose}>
+          <Drawer.Header title="MENU" titleIcon={() => <></>} />
+          <Drawer.Items>
+            <Sidebar
+              aria-label="Sidebar with multi-level dropdown example"
+              className="[&>div]:bg-transparent [&>div]:p-0"
+            >
+              <div className="flex h-full flex-col justify-between py-2">
+                <div>
+                  <form className="pb-3 md:hidden">
+                    <TextInput
+                      icon={HiSearch}
+                      type="search"
+                      placeholder="Search"
+                      required
+                      size={32}
+                    />
+                  </form>
+                  <Sidebar.Items>
+                    <Sidebar.ItemGroup>
+                      <Sidebar.Item href="/dashboard" icon={HiChartPie}>
+                        Dashboard
+                      </Sidebar.Item>
+                      <Sidebar.Item href="/dashboard/projects" icon={HiPencil}>
+                        Projects
+                      </Sidebar.Item>
+                      <Sidebar.Item href="/dashboard/chats" icon={HiUsers}>
+                        Chats
+                      </Sidebar.Item>
+                      <Sidebar.Item
+                        href="/authentication/sign-in"
+                        icon={HiLogin}
+                      >
+                        Notifications
+                      </Sidebar.Item>
+                    </Sidebar.ItemGroup>
+                  </Sidebar.Items>
+                </div>
+              </div>
+            </Sidebar>
+          </Drawer.Items>
+        </Drawer>
+      </>
       <div className="flex h-screen">
-        <div className="w-3/12 sticky bg-black p-4 overflow-y-auto">
+        <div className="w-3/12 hidden md:block bg-black p-4 overflow-y-auto">
           <h2 className="text-xl font-bold text-white mb-4">Chats:</h2>
           {userData?.chats.map((chat, index) => (
             <div
@@ -216,14 +265,26 @@ function ChatPage() {
               className="cursor-pointer p-2 mb-2 bg-gray-700 text-white rounded hover:bg-gray-600"
             >
               <div className="flex items-center">
-                <p className="mb-1 text-sm font-semibold">
-                  Nickname: {chat.chatWithNickName}
-                </p>
-                <Tooltip content="The nickname here will not be changed even if the user changes them" style="dark">
-                  <Button><FaQuestionCircle/></Button>
+                <div className="mb-1 text-sm font-semibold flex md:flex-nowrap flex-wrap">
+                  <p className="mr-3">Nickname:</p>
+                  <p className="md:text-sm text-xs ml-0">
+                    {chat.chatWithNickName}
+                  </p>
+                </div>
+                <Tooltip
+                  content="The nickname here will not be changed even if the user changes them"
+                  style="dark"
+                >
+                  <Button>
+                    <FaQuestionCircle />
+                  </Button>
                 </Tooltip>
               </div>
-              <p className="mb-1 text-sm">Email: {chat.chatWithEmail}</p>
+              <p className="mb-1 text-sm ">
+                <p className="sm:text-sm text-3xs w-fit font-bold">
+                  {chat.chatWithEmail}
+                </p>
+              </p>
               <p className="mb-1 text-2xs text-white/50">
                 Chat ID: {chat.chatId}
               </p>
@@ -231,17 +292,24 @@ function ChatPage() {
           ))}
         </div>
 
-        <div className="flex-1 w-7/12 flex flex-col h-full p-4 border-l-2 text-white">
+        <div className="flex-1 w-7/12 flex flex-col h-full p-4 border-2 rounded-lg md:border-l-2 text-white">
           <div className="bg-black p-4 text-center flex items-center">
+            <Button
+              className="md:hidden visible"
+              onClick={() => setIsOpen(true)}
+            >
+              {" "}
+              <HiMenu className="w-7 h-7" />{" "}
+            </Button>
             <img
               src={participantData?.profile_image}
               alt={`${participantData?.firstName} ${participantData?.lastName}`}
               className="w-16 h-16 ml-2 rounded-full object-cover border-4 border-gray-300 dark:border-gray-600"
             />
-            <div className="text-2xl font-bold ml-5">
-              <div className="flex gap-5 items-center">
+            <div className="md:text-2xl text-sm font-bold ml-5">
+              <div className="flex gap-5 items-center flex-wrap">
                 Chatting with:{" "}
-                <p className="ml-2">{participantData?.nickName} </p>{" "}
+                <p className="md:ml-2 text-xl">{participantData?.nickName} </p>{" "}
                 <p className="text-white/50 text-xs">{participant}</p>
               </div>
             </div>

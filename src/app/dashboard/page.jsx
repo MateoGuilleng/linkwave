@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import CustomAside from "@/components/SideBarPC";
 import { toast } from "sonner";
+import CustomDrawer from "@/components/sideBar";
 import Navbar from "@/components/Navbar";
 import {
   Button,
@@ -10,21 +12,9 @@ import {
   Label,
   FileInput,
   DarkThemeToggle,
-  Drawer,
-  Sidebar,
-  TextInput,
 } from "flowbite-react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import {
-  HiOutlineExclamationCircle,
-  HiSave,
-  HiMenu,
-  HiChartPie,
-  HiLogin,
-  HiPencil,
-  HiSearch,
-  HiUsers,
-} from "react-icons/hi";
+import { HiOutlineExclamationCircle, HiSave } from "react-icons/hi";
 
 function Dashboard() {
   const [openModal, setOpenModal] = useState(false);
@@ -33,14 +23,12 @@ function Dashboard() {
   const { user, isLoading } = useUser();
   const [userData, setUserData] = useState(null);
   const [formFilled, setFormFilled] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [archivo, setArchivo] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
 
   console.log(userData);
-  const handleClose = () => setIsOpen(false);
+
   const email = user?.email;
   useEffect(() => {
     if (email) {
@@ -272,98 +260,25 @@ function Dashboard() {
   return (
     <div>
       <Navbar using={"dashboard"} />
-      <>
-        <Drawer open={isOpen} onClose={handleClose}>
-          <Drawer.Header title="MENU" titleIcon={() => <></>} />
-          <Drawer.Items>
-            <Sidebar
-              aria-label="Sidebar with multi-level dropdown example"
-              className="[&>div]:bg-transparent [&>div]:p-0"
-            >
-              <div className="flex h-full flex-col justify-between py-2">
-                <div>
-                  <form className="pb-3 md:hidden">
-                    <TextInput
-                      icon={HiSearch}
-                      type="search"
-                      placeholder="Search"
-                      required
-                      size={32}
-                    />
-                  </form>
-                  <Sidebar.Items>
-                    <Sidebar.ItemGroup>
-                      <Sidebar.Item href="/dashboard" icon={HiChartPie}>
-                        Dashboard
-                      </Sidebar.Item>
-                      <Sidebar.Item href="/dashboard/projects" icon={HiPencil}>
-                        Projects
-                      </Sidebar.Item>
-                      <Sidebar.Item href="/users/list" icon={HiUsers}>
-                        Account Settings
-                      </Sidebar.Item>
-                      <Sidebar.Item
-                        href="/authentication/sign-in"
-                        icon={HiLogin}
-                      >
-                        Notifications
-                      </Sidebar.Item>
-                    </Sidebar.ItemGroup>
-                  </Sidebar.Items>
-                </div>
-              </div>
-            </Sidebar>
-          </Drawer.Items>
-        </Drawer>
-      </>
+
       <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
-        <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">
-          <div className="sticky flex flex-col gap-2 p-4 text-sm border-r border-indigo-100 top-12">
-            <h2 className="pl-3 mb-4 text-2xl font-semibold">Settings</h2>
-            <a
-              href="/dashboard"
-              className="flex items-center px-3 py-2.5 font-bol bg-slate-200  text-black border rounded-full"
-            >
-              Dashboard
-            </a>
-            <a
-              href="dashboard/projects/"
-              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
-            >
-              Projects
-            </a>
-            <a
-              href="dashboard/account"
-              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full"
-            >
-              Account Settings
-            </a>
-            <a
-              href="dashboard/notifications"
-              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
-            >
-              Notifications
-            </a>
-          </div>
-        </aside>
+        <CustomAside />
         <main className="w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
           <div className="p-2 md:p-4">
             <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
-              <div className="flex">
-                <Button
-                  className="md:hidden visible"
-                  onClick={() => setIsOpen(true)}
-                >
-                  {" "}
-                  <HiMenu className="w-7 h-7" />{" "}
-                </Button>
-                <h2 className="pl-6 text-2xl font-bold sm:text-xl">
-                  Welcome {userData?.nickName || ""}
-                  <DarkThemeToggle />
-                </h2>
-                <p className="align-middle self-center text-white/50">
-                  {userData?.email}
-                </p>
+              <div className="flex flex-wrap justify-center">
+                <div className="flex items-center mb-10 w-full">
+                  <CustomDrawer />
+                  <div className="sm:text-center">
+                    <h2 className="pl-6 text-2xl font-bold sm:text-xl">
+                      Welcome {userData?.nickName || ""}
+                      <DarkThemeToggle />
+                    </h2>
+                    <p className="align-middle self-center text-white/50">
+                      {userData?.email}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <div className="grid max-w-2xl mx-auto mt-8">
