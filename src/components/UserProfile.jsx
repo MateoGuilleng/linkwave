@@ -15,10 +15,10 @@ const UserProfile = ({ user }) => {
           />
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {user.firstName} {user.lastName}
+              {user.nickName}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {user.profession}
+              Profession: {user.profession}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {user.email}

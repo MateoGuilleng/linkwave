@@ -323,42 +323,7 @@ export default function UsersPage() {
                   </Link>
                 ))}
               </div>
-              <h2 className="pl-3 mb-4 text-2xl font-semibold m-10">
-                Featured users:
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 m-10">
-                {users.map((user) => (
-                  <Link
-                    key={user._id}
-                    href={`/${user.email}`}
-                    className="block"
-                  >
-                    <div className="relative rounded-lg overflow-hidden hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300 ease-in-out shadow-md bg-white dark:bg-gray-800 p-6">
-                      <div className="flex items-center space-x-4">
-                        <img
-                          src={user.profile_image}
-                          alt={`${user.firstName} ${user.lastName}`}
-                          className="w-16 h-16 rounded-full object-cover"
-                        />
-                        <div>
-                          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            {user.firstName} {user.lastName}
-                          </h2>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {user.profession}
-                          </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {user.email}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="mt-4 text-gray-700 dark:text-gray-300">
-                        Bio: {user.bio}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+            
             </Tabs.Item>
             <Tabs.Item title="Settings" icon={HiAdjustments}>
               This is{" "}

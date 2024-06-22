@@ -39,6 +39,10 @@ const userSchema = new Schema(
     socialProfiles: {
       type: Array,
       required: false,
+    },
+    chats: {
+      type: Array,
+      required: false,
     }
   },
   { timestamps: true }
