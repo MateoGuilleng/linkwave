@@ -12,11 +12,26 @@ import {
   remove,
   get,
 } from "firebase/database";
-import { Button, TextInput, Dropdown, Tooltip, Sidebar, Drawer } from "flowbite-react";
+import {
+  Button,
+  TextInput,
+  Dropdown,
+  Tooltip,
+  Sidebar,
+  Drawer,
+} from "flowbite-react";
 import Navbar from "@/components/Navbar";
+import CustomChatDrawer from "@/components/sideBarChats";
 import { useRouter } from "next/navigation";
 import { FaQuestionCircle } from "react-icons/fa";
-import { HiMenu, HiSearch, HiChartPie, HiPencil, HiUsers, HiLogin } from "react-icons/hi";
+import {
+  HiMenu,
+  HiSearch,
+  HiChartPie,
+  HiPencil,
+  HiUsers,
+  HiLogin,
+} from "react-icons/hi";
 
 import moment from "moment";
 
@@ -62,6 +77,7 @@ function ChatPage() {
           const response = await fetch(`/api/${user}`);
           const userData = await response.json();
           setUserData(userData);
+          setChats(userData.chats);
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -133,18 +149,8 @@ function ChatPage() {
             }
           });
 
-          const userChatsRef = ref(db, `users/${userRes._id}/chats`);
-          const unsubscribeChats = onValue(userChatsRef, (snapshot) => {
-            if (snapshot.exists()) {
-              setChats(Object.values(snapshot.val()));
-            } else {
-              setChats([]);
-            }
-          });
-
           return () => {
             unsubscribeMessages();
-            unsubscribeChats();
           };
         } catch (error) {
           console.error("Error fetching user data or chat messages:", error);
@@ -211,96 +217,18 @@ function ChatPage() {
   return (
     <div>
       <Navbar />
-      <>
-        <Drawer open={isOpen} onClose={handleClose}>
-          <Drawer.Header title="MENU" titleIcon={() => <></>} />
-          <Drawer.Items>
-            <Sidebar
-              aria-label="Sidebar with multi-level dropdown example"
-              className="[&>div]:bg-transparent [&>div]:p-0"
-            >
-              <div className="flex h-full flex-col justify-between py-2">
-                <div>
-                  <form className="pb-3 md:hidden">
-                    <TextInput
-                      icon={HiSearch}
-                      type="search"
-                      placeholder="Search"
-                      required
-                      size={32}
-                    />
-                  </form>
-                  <Sidebar.Items>
-                    <Sidebar.ItemGroup>
-                      <Sidebar.Item href="/dashboard" icon={HiChartPie}>
-                        Dashboard
-                      </Sidebar.Item>
-                      <Sidebar.Item href="/dashboard/projects" icon={HiPencil}>
-                        Projects
-                      </Sidebar.Item>
-                      <Sidebar.Item href="/dashboard/chats" icon={HiUsers}>
-                        Chats
-                      </Sidebar.Item>
-                      <Sidebar.Item
-                        href="/authentication/sign-in"
-                        icon={HiLogin}
-                      >
-                        Notifications
-                      </Sidebar.Item>
-                    </Sidebar.ItemGroup>
-                  </Sidebar.Items>
-                </div>
-              </div>
-            </Sidebar>
-          </Drawer.Items>
-        </Drawer>
-      </>
+
       <div className="flex h-screen">
         <div className="w-3/12 hidden md:block bg-black p-4 overflow-y-auto">
           <h2 className="text-xl font-bold text-white mb-4">Chats:</h2>
-          {userData?.chats.map((chat, index) => (
-            <div
-              key={index}
-              onClick={() => handleChatClick(chat.chatId)}
-              className="cursor-pointer p-2 mb-2 bg-gray-700 text-white rounded hover:bg-gray-600"
-            >
-              <div className="flex items-center">
-                <div className="mb-1 text-sm font-semibold flex md:flex-nowrap flex-wrap">
-                  <p className="mr-3">Nickname:</p>
-                  <p className="md:text-sm text-xs ml-0">
-                    {chat.chatWithNickName}
-                  </p>
-                </div>
-                <Tooltip
-                  content="The nickname here will not be changed even if the user changes them"
-                  style="dark"
-                >
-                  <Button>
-                    <FaQuestionCircle />
-                  </Button>
-                </Tooltip>
-              </div>
-              <p className="mb-1 text-sm ">
-                <p className="sm:text-sm text-3xs w-fit font-bold">
-                  {chat.chatWithEmail}
-                </p>
-              </p>
-              <p className="mb-1 text-2xs text-white/50">
-                Chat ID: {chat.chatId}
-              </p>
-            </div>
-          ))}
+          
         </div>
 
         <div className="flex-1 w-7/12 flex flex-col h-full p-4 border-2 rounded-lg md:border-l-2 text-white">
           <div className="bg-black p-4 text-center flex items-center">
-            <Button
-              className="md:hidden visible"
-              onClick={() => setIsOpen(true)}
-            >
-              {" "}
-              <HiMenu className="w-7 h-7" />{" "}
-            </Button>
+            <span className="text-left">
+              <CustomChatDrawer chats={chats} />
+            </span>
             <img
               src={participantData?.profile_image}
               alt={`${participantData?.firstName} ${participantData?.lastName}`}
