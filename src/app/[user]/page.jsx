@@ -5,7 +5,13 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { FaTwitter, FaLinkedin, FaGithub } from "react-icons/fa";
+import {
+  FaTwitter,
+  FaLinkedin,
+  FaGithub,
+  FaFacebook,
+  FaInstagram,
+} from "react-icons/fa";
 import { ref, set } from "firebase/database";
 import { db } from "@/config/firebase";
 import { Button } from "flowbite-react";
@@ -21,6 +27,14 @@ export default function Page() {
   const [lastWord, setLastWord] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const iconMap = {
+    Facebook: <FaFacebook size={24} />,
+    Twitter: <FaTwitter size={24} />,
+    Instagram: <FaInstagram size={24} />,
+    LinkedIn: <FaLinkedin size={24} />,
+    GitHub: <FaGithub size={24} />,
+  };
 
   console.log("lastword", userData);
   console.log("sessionUserData", sessionUserData);
@@ -52,8 +66,6 @@ export default function Page() {
       // If no existing chat, generate a new chat ID
       if (!chatId) {
         chatId = uuidv4();
-
-        
       } else {
         router.push(`${user.email}/chats/${chatId}`);
       }
@@ -251,34 +263,28 @@ export default function Page() {
             <p className="text-gray-500 dark:text-gray-300 mt-2">
               {userData?.email}
             </p>
-            <div className="flex space-x-4 mt-4">
-              <a
-                href={`https://twitter.com/${userData?.twitter}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-              >
-                <FaTwitter size={24} />
-              </a>
-              <a
-                href={`https://linkedin.com/in/${userData?.linkedin}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-              >
-                <FaLinkedin size={24} />
-              </a>
-              <a
-                href={`https://github.com/${userData?.github}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
-              >
-                <FaGithub size={24} />
-              </a>
+            <div className="grid grid-cols-1 mt-3 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {userData?.socialProfiles?.map((profile, index) => (
+                <button
+                  key={index}
+                  className="p-4 border rounded-lg shadow-md bg-black"
+                  onClick={()=> router.push(`${profile.url}`)}
+                >
+                  <div className="flex items-center space-x-4">
+                    {iconMap[profile.social]}
+                    <h3 className="text-xl font-semibold text-white">
+                      {profile.social}
+                    </h3>
+                  </div>
+                  <p className="text-2xs text-white break-words">
+                    {profile.url}
+                  </p>
+                </button>
+              ))}
             </div>
+
             <p className="text-gray-800 dark:text-gray-200 mt-4">
-              {userData?.bio}
+              Bio: {userData?.bio}
             </p>
           </div>
         </div>

@@ -221,7 +221,38 @@ function ChatPage() {
       <div className="flex h-screen">
         <div className="w-3/12 hidden md:block bg-black p-4 overflow-y-auto">
           <h2 className="text-xl font-bold text-white mb-4">Chats:</h2>
-          
+          {userData?.chats.map((chat, index) => (
+            <div
+              key={index}
+              onClick={() => handleChatClick(chat.chatId)}
+              className="cursor-pointer p-2 mb-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+            >
+              <div className="flex items-center">
+                <div className="mb-1 text-sm font-semibold flex md:flex-nowrap flex-wrap">
+                  <p className="mr-3">Nickname:</p>
+                  <p className="md:text-sm text-xs ml-0">
+                    {chat.chatWithNickName}
+                  </p>
+                </div>
+                <Tooltip
+                  content="The nickname here will not be changed even if the user changes them"
+                  style="dark"
+                >
+                  <Button>
+                    <FaQuestionCircle />
+                  </Button>
+                </Tooltip>
+              </div>
+              <p className="mb-1 text-sm ">
+                <p className="sm:text-sm text-3xs w-fit font-bold">
+                  {chat.chatWithEmail}
+                </p>
+              </p>
+              <p className="mb-1 text-2xs text-white/50">
+                Chat ID: {chat.chatId}
+              </p>
+            </div>
+          ))}
         </div>
 
         <div className="flex-1 w-7/12 flex flex-col h-full p-4 border-2 rounded-lg md:border-l-2 text-white">

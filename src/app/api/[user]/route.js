@@ -16,6 +16,7 @@ export const PUT = async (request, { params }) => {
     profession,
     bio,
     imageLink,
+    socialProfile,
   } = await request.json();
 
   try {
@@ -27,8 +28,10 @@ export const PUT = async (request, { params }) => {
     if (profession !== undefined) updateData.profession = profession;
     if (bio !== undefined) updateData.bio = bio;
     if (imageLink !== undefined) updateData.profile_image = imageLink;
-
-
+    // Si hay un socialProfile, lo agregamos al array socialProfiles
+    if (socialProfile !== undefined) {
+      updateData.$push = { socialProfiles: socialProfile };
+    }
 
     // Actualizar el usuario en la base de datos
     const updatedUser = await User.findOneAndUpdate(
@@ -64,6 +67,18 @@ export const PUT = async (request, { params }) => {
           },
         },
         { arrayFilters: [{ "elem.author": email }] }
+      );
+    }
+
+    // Actualizar el authorImage en los proyectos
+    if (imageLink !== undefined) {
+      await project.updateMany(
+        { author: email },
+        {
+          $set: {
+            authorImage: imageLink,
+          },
+        }
       );
     }
 

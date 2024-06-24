@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import SocialProfilesList from "@/components/SocialProfilesList";
+import ModalSocial from "@/components/ModalSocial";
+import {
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedin,
+  FaGithub,
+} from "react-icons/fa";
 import CustomAside from "@/components/SideBarPC";
 import { toast } from "sonner";
 import CustomDrawer from "@/components/sideBar";
@@ -26,8 +35,17 @@ function Dashboard() {
   const [archivo, setArchivo] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedSocial, setSelectedSocial] = useState(null);
 
   console.log(userData);
+
+  const openSocialModal = (social) => {
+    setSelectedSocial(social);
+  };
+
+  const closeSocialModal = () => {
+    setSelectedSocial(null);
+  };
 
   const email = user?.email;
   useEffect(() => {
@@ -600,7 +618,55 @@ function Dashboard() {
                       </button>
                     </div>
                   </div>
+                  <div className="mb-6">
+                    <h3 className="text-lg font-bold mb-4 text-white">
+                      Add accounts to your profile:
+                    </h3>
+                    <div className="flex space-x-4">
+                      <button
+                        type="button"
+                        onClick={() => openSocialModal("Facebook")}
+                      >
+                        <FaFacebook className="text-blue-600 text-3xl" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openSocialModal("Twitter")}
+                      >
+                        <FaTwitter className="text-blue-400 text-3xl" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openSocialModal("Instagram")}
+                      >
+                        <FaInstagram className="text-pink-500 text-3xl" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openSocialModal("LinkedIn")}
+                      >
+                        <FaLinkedin className="text-blue-700 text-3xl" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openSocialModal("GitHub")}
+                      >
+                        <FaGithub className="text-gray-800 text-3xl" />
+                      </button>
+                    </div>
+                  </div>
+                  {selectedSocial && (
+                    <ModalSocial
+                      social={selectedSocial}
+                      onClose={closeSocialModal}
+                    />
+                  )}
                 </form>
+                <div>
+                  <SocialProfilesList
+                    socialProfiles={userData?.socialProfiles} userEmail={user?.email}
+                  />
+                </div>
               </div>
             </div>
           </div>
