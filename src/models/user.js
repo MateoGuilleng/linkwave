@@ -4,8 +4,8 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    nickName:{
-      type: 'string',
+    nickName: {
+      type: "string",
       required: true,
     },
     firstName: {
@@ -41,6 +41,18 @@ const userSchema = new Schema(
       required: false,
     },
     chats: {
+      type: Array,
+      required: false,
+    },
+    following: {
+      type: Array,
+      required: false,
+    },
+    followers: {
+      type: Array,
+      required: false,
+    },
+    followingProjects: {
       type: Array,
       required: false,
     }

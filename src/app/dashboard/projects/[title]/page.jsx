@@ -854,25 +854,9 @@ function Page() {
                     <div className="flex items-center w-full gap-5 my-5 text-lg">
                       <div className="border-2 text-sm sm:text-lg rounded-lg w-full items-center flex p-3">
                         <div>Stars: {project?.stars}</div>
-                        <button
-                          className="w-9 h-9 ml-2 align-middle self-end"
-                          onClick={handleStarClick}
-                        >
-                          {starIsClicked ? (
-                            <HiStar className="" />
-                          ) : (
-                            <HiOutlineStar />
-                          )}
-                        </button>
                       </div>
                       <div className="border-2 text-sm sm:text-lg rounded-lg w-full items-center flex p-3">
                         <div>Following: {project?.stars}</div>
-                        <button
-                          className="w-9 h-9 ml-2 align-middle"
-                          onClick={handleStarClick}
-                        >
-                          {starIsClicked ? <HiStar /> : <HiOutlineStar />}
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -1290,12 +1274,15 @@ function Page() {
             <button
               className="flex items-center px-3 py-2.5 font-semibold hover:border-2 hover:rounded-full border-red-950  "
               onClick={() => {
-                toast.warning("Are you sure you want to delete this proyect? If you confirm, changes will not be able to undo!", {
-                  action: {
-                    label: "Confirm Delete",
-                    onClick: () => handleDelete(),
-                  },
-                });
+                toast.warning(
+                  "Are you sure you want to delete this proyect? If you confirm, changes will not be able to undo!",
+                  {
+                    action: {
+                      label: "Confirm Delete",
+                      onClick: () => handleDelete(),
+                    },
+                  }
+                );
               }}
             >
               delete project

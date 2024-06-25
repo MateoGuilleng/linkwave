@@ -5,6 +5,8 @@ import { useState } from "react";
 import {
   HiChartPie,
   HiClipboard,
+  HiLink,
+  HiUserCircle,
   HiCollection,
   HiInformationCircle,
   HiLogin,
@@ -15,7 +17,7 @@ import {
   HiUsers,
 } from "react-icons/hi";
 
-function CustomDrawerFeed() {
+function CustomDrawerFeed({ followingUsers, followingProjects }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClose = () => setIsOpen(false);
@@ -58,11 +60,37 @@ function CustomDrawerFeed() {
                     </Sidebar.Item>
                   </Sidebar.ItemGroup>
                   <Sidebar.ItemGroup>
-                    <Sidebar.Item href="/docs">
-                      Following projects:
-                    </Sidebar.Item>
+                    <Sidebar.Item>Following projects:</Sidebar.Item>
 
-                    <Sidebar.Item href="/contact">Users:</Sidebar.Item>
+                    <ul className="mt-2">
+                      {followingProjects?.map((followingProject) => (
+                        <div className="flex gap-2 items-center ml-5">
+                          <HiLink />
+                          <a
+                            className="sm:hover:border-b-2 sm:border-b-0 border-b-2"
+                            href={`${followingProject?.author}/${followingProject?.title}`}
+                          >
+                            {" "}
+                            {followingProject.title}
+                          </a>
+                        </div>
+                      ))}
+                    </ul>
+                    <Sidebar.Item>Following users: </Sidebar.Item>
+                    <ul className="mt-2">
+                      {followingUsers?.map((followingUser) => (
+                        <div className="flex gap-2 items-center ml-5">
+                          <HiUserCircle />{" "}
+                          <a
+                            className="sm:hover:border-b-2 sm:border-b-0 border-b-2"
+                            href={`${followingUser}`}
+                          >
+                            {" "}
+                            {followingUser}
+                          </a>
+                        </div>
+                      ))}
+                    </ul>
                   </Sidebar.ItemGroup>
                 </Sidebar.Items>
               </div>

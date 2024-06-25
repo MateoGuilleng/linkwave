@@ -5,9 +5,9 @@ import { Banner, Tabs, Dropdown, TextInput, Button } from "flowbite-react";
 import UserProfile from "@/components/UserProfile";
 import ProjectCard from "@/components/ProjectCard";
 import { MdDashboard, MdAnnouncement } from "react-icons/md";
-import CustomAside from "@/components/SideBarPC";
+
 import CustomDrawerFeed from "@/components/sideBarFeed";
-import CustomDrawer from "@/components/sideBar";
+
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { useUser } from "@auth0/nextjs-auth0/client";
@@ -27,6 +27,41 @@ export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const { user, isLoading } = useUser();
+  const [userData, setUserData] = useState(null);
+  const [userFollowingProjects, setUserFollowingProjects] = useState(null);
+
+  console.log(userData);
+
+  const email = user?.email;
+  useEffect(() => {
+    if (email) {
+      fetchData();
+    }
+  }, [user]);
+
+  console.log(userFollowingProjects);
+
+  const fetchData = async () => {
+    if (user) {
+      try {
+        const response = await fetch(`/api/${email}`);
+        const userData = await response.json();
+        setUserData(userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+
+      try {
+        const response = await fetch(`/api/${email}/projects`);
+        const userFollowingProjects = await response.json();
+        setUserFollowingProjects(userFollowingProjects);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    } else {
+      console.error("Session or user is null or undefined.");
+    }
+  };
 
   useEffect(() => {
     fetch("api/project")
@@ -84,7 +119,7 @@ export default function UsersPage() {
       <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-8 lg:px-12 text-white">
         <div className="w-full md:w-9/12">
           <div className="flex my-10 gap-3">
-          <CustomDrawerFeed />
+            <CustomDrawerFeed followingUsers={userData?.following} followingProjects={userFollowingProjects?.projects} />
             <Dropdown
               label="Filter"
               className="dark:bg-black border-2 border-white/35"
@@ -196,7 +231,7 @@ export default function UsersPage() {
 
           <div className="flex max-w-full gap-6 overflow-x-scroll pb-6">
             {users.map((user) => (
-              <UserProfile key={user._id} user={user} />
+              <UserProfile key={user._id} userData={user} />
             ))}
           </div>
         </div>

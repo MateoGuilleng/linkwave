@@ -47,6 +47,14 @@ const projectSchema = new Schema(
       type: Array,
       required: false,
     },
+    followers: {
+      type: Number,
+      required: false,
+    },
+    followBy: {
+      type: Array,
+      required: false,
+    },
     files: {
       type: Array,
       required: false,
@@ -58,7 +66,7 @@ const projectSchema = new Schema(
     requestBoxes: {
       type: Array,
       required: false,
-    }
+    },
   },
   { timestamps: true }
 );

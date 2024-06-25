@@ -8,6 +8,7 @@ export const POST = async (request) => {
 
   await connect();
   const stars = 0;
+  const followers = 0
   const existingProject = await project.findOne({ title });
 
   if (existingProject) {
@@ -21,6 +22,7 @@ export const POST = async (request) => {
     author,
     projectType,
     stars,
+    followers,
     authorImage,
   });
 

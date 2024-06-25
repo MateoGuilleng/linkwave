@@ -5,10 +5,6 @@ import { formatDistanceToNow } from "date-fns";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 
-// http://localhost:3000/mmateoguillen@gmail.com/qaws%20asd
-// http://localhost:3000/dashboard/projects/qaws%20asd
-
-import SortableListReadOnly from "@/components/boxesForClient";
 import SortableRequestListReadOnly from "@/components/requestBoxesForClient";
 
 import {
@@ -38,7 +34,7 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 function Page() {
   const [starIsClicked, setStarIsClicked] = useState(false);
   const [binaryStar, setBinaryStar] = useState(0);
-  const [followIsClicked, setFollowIsClick] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [openCommentEditModal, setOpenCommentEditModal] = useState(false);
 
@@ -62,17 +58,21 @@ function Page() {
   const [requestBoxCategory, setRequestBoxCategory] = useState("");
   const [requestFile, setRequestFile] = useState(null);
   const [requestBoxDescription, setRequestBoxDescription] = useState("");
+  const router = useRouter();
 
   const [items, setItems] = useState([]);
   const getProject = async () => {
     console.log("last word desde get project", lastWord);
     try {
-      const res = await fetch(`/api/project/specificProject/${lastWord}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await fetch(
+        `/api/project/specificProject/${encodeURIComponent(lastWord)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (res.ok) {
         const data = await res.json();
         console.log("data", data);
@@ -100,9 +100,17 @@ function Page() {
 
   useEffect(() => {
     const currentPath = window.location.pathname;
-    const pathParts = currentPath.split("/");
-    const last = pathParts.filter((part) => part.trim() !== "").pop() || "";
-    setLastWord(last);
+    const pathParts = currentPath
+      .split("/")
+      .filter((part) => part.trim() !== "");
+
+    // Obtener la penúltima palabra
+    const penultimateWord =
+      pathParts.length >= 2 ? pathParts[pathParts.length - 2] : "";
+
+    // Establecer el estado lastWord con la penúltima palabra
+    setLastWord(decodeURIComponent(penultimateWord));
+    console.log("last word", lastWord);
   }, []);
 
   const handleRequestTitleChange = (e) => {
@@ -113,7 +121,7 @@ function Page() {
     setRequestBoxCategory(e.target.value);
   };
   const handleRequestFileChange = (e) => {
-    setRequestFile(e.target.value);
+    setRequestFile(e.target.files[0]);
   };
 
   const handleRequestBoxDescriptionChange = (e) => {
@@ -122,45 +130,63 @@ function Page() {
 
   const handleRequestBoxSubmit = async (e) => {
     e.preventDefault();
+    const author = await project.author;
 
+    console.log("author", author);
     const formData = new FormData();
     formData.append("file", requestFile);
+    formData.append("author", author);
     formData.append("projectID", project._id);
     formData.append("title", requestBoxTitle);
     formData.append("category", requestBoxCategory);
     formData.append("description", requestBoxDescription);
 
-    try {
-      const response = await fetch("/api/boxes/request/uploadRequest", {
-        method: "POST",
-        body: formData,
+    const promise = () =>
+      new Promise(async (resolve, reject) => {
+        try {
+          const response = await fetch("/api/boxes/request/uploadRequest", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+          if (response.ok) {
+            console.log("File uploaded successfully", result);
+
+            toast.success("Box uploaded successfully", result);
+
+            const newBox = {
+              id: result.fileId,
+              title: requestBoxTitle,
+              category: requestBoxCategory,
+              description: requestBoxDescription,
+              filename: result.filename,
+              filetype: result.filetype,
+            };
+            setBoxInfo(newBox);
+            setItems((prevItems) => {
+              const updatedItems = [...prevItems, newBox];
+              console.log("Updated items:", updatedItems);
+              return updatedItems;
+            });
+
+            resolve({ filename: result.filename });
+          } else {
+            console.error("Error uploading file:", result);
+            reject(new Error("Error uploading file"));
+          }
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          reject(error);
+        }
       });
 
-      const result = await response.json();
-      if (response.ok) {
-        console.log("File uploaded successfully", result);
-        setMessage("Box uploaded successfully");
-
-        const newBox = {
-          id: result.fileId,
-          title: boxTitle,
-          category: boxCategory,
-          description: boxDescription,
-          filename: result.filename,
-          filetype: result.filetype,
-        };
-        setBoxInfo(newBox);
-        setItems((prevItems) => {
-          const updatedItems = [...prevItems, newBox];
-          console.log("Updated items:", updatedItems);
-          return updatedItems;
-        });
-      } else {
-        console.error("Error uploading file:", result);
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
+    toast.promise(promise(), {
+      loading: "Uploading...",
+      success: (data) => {
+        return `File uploaded successfully: ${data.filename}`;
+      },
+    });
   };
 
   useEffect(() => {
@@ -172,80 +198,6 @@ function Page() {
       setBinaryStar(0);
     }
   }, [project, isLoading]);
-
-  useEffect(() => {
-    if (project?.followBy?.includes(user?.email)) {
-      setFollowIsClick(true);
-    } else {
-      setFollowIsClick(false);
-    }
-  }, [project, isLoading]);
-
-  const handleStarClick = async () => {
-    console.log("loco");
-    const newStarIsClicked = !starIsClicked;
-    setStarIsClicked(newStarIsClicked); // Cambia el estado de clicado a no clicado y viceversa
-
-    const newBinaryStar = newStarIsClicked ? 1 : 0;
-
-    console.log("binary Star: ", newBinaryStar, typeof newBinaryStar); //binary Star:  1 number
-    console.log("lastWord: ", lastWord, typeof lastWord); // Añade un log para lastWord
-
-    const starredBy = await user?.email;
-    try {
-      const res = await fetch(`/api/stars/project/${lastWord}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          binaryStar: newBinaryStar,
-          starredBy,
-        }),
-      });
-
-      if (res.status === 200) {
-        setError("");
-      } else {
-        setError("Failed to update the star status");
-        console.log("Response status: ", res.status);
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
-  };
-
-  const handleFollowClick = async () => {
-    console.log("loca");
-    const newFollowingIsClicked = !followIsClicked;
-    setFollowIsClick(newFollowingIsClicked); // Cambia el estado de clicado a no clicado y viceversa
-
-    const binaryFollow = newFollowingIsClicked ? 1 : 0;
-
-    console.log("binary Star: ", binaryFollow, typeof binaryFollow); //binary Star:  1 number
-    console.log("lastWord: ", lastWord, typeof lastWord); // Añade un log para lastWord
-
-    const followBy = await user.email;
-    try {
-      const res = await fetch(`/api/project/follows/${lastWord}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          binaryFollow: binaryFollow,
-          followBy,
-        }),
-      });
-
-      if (res.status === 200) {
-        setError("");
-      } else {
-        setError("Failed to update the follow status");
-        console.log("Response status: ", res.status);
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
-  };
-
-  const router = useRouter();
 
   const formatCreatedAt = (createdAt) => {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
@@ -266,140 +218,91 @@ function Page() {
     const author = user?.email;
     e.preventDefault();
 
-    const formData = new FormData(e.target.closest("form")); // Access the closest form element to the event trigger
+    const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
 
     const comment = formData.get("comment");
-
-    const promise = () =>
-      new Promise(async (resolve, reject) => {
-        try {
-          const res = await fetch(`/api/project/specificProject/${lastWord}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              comment,
-              author,
-            }),
-          });
-
-          if (res.status === 200) {
-            setError("");
-            window.location.reload(); // Reload the page after successful comment upload (consider using React state update instead)
-            const { comments } = await res.json();
-            console.log("Comment added successfully!");
-            console.log("Comments:", comments);
-
-            resolve({ comment });
-          } else {
-            setError("Something went wrong, try again");
-            console.log("Error adding comment:", res.statusText);
-            reject(new Error("Error adding comment"));
-          }
-        } catch (error) {
-          setError("Something went wrong, try again");
-          console.error("Error adding comment:", error);
-          reject(error);
+    try {
+      const res = await fetch(
+        `/api/project/specificProject/${encodeURIComponent(lastWord)}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            comment,
+            author,
+          }),
         }
-      });
+      );
 
-    toast.promise(promise(), {
-      loading: "Uploading comment...",
-      success: (data) => {
-        return `Comment added successfully: ${data.comment}`;
-      },
-      error: "Error adding comment",
-    });
+      if (res.status === 200) {
+        setError("");
+        window.location.reload();
+        const { comments } = await res.json();
+        console.log("¡Comentario agregado con éxito!");
+        console.log("Comentarios:", comments);
+      }
+    } catch (error) {
+      setError("Something went wrong, try again");
+      console.log(error);
+    }
   };
 
   const handleDeleteComment = async () => {
     console.log(commentId);
-
-    const promise = () =>
-      new Promise(async (resolve, reject) => {
-        try {
-          const res = await fetch(`/api/comments/${lastWord}`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              commentId,
-            }),
-          });
-
-          if (res.ok) {
-            console.log("Comment deleted successfully");
-            // Optionally, update your local state or UI after deletion
-            window.location.reload(); // Reload the page after successful comment deletion (consider using React state update instead)
-            resolve();
-          } else {
-            console.error("Failed to delete comment:", res.statusText);
-            reject(new Error("Failed to delete comment"));
-          }
-        } catch (error) {
-          console.error("Error deleting comment:", error.message);
-          reject(error);
-        }
+    try {
+      const res = await fetch(`/api/comments/${encodeURIComponent(lastWord)}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          commentId,
+        }),
       });
-
-    toast.promise(promise(), {
-      loading: "Deleting comment...",
-      success: "Comment deleted successfully",
-      error: "Failed to delete comment",
-    });
+      if (res.ok) {
+        // Redirige a la misma página para refrescar
+        window.location.reload();
+      } else {
+        console.error("Failed to delete comment:", res.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error.message);
+    }
   };
 
   const handleUploadEditComment = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.target.closest("form")); // Access the closest form element to the event trigger
+    const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
 
     const newComment = formData.get("newComment");
 
-    const promise = () =>
-      new Promise(async (resolve, reject) => {
-        try {
-          const res = await fetch(`/api/comments/${lastWord}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              commentId,
-              newComment,
-            }),
-          });
-
-          if (res.ok) {
-            setError("");
-
-            const { comments } = await res.json();
-            console.log("Comment updated successfully!");
-            console.log("Comments:", comments);
-            window.location.reload(); // Reload the page after successful comment update (consider using React state update instead)
-
-            resolve({ comment: newComment });
-          } else {
-            setError("Something went wrong, try again");
-            console.log("Error updating comment:", res.statusText);
-            reject(new Error("Error updating comment"));
-          }
-        } catch (error) {
-          setError("Something went wrong, try again");
-          console.error("Error updating comment:", error);
-          reject(error);
-        }
+    try {
+      const res = await fetch(`/api/comments/${encodeURIComponent(lastWord)}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          commentId,
+          newComment,
+        }),
       });
 
-    toast.promise(promise(), {
-      loading: "Updating comment...",
-      success: (data) => {
-        return `Comment updated successfully: ${data.comment}`;
-      },
-      error: "Error updating comment",
-    });
+      if (res.ok) {
+        setError("");
+
+        const { comments } = await res.json();
+        console.log("¡Comentario agregado con éxito!");
+        console.log("Comentarios:", comments);
+        window.location.reload();
+      }
+    } catch (error) {
+      setError("Something went wrong, try again");
+      console.log(error);
+    }
   };
 
   const projectComments = project?.comments;
@@ -409,11 +312,6 @@ function Page() {
 
       <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
         <div className="w-full">
-          <img
-            className="object-cover w-full h-72 p-1 ring-2 ring-indigo-300 dark:ring-indigo-500"
-            src={project?.banner}
-            alt="Bordered avatar"
-          />
           <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
             <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
               <div className="flex flex-wrap sm:w-full">
@@ -424,53 +322,11 @@ function Page() {
                         <FaArrowLeft />{" "}
                       </button>{" "}
                       <h2 className="sm:text-4xl sm:w-fit align-middle">
-                        {project?.title}
-                      </h2>{" "}
+                        People: {project?.title}
+                      </h2>
                     </div>
-                    <div className="flex items-center w-full gap-5 my-5 text-lg">
-                      <div className="border-2 text-sm sm:text-lg rounded-lg w-full items-center flex p-3">
-                        <div>Stars: {project?.stars}</div>
-                        <button
-                          className="w-9 h-9 ml-2 align-middle self-end"
-                          onClick={handleStarClick}
-                        >
-                          {starIsClicked ? (
-                            <HiStar className="" />
-                          ) : (
-                            <HiOutlineStar />
-                          )}
-                        </button>
-                      </div>
-                      <div className="border-2 text-sm sm:text-lg rounded-lg w-full items-center flex p-3">
-                        <div>Following: {project?.followers}</div>
-                        <button
-                          className="w-9 h-9 ml-2 align-middle"
-                          onClick={handleFollowClick}
-                        >
-                          {followIsClicked ? <HiStar /> : <HiOutlineStar />}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <p className="text-lg mr-4">Author:</p>
-                    <img
-                      src={project?.authorImage}
-                      alt={`${project?.author}'s profile`}
-                      className="w-10 h-10 mr-4 rounded-full object-cover"
-                    />
-                    <a
-                      className="text-sm border-b-2 sm:text-xl "
-                      href={`/${project?.author}`}
-                    >
-                      {" "}
-                      {project?.author}{" "}
-                    </a>
                   </div>
                 </div>
-                <h3 className="text-gray-400 text-xl mt-4 sm:mt-5 sm:order-first">
-                  Description: {project?.description}{" "}
-                </h3>
               </div>
             </div>
           </div>
@@ -478,7 +334,11 @@ function Page() {
           <main className="m-10 mt-0">
             <div className="">
               <Button.Group className="flex-wrap">
-                <Button>
+                <Button
+                  onClick={() =>
+                    router.replace(`/${project.author}/${project.title}`)
+                  }
+                >
                   <HiUserCircle className="mr-3 h-4 w-4" />
                   Overview
                 </Button>
@@ -693,11 +553,7 @@ function Page() {
                   </Modal>
                 </>
 
-                <Button
-                  className=""
-                  color=""
-                  onClick={() => router.push(`${lastWord}/requests`)}
-                >
+                <Button className="" color="" onClick={() => router.refresh()}>
                   <HiAdjustments className="mr-3 h-4 w-4" />
                   Requests
                 </Button>
@@ -705,7 +561,11 @@ function Page() {
                   <Button
                     color=""
                     onClick={() =>
-                      router.push(`/dashboard/projects/${project?.title}`)
+                      router.push(
+                        `/dashboard/projects/${encodeURIComponent(
+                          project?.title
+                        )}`
+                      )
                     }
                   >
                     <HiAdjustments className="mr-3 h-4 w-4" />
@@ -716,123 +576,28 @@ function Page() {
                 )}
               </Button.Group>
             </div>
-
-            <div className="m-10"> {project?.content}</div>
+            <div className="flex items-center gap-5 mb-5">
+              <h1 className="text-2xl font-bold">Owner: </h1>{" "}
+              <a className="hover:border-b-2" href={`${project.author}`}>{project?.author}</a>
+            </div>
             <div className="flex">
-              <h1 className="text-2xl font-bold">Boxes:</h1>
-            </div>
-            <div className="App text-black w-full ">
-              <div className="w-full">
-                {items?.length == 0 ? (
-                  "There are no boxes in the list"
-                ) : (
-                  <SortableListReadOnly
-                    items={items}
-                    projectName={project?.title}
-                  />
-                )}
-              </div>
-            </div>
-
-            <>
-              <Modal
-                className="bg-black/75"
-                show={uploadModal}
-                onClose={() => setUploadModal(false)}
-              >
-                <Modal.Header>Upload Request:</Modal.Header>
-                <Modal.Body>
-                  <form onSubmit={handleRequestBoxSubmit}>
-                    <div className="overflow-y-auto max-h-[70vh]">
-                      <div className="flex gap-10">
-                        <div className="mt-5 w-full ">
-                          <div className="mb-2 block">
-                            <Label htmlFor="Title" value="Title (optional)" />
-                          </div>
-                          <TextInput
-                            id="Title"
-                            type="Title"
-                            placeholder="Title of the box"
-                            name="title"
-                            autoComplete="off"
-                            onChange={handleRequestTitleChange}
-                          />
-                        </div>
-                        <div className="w-full">
-                          <div className="mb-2 mt-6  block">
-                            <Label htmlFor="Category" value="Category:" />
-                          </div>
-                          <Select
-                            id="type"
-                            type="type"
-                            required
-                            name="category"
-                            onChange={handleRequestCategoryChange}
-                          >
-                            <option value="FileVanilla">
-                              {" "}
-                              File vanilla (default)
-                            </option>
-                            <option value="File">File</option>
-                            <option value="Text"> Text </option>
-                            <option value="Picture">Picture</option>
-                            <option value="Audio">Audio</option>
-                            <option value="Video">Video</option>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div id="fileUpload" className="w-full mt-4">
-                        <div className="mb-2 block">
-                          <Label htmlFor="file" value="Upload file" />
-                        </div>
-                        <FileInput
-                          id="file"
-                          name="file"
-                          className="w-full"
-                          onChange={handleRequestFileChange}
-                          helperText="Add a file to your box"
-                        />
-                      </div>
-
-                      <label
-                        htmlFor="Description"
-                        className="block mt-4 ml-5 text-sm font-medium text-indigo-900 dark:text-white"
-                      >
-                        Description: (Description Suports HTML Embeded!)
-                      </label>
-
-                      <Textarea
-                        className="mt-5"
-                        id="description"
-                        name="description"
-                        onChange={handleRequestBoxDescriptionChange}
-                        placeholder="give a description about the box:"
-                        required
-                        rows={4}
-                      />
-
-                      <button type="submit">Upload</button>
-                      {message && <p>{message}</p>}
-                    </div>
-                  </form>
-                </Modal.Body>
-              </Modal>
-            </>
+              <h1 className="text-2xl font-bold">Followers:</h1>
+          
+           </div>
           </main>
         </div>
         <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">
           <div className="sticky flex flex-col gap-2 p-4 text-sm  top-12">
             <a
               href="/dashboard"
-              className="flex items-center px-3 py-2.5 font-bol bg-slate-200  text-black border rounded-full"
+              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
             >
               Project info
             </a>
 
             <a
-              href={`${lastWord}/social`}
-              className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
+              href={`${encodeURIComponent(lastWord)}/social`}
+              className="flex items-center px-3 py-2.5 font-bol bg-slate-200  text-black border rounded-full"
             >
               People
             </a>
