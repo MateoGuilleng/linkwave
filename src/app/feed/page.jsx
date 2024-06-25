@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Banner, Tabs, Dropdown, TextInput, Button } from "flowbite-react";
+import {
+  Banner,
+  Tabs,
+  Dropdown,
+  TextInput,
+  Button,
+  Select,
+} from "flowbite-react";
 import UserProfile from "@/components/UserProfile";
 import ProjectCard from "@/components/ProjectCard";
 import { MdDashboard, MdAnnouncement } from "react-icons/md";
@@ -21,16 +28,27 @@ import {
   HiX,
   HiOutlineArrowRight,
 } from "react-icons/hi";
+import { toast } from "sonner";
 
 export default function UsersPage() {
   const [projects, setProjects] = useState([]);
+  const [projectsCopy, setProjectsCopy] = useState(null);
+
   const [users, setUsers] = useState([]);
+  const [usersCopy, setUsersCopy] = useState(null);
+
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedType, setSelectedType] = useState("all");
   const { user, isLoading } = useUser();
   const [userData, setUserData] = useState(null);
   const [userFollowingProjects, setUserFollowingProjects] = useState(null);
 
-  console.log(userData);
+  const [searchQuery, setSearchQuery] = useState(null);
+
+  const handleTypeChange = (e) => {
+    setSelectedType(e.target.value);
+    console.log(selectedType);
+  };
 
   const email = user?.email;
   useEffect(() => {
@@ -66,16 +84,55 @@ export default function UsersPage() {
   useEffect(() => {
     fetch("api/project")
       .then((response) => response.json())
-      .then((data) => setProjects(data))
+      .then((data) => {
+        setProjects(data);
+        setProjectsCopy(data);
+      })
       .catch((error) => console.error("Error fetching projects:", error));
   }, []);
 
   useEffect(() => {
     fetch("api/users")
       .then((response) => response.json())
-      .then((data) => setUsers(data))
+      .then((data) => {
+        setUsers(data);
+        setUsersCopy(data);
+      })
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+
+    let queryFilteredProjects = [];
+    let queryFilteredUsers = [];
+
+    if (selectedType === "all") {
+      queryFilteredProjects = projectsCopy.filter((project) =>
+        project?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      queryFilteredUsers = usersCopy.filter((user) =>
+        user.nickName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    } else if (selectedType === "project") {
+      queryFilteredProjects = projectsCopy.filter((project) =>
+        project.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      queryFilteredUsers = []; // No mostrar usuarios
+    } else if (selectedType === "user") {
+      queryFilteredUsers = usersCopy.filter((user) =>
+        user.nickName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      queryFilteredProjects = []; // No mostrar proyectos
+    }
+
+    setProjects(queryFilteredProjects);
+    setUsers(queryFilteredUsers);
+  };
 
   const handleCategoryClick = (category) => {
     setSelectedCategory(category === selectedCategory ? "" : category);
@@ -119,121 +176,152 @@ export default function UsersPage() {
       <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-8 lg:px-12 text-white">
         <div className="w-full md:w-9/12">
           <div className="flex my-10 gap-3">
-            <CustomDrawerFeed followingUsers={userData?.following} followingProjects={userFollowingProjects?.projects} />
-            <Dropdown
-              label="Filter"
-              className="dark:bg-black border-2 border-white/35"
-              size="lg"
+            <CustomDrawerFeed
+              followingUsers={userData?.following}
+              followingProjects={userFollowingProjects?.projects}
+            />
+            <Select
+              id="type"
+              type="type"
+              required
+              name="type"
+              value={selectedType}
+              onChange={handleTypeChange}
             >
-              <Dropdown.Item>Projects</Dropdown.Item>
-              <Dropdown.Item>Users</Dropdown.Item>
-              <Dropdown.Item>Organizations</Dropdown.Item>
-              <Dropdown.Item>Help requests</Dropdown.Item>
-            </Dropdown>
+              <option value="" disabled>
+                Filter
+              </option>
+              <option value="all">All</option>
+              <option value="project">Project</option>
+              <option value="user">User</option>
+            </Select>
             <TextInput
               id="search"
-              className="w-full"
+              className="w-9/12"
               type="search"
-              placeholder="Search for a specific author, project or organization!"
+              placeholder="Search for a nick name user or a project title!"
+              onChange={(e) => {
+                handleSearchChange(e);
+              }}
               name="search"
               autoComplete="off"
             />
-            <Button>
+            <Button onClick={handleSearchSubmit}>
               <HiOutlineArrowRight className="h-6 w-6" />
             </Button>
           </div>
 
-          <div className="grid md:flex md:justify-between md:mx-12 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            <button
-              className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                !selectedCategory && "bg-blue-500"
-              }`}
-              onClick={() => handleCategoryClick("")}
-            >
-              <div className="text-2xl sm:text-3xl">
-                <HiArchive />
-              </div>
-              <div className="mt-2 p-2 text-sm sm:text-base">All</div>
-            </button>
-            <button
-              className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                selectedCategory === "Aplication" && "bg-blue-500"
-              }`}
-              onClick={() => handleCategoryClick("Aplication")}
-            >
-              <div className="text-2xl sm:text-3xl">
-                <HiPaperClip />
-              </div>
-              <div className="mt-2 p-2 text-sm sm:text-base">
-                Application / Game
-              </div>
-            </button>
-            <button
-              className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                selectedCategory === "Art" && "bg-blue-500"
-              }`}
-              onClick={() => handleCategoryClick("Art")}
-            >
-              <div className="text-2xl sm:text-3xl">
-                <HiPencil />
-              </div>
-              <div className="mt-2 text-sm sm:text-base">Art</div>
-            </button>
-            <button
-              className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                selectedCategory === "General discussion" && "bg-blue-500"
-              }`}
-              onClick={() => handleCategoryClick("General discussion")}
-            >
-              <div className="text-2xl sm:text-3xl">
-                <HiGlobe />
-              </div>
-              <div className="mt-2 text-sm sm:text-base">
-                General discussion
-              </div>
-            </button>
-            <button
-              className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                selectedCategory === "Audio" && "bg-blue-500"
-              }`}
-              onClick={() => handleCategoryClick("Audio")}
-            >
-              <div className="text-2xl sm:text-3xl">
-                <HiOutlineSpeakerphone />
-              </div>
-              <div className="mt-2 text-sm sm:text-base">Audio</div>
-            </button>
-            <button
-              className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                selectedCategory === "Video" && "bg-blue-500"
-              }`}
-              onClick={() => handleCategoryClick("Video")}
-            >
-              <div className="text-2xl sm:text-3xl">
-                <HiCamera />
-              </div>
-              <div className="mt-2 text-sm sm:text-base">Video</div>
-            </button>
-          </div>
-          <h2 className="pl-3 mb-4 text-2xl font-semibold mt-10">
-            Top projects:
-          </h2>
+          {selectedType == "all" || selectedType == "project" ? (
+            <div>
+              <h2 className="pl-3 mb-4 text-2xl font-semibold mt-10">
+                Top projects:
+              </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
-              <ProjectCard key={project._id} project={project} />
-            ))}
-          </div>
+              <div className="grid md:flex md:justify-between md:mx-12 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+                <button
+                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+                    !selectedCategory && "bg-blue-500"
+                  }`}
+                  onClick={() => handleCategoryClick("")}
+                >
+                  <div className="text-2xl sm:text-3xl">
+                    <HiArchive />
+                  </div>
+                  <div className="mt-2 p-2 text-sm sm:text-base">All</div>
+                </button>
+                <button
+                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+                    selectedCategory === "Aplication" && "bg-blue-500"
+                  }`}
+                  onClick={() => handleCategoryClick("Aplication")}
+                >
+                  <div className="text-2xl sm:text-3xl">
+                    <HiPaperClip />
+                  </div>
+                  <div className="mt-2 p-2 text-sm sm:text-base">
+                    Application / Game
+                  </div>
+                </button>
+                <button
+                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+                    selectedCategory === "Art" && "bg-blue-500"
+                  }`}
+                  onClick={() => handleCategoryClick("Art")}
+                >
+                  <div className="text-2xl sm:text-3xl">
+                    <HiPencil />
+                  </div>
+                  <div className="mt-2 text-sm sm:text-base">Art</div>
+                </button>
+                <button
+                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+                    selectedCategory === "General discussion" && "bg-blue-500"
+                  }`}
+                  onClick={() => handleCategoryClick("General discussion")}
+                >
+                  <div className="text-2xl sm:text-3xl">
+                    <HiGlobe />
+                  </div>
+                  <div className="mt-2 text-sm sm:text-base">
+                    General discussion
+                  </div>
+                </button>
+                <button
+                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+                    selectedCategory === "Audio" && "bg-blue-500"
+                  }`}
+                  onClick={() => handleCategoryClick("Audio")}
+                >
+                  <div className="text-2xl sm:text-3xl">
+                    <HiOutlineSpeakerphone />
+                  </div>
+                  <div className="mt-2 text-sm sm:text-base">Audio</div>
+                </button>
+                <button
+                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
+                    selectedCategory === "Video" && "bg-blue-500"
+                  }`}
+                  onClick={() => handleCategoryClick("Video")}
+                >
+                  <div className="text-2xl sm:text-3xl">
+                    <HiCamera />
+                  </div>
+                  <div className="mt-2 text-sm sm:text-base">Video</div>
+                </button>
+              </div>
 
-          <h2 className="pl-3 mb-4 text-2xl font-semibold mt-10">
-            Featured users:
-          </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+                {filteredProjects.map((project) => (
+                  <ProjectCard key={project?._id} project={project} />
+                ))}
 
-          <div className="flex max-w-full gap-6 overflow-x-scroll pb-6">
-            {users.map((user) => (
-              <UserProfile key={user._id} userData={user} />
-            ))}
-          </div>
+                <p className="m-5">
+                  {filteredProjects.length <= 0 ? "Not projects found" : ""}
+                </p>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+
+          {selectedType == "all" || selectedType == "user" ? (
+            <div>
+              <h2 className="pl-3 mb-4 text-2xl font-semibold mt-10">
+                Featured users:
+              </h2>
+
+              <div className="flex max-w-full gap-6 overflow-x-scroll pb-6">
+                {users?.map((user) => (
+                  <UserProfile key={user._id} userData={user} />
+                ))}
+                <p className="m-5">
+                  {users.length <= 0 ? "No users found" : ""}
+                </p>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </div>
