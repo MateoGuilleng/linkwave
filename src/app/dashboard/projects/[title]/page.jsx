@@ -856,7 +856,7 @@ function Page() {
                         <div>Stars: {project?.stars}</div>
                       </div>
                       <div className="border-2 text-sm sm:text-lg rounded-lg w-full items-center flex p-3">
-                        <div>Following: {project?.stars}</div>
+                        <div>Following: {project?.followers}</div>
                       </div>
                     </div>
                   </div>

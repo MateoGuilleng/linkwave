@@ -63,8 +63,8 @@ function CustomDrawerFeed({ followingUsers, followingProjects }) {
                     <Sidebar.Item>Following projects:</Sidebar.Item>
 
                     <ul className="mt-2">
-                      {followingProjects?.map((followingProject) => (
-                        <div className="flex gap-2 items-center ml-5">
+                      {followingProjects?.map((followingProject, index) => (
+                        <div key={index} className="flex gap-2 items-center ml-5">
                           <HiLink />
                           <a
                             className="sm:hover:border-b-2 sm:border-b-0 border-b-2"
@@ -78,8 +78,8 @@ function CustomDrawerFeed({ followingUsers, followingProjects }) {
                     </ul>
                     <Sidebar.Item>Following users: </Sidebar.Item>
                     <ul className="mt-2">
-                      {followingUsers?.map((followingUser) => (
-                        <div className="flex gap-2 items-center ml-5">
+                      {followingUsers?.map((followingUser, index) => (
+                        <div key={index} className="flex gap-2 items-center ml-5">
                           <HiUserCircle />{" "}
                           <a
                             className="sm:hover:border-b-2 sm:border-b-0 border-b-2"
