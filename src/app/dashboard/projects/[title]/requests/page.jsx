@@ -39,9 +39,9 @@ function Page() {
   const [commentId, setCommentId] = useState();
   const [uploadModal, setUploadModal] = useState(false);
   const [error, setError] = useState();
-  const {user, isLoading} = useUser()
+  const { user, isLoading } = useUser();
   const [project, setProject] = useState({});
-  const author = user?.email
+  const author = user?.email;
   const [lastWord, setLastWord] = useState("");
   const [commentText, setCommentText] = useState("");
   const [newComment, setNewComment] = useState("");
@@ -70,6 +70,7 @@ function Page() {
         const data = await res.json();
         setProject(data);
         setItems(data.boxes);
+        setReqItems(data.requestBoxes);
       } else {
         console.error("Failed to fetch projects:", res.statusText);
       }
@@ -164,7 +165,7 @@ function Page() {
   };
 
   const handleUploadComment = async (e) => {
-    const author = user?.email
+    const author = user?.email;
     e.preventDefault();
 
     const formData = new FormData(e.target.closest("form")); // Accede al formulario más cercano al elemento que desencadenó el evento
@@ -256,7 +257,7 @@ function Page() {
     <div>
       <Navbar />
 
-      <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
+      <div className="bg-gray-100 dark:bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-black dark:text-white">
         <div className="w-full">
           <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
             <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
@@ -289,13 +290,13 @@ function Page() {
                     )
                   }
                 >
-                  <HiUserCircle className="mr-3 h-4 w-4" />
-                  Overview
+                  <HiUserCircle className="mr-3 h-4 w-4 text-black dark:text-white" />
+                  <p className="text-black dark:text-white">Overview</p>
                 </Button>
                 <>
                   <Button onClick={() => setOpenModal(true)}>
-                    <HiCloudDownload className="mr-3 h-4 w-4" />
-                    Comments
+                    <HiCloudDownload className="mr-3 h-4 w-4 text-black dark:text-white" />
+                    <p className="text-black dark:text-white">Comments</p>
                   </Button>
                   <Modal
                     dismissible
@@ -367,8 +368,7 @@ function Page() {
                                           <strong className="text-md ">
                                             {comment.authorFN}{" "}
                                             {comment.authorLN}{" "}
-                                            {user?.email ==
-                                            comment.author
+                                            {user?.email == comment.author
                                               ? "(you)"
                                               : ""}
                                           </strong>{" "}
@@ -445,8 +445,7 @@ function Page() {
                                           </span>
                                         )}
                                       >
-                                        {user?.email ==
-                                        comment.author ? (
+                                        {user?.email == comment.author ? (
                                           <div>
                                             <Dropdown.Item>
                                               Copy Link
@@ -534,7 +533,7 @@ function Page() {
             </div>
             <h1 className="text-2xl font-bold mt-10">Request Boxes:</h1>
 
-            <div className="App text-black w-full ">
+            <div className="App text-black dark:text-white w-full ">
               <div className="w-full">
                 {reqItems?.length == 0 ? (
                   "There are no boxes in the list"

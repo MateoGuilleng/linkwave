@@ -15,37 +15,36 @@ function Navbar({ using }) {
   return (
     <div>
       {user ? (
-        <div className="w-full h-16 backdrop-filter backdrop-blur-xl bg-opacity-20 border-b flex items-center justify-center   top-0 z-10 bg-fuchsia-950">
-          <div className="max-w-7xl mx-10 w-full flex items-center justify-between p-4 backdrop-filter ">
+        <div className="w-full h-16 backdrop-filter backdrop-blur-xl bg-opacity-20 border-b border-black dark:border-white flex items-center justify-center text-black dark:text-white sticky top-0 z-10 bg-white dark:bg-gray-900">
+          <div className="max-w-7xl mx-10 w-full flex items-center justify-between p-4">
             <Link
-              className="hover:text-fuchsia-500 transition-colors text-xs sm:text-base"
+              className="text-lg font-bold hover:text-fuchsia-600 transition-colors"
               href="/"
             >
               Projectfully
             </Link>
-            <ul className="flex gap-8 ">
+            <ul className="flex gap-8 text-gray-700 dark:text-gray-300">
               <li>
                 <DarkThemeToggle className="p-0" />
               </li>
               <li>
                 <Link
-                  className={`hover:text-fuchsia-500 transition-colors text-xs sm:text-base ${
+                  className={`hover:text-fuchsia-600 transition-colors ${
                     use == "feed"
-                      ? "border-b-4 hover:border-fuchsia-500"
-                      : "text-white"
+                      ? "border-b-4 border-fuchsia-600"
+                      : "text-gray-700 dark:text-gray-300"
                   }`}
                   href="/feed"
                 >
-                  feed
+                  Feed
                 </Link>
               </li>
-
               <li>
                 <Link
-                  className={`hover:text-fuchsia-500 border-2 p-2 hover:border-fuchsia-500 transition-colors text-xs sm:text-base px-3 py-1 rounded  ${
+                  className={`hover:text-fuchsia-600 border-2 p-2 transition-colors rounded ${
                     use == "dashboard"
-                      ? "border-b-4 hover:border-fuchsia-500"
-                      : "text-white"
+                      ? "border-fuchsia-600 text-fuchsia-600"
+                      : "text-gray-700 dark:text-gray-300 border-gray-700 dark:border-gray-300"
                   }`}
                   href="/dashboard"
                 >
@@ -56,18 +55,18 @@ function Navbar({ using }) {
           </div>
         </div>
       ) : (
-        <div className="w-full h-16 backdrop-filter backdrop-blur-xl bg-opacity-20 border-b flex items-center justify-center sticky  top-0 z-10 bg-fuchsia-950">
-          <div className="max-w-7xl w-full flex items-center justify-between p-4 backdrop-filter ">
+        <div className="w-full h-16 backdrop-filter backdrop-blur-xl bg-opacity-20 border-b flex items-center justify-center sticky top-0 z-10 bg-white dark:bg-gray-900">
+          <div className="max-w-7xl mx-10 w-full flex items-center justify-between p-4">
             <Link
-              className="hover:text-fuchsia-500 transition-colors text-xs sm:text-base"
+              className="text-lg font-bold hover:text-fuchsia-600 transition-colors"
               href="/"
             >
-              Insightful
+              Projectfully
             </Link>
             <ul className="flex gap-8 align-middle items-center">
               <li>
                 <Link
-                  className="hover:text-fuchsia-500 transition-colors text-xs sm:text-base"
+                  className="hover:text-fuchsia-600 transition-colors text-gray-700 dark:text-gray-300"
                   href="/feed"
                 >
                   Explore
@@ -75,7 +74,7 @@ function Navbar({ using }) {
               </li>
               <li>
                 <button
-                  className="hover:text-fuchsia-500 hover:border-fuchsia-500 transition-colors text-xs sm:text-base border-2 px-3 py-1 rounded"
+                  className="hover:text-fuchsia-600 hover:border-fuchsia-600 transition-colors text-gray-700 dark:text-gray-300 border-2 px-3 py-1 rounded border-gray-700 dark:border-gray-300"
                   onClick={() => router.push("/api/auth/login")}
                 >
                   Log in

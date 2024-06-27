@@ -387,51 +387,84 @@ const SortableList = ({ items = [], projectName }) => {
       // Manejar el error según sea necesario
     }
   };
+
   const handleDeleteFile = async (fileId) => {
-    try {
-      console.log(projectName); // Imprime el nombre correctamente
+    console.log("file Id", fileId);
 
-      const response = await fetch(`/api/files/${fileId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          projectTitle: projectName, // Asegúrate de que esta clave coincida con la que esperas en el backend
-        }),
-      });
+    const deleteFileFromProject = async () => {
+      try {
+        console.log(projectName);
 
-      if (response.ok) {
-        console.log("File deleted successfully");
-      } else {
-        console.error("Failed to delete file:", await response.text());
+        const response = await fetch(`/api/files/${fileId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            projectTitle: projectName,
+          }),
+        });
+
+        if (response.ok) {
+          console.log("File deleted successfully from project and box");
+          return { success: true };
+        } else {
+          console.error(
+            "Failed to delete file from project and box:",
+            await response.text()
+          );
+          return { success: false };
+        }
+      } catch (error) {
+        console.error("Failed to delete file from project and box", error);
+        throw error;
       }
-    } catch (error) {
-      console.error("Failed to delete file from project and box", error);
-    }
-    try {
-      const response = await fetch(`/api/files/uploadFile`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fileId,
-        }),
-      });
+    };
 
-      if (response.ok) {
-        console.log("File deleted successfully");
-        setFilesPreview((prevFiles) =>
-          prevFiles.filter((file) => file.id !== fileId)
-        ); // Cambio: eliminar el archivo del estado de vista previa
-        setFile(null);
-      } else {
-        console.error("Failed to delete file");
+    const deleteFileFromUploads = async () => {
+      try {
+        const response = await fetch(`/api/files/uploadFile`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fileId,
+          }),
+        });
+
+        if (response.ok) {
+          console.log("File deleted successfully from uploads");
+          setFilesPreview((prevFiles) =>
+            prevFiles.filter((file) => file.id !== fileId)
+          ); // Eliminar el archivo del estado de vista previa
+          setFile(null);
+          return { success: true };
+        } else {
+          console.error("Failed to delete file:", await response.text());
+          return { success: false };
+        }
+      } catch (error) {
+        console.error("Error deleting file:", error);
+        throw error;
       }
-    } catch (error) {
-      console.error("Error deleting file:", error);
-    }
+    };
+
+    toast.promise(
+      Promise.all([deleteFileFromProject(), deleteFileFromUploads()]),
+      {
+        loading: "Deleting file...",
+        success: (results) => {
+          const [projectResult, uploadsResult] = results;
+          if (projectResult.success && uploadsResult.success) {
+            return "File deleted successfully";
+          } else {
+            return "File deleted from project and box, but failed to delete from uploads";
+          }
+        },
+        error: "Failed to delete file",
+      }
+    );
   };
 
   const handleBoxDescriptionChange = (e) => {
@@ -520,7 +553,7 @@ const SortableList = ({ items = [], projectName }) => {
         ref={(node) => drag(drop(node))}
         className={`h-fit w-full lg:w-${
           isDescriptionLong ? "full" : "fit"
-        } max-w-full p-5 bg-black text-white border-2 rounded-lg flex items-center mb-2 ${
+        } max-w-full p-5 bg-white dark:bg-black text-black dark:text-white border-2 rounded-lg flex items-center mb-2 ${
           isDragging ? "opacity-50" : ""
         }`}
         style={{ cursor: "move", opacity }}
@@ -592,7 +625,7 @@ const SortableList = ({ items = [], projectName }) => {
               handleEditBoxClick(item);
             }}
           >
-            <div className="flex gap-5 align-middle">
+            <div className="flex gap-5 align-middle text-white">
               <FaEdit />
             </div>
           </button>
@@ -607,7 +640,7 @@ const SortableList = ({ items = [], projectName }) => {
               });
             }}
           >
-            <div className="flex gap-5 align-middle">
+            <div className="flex gap-5 align-middle text-white">
               <FaTrash />
             </div>
           </button>
@@ -629,7 +662,7 @@ const SortableList = ({ items = [], projectName }) => {
           show={editBoxModal}
           onClose={() => setEditBoxModal(false)}
         >
-          <div className="bg-black border-2 border-white/50 rounded-md">
+          <div className="bg-white dark:bg-black border-2 border-white/50 rounded-md">
             <Modal.Header>Edit Box</Modal.Header>
             <Modal.Body>
               <form onSubmit={handleUpdateBoxSubmit}>
@@ -721,7 +754,7 @@ const SortableList = ({ items = [], projectName }) => {
                       </button>
                     </div>
 
-                    <div className="mt-5 w-full flex">
+                    <div className="mt-5 w-full flex text-black dark:text-white">
                       <Label value="Current Files:" />
                       {filesPreview &&
                       Array.isArray(filesPreview) &&
@@ -771,7 +804,7 @@ const SortableList = ({ items = [], projectName }) => {
                         />
                       </div>
                       <Popover content={content} className="" placement="right">
-                        <Button className="align-middle mb-2 border-2 ml-3 border-white/35">
+                        <Button className="align-middle mb-2 border-2 ml-3 text-black dark:text-white border-white/35">
                           Learn More
                         </Button>
                       </Popover>
@@ -795,9 +828,12 @@ const SortableList = ({ items = [], projectName }) => {
                   </div>
 
                   <div className="mt-5 w-full">
-                    <Button type="submit" className="bg-slate-800">
-                      <div className="self-center">
-                        <FaEdit />
+                    <Button
+                      type="submit"
+                      className="bg-slate-800 text-black dark:text-white"
+                    >
+                      <div className="self-center ">
+                        <FaEdit className="" />
                       </div>
                       <p className="p-2">Edit</p>
                     </Button>

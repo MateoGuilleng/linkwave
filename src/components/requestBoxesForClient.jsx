@@ -327,7 +327,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
   };
 
   const Item = ({ item }) => (
-    <li className="h-fit w-full lg:w-fit max-w-full p-5 bg-black text-white border-2 border-blue-700 rounded-lg flex items-center mb-2">
+    <li className="h-fit w-full lg:w-fit max-w-full p-5 bg-white dark:bg-black text-black dark:text-white border-2 border-blue-700 rounded-lg flex items-center mb-2">
       <div className="ml-4 w-full">
         <h2 className="text-2xl mb-2 items-center">
           <div className="flex items-center">
@@ -398,7 +398,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
               }}
             >
               <div className="flex gap-5 align-middle">
-                <FaEdit />
+                <FaEdit className="text-white"/>
               </div>
             </button>
             <button
@@ -415,7 +415,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
                 );
               }}
             >
-              <div className="flex gap-5 align-middle">
+              <div className="flex gap-5 align-middle text-white">
                 <FaTrash />
               </div>
             </button>
@@ -437,7 +437,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
         show={editBoxModal}
         onClose={() => setEditBoxModal(false)}
       >
-        <div className="bg-black border-2 border-white/50 rounded-md">
+        <div className="bg-white dark:bg-black border-2 border-white/50 rounded-md">
           <Modal.Header>Edit Request Box</Modal.Header>
           <Modal.Body>
             <form onSubmit={handleUpdateBoxSubmit}>
@@ -506,7 +506,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
                     </button>
                   </div>
 
-                  <div className="mt-5 w-full flex">
+                  <div className="mt-5 w-full flex text-black dark:text-white">
                     <Label value="Current Files:" />
                     {filesPreview &&
                     Array.isArray(filesPreview) &&
@@ -573,7 +573,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
                 </div>
 
                 <div className="mt-5 w-full">
-                  <Button type="submit" className="bg-slate-800">
+                  <Button type="submit" className="bg-slate-800 text-black dark:text-white">
                     <div className="self-center">
                       <FaEdit />
                     </div>

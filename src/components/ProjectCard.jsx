@@ -12,7 +12,7 @@ const ProjectCard = ({ project }) => {
           src={project.banner}
           alt={project.title}
         />
-        <div className="absolute bottom-0 h-full left-0 p-4 bg-gradient-to-t from-black to-transparent w-full">
+        <div className="absolute bottom-0 h-full left-0 p-4  bg-gradient-to-t dark:from-black from-white to-transparent w-full">
           <div className="flex items-center">
             <div className="ml-3 text-white absolute bottom-5 flex">
               <img
@@ -20,9 +20,13 @@ const ProjectCard = ({ project }) => {
                 alt={`${project.author}'s profile`}
                 className="w-10 h-10 rounded-full object-cover"
               />
-              <div className="flex flex-col ml-4">
-                <div className="text-lg font-bold">{project.title}</div>
-                <div className="text-xs">{project.author}</div>
+              <div className="flex flex-col ml-4 dark:text-white text-black">
+                <div className="text-lg font-bold dark:text-white text-black">
+                  {project.title}
+                </div>
+                <div className="text-xs dark:text-white text-black">
+                  {project.author}
+                </div>
               </div>
             </div>
           </div>

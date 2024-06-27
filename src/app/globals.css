@@ -36,6 +36,7 @@ body {
   background: #1d1d1d; /* Color de fondo de la barra de desplazamiento */
 }
 
+
 /* Estilo del pulgar de la barra de desplazamiento */
 ::-webkit-scrollbar-thumb {
   background: #69696970; /* Color del pulgar de la barra de desplazamiento */

@@ -22,7 +22,7 @@ function Docs() {
     <div>
       <Navbar using={"projects"} />
 
-      <div className="bg-black w-full flex flex-col gap-5 sm:px-5 md:px-10 md:flex-row text-[#ffffff]">
+      <div className="bg-gray-100 dark:bg-black w-full flex flex-col gap-5 sm:px-5 md:px-10 md:flex-row text-black dark:text-white">
         <CustomAside />
 
         <main className="w-screen min-h-screen py-1 md:w-2/3 lg:w-3/4">

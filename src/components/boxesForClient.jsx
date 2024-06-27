@@ -34,7 +34,7 @@ const SortableListReadOnly = ({ items = [], projectName }) => {
     );
   }, [items]);
   const Item = ({ item }) => (
-    <li className="h-fit w-full lg:w-fit max-w-full p-5 bg-black text-white border-2 rounded-lg flex items-center mb-2">
+    <li className="h-fit w-full lg:w-fit max-w-full p-5 bg-white dark:bg-black text-black dark:text-white border-2 rounded-lg flex items-center mb-2">
       <div className="ml-4 w-full">
         <h2 className="text-2xl mb-2 items-center">
           <div className="flex items-center">

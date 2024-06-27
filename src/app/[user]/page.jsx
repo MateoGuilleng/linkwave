@@ -240,11 +240,11 @@ export default function Page() {
                 Dashboard
               </Button>
             ) : (
-              <div className="mt-4 w-full  sm:flex">
-                <Button className="w-full mb-2">Follow</Button>
+              <div className="mt-4 w-full  sm:flex " >
+                <Button className="w-full mb-2 text-black dark:text-white">Follow</Button>
                 <Button
                   onClick={handleChatButtonClick}
-                  className="w-full"
+                  className="w-full text-black dark:text-white"
                   disabled={loading}
                 >
                   {loading ? "Loading Chat..." : "Chat"}

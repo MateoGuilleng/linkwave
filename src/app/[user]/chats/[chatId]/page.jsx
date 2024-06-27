@@ -24,14 +24,7 @@ import Navbar from "@/components/Navbar";
 import CustomChatDrawer from "@/components/sideBarChats";
 import { useRouter } from "next/navigation";
 import { FaQuestionCircle } from "react-icons/fa";
-import {
-  HiMenu,
-  HiSearch,
-  HiChartPie,
-  HiPencil,
-  HiUsers,
-  HiLogin,
-} from "react-icons/hi";
+import { HiArrowCircleDown, HiMenu } from "react-icons/hi";
 
 import moment from "moment";
 
@@ -116,18 +109,22 @@ function ChatPage() {
           }
 
           setUserId(userRes._id);
-          const chatParticipantsRef = ref(db, `chats/${chatId}/participants`);
 
+          const chatParticipantsRef = ref(db, `chats/${chatId}/participants`);
+          const chatMessagesRef = ref(db, `chats/${chatId}/messages`);
+
+          // Subscribe to participants
           const unsubscribeParticipants = onValue(
             chatParticipantsRef,
             (snapshot) => {
               if (snapshot.exists()) {
                 const allParticipants = Object.values(snapshot.val());
-
                 console.log(allParticipants);
+
                 const filteredParticipants = allParticipants.filter(
                   (participant) => participant !== user
                 );
+
                 setParticipants(filteredParticipants.join(", "));
               } else {
                 setParticipants([]);
@@ -135,7 +132,7 @@ function ChatPage() {
             }
           );
 
-          const chatMessagesRef = ref(db, `chats/${chatId}/messages`);
+          // Subscribe to messages
           const unsubscribeMessages = onValue(chatMessagesRef, (snapshot) => {
             if (snapshot.exists()) {
               setMessages(
@@ -149,7 +146,9 @@ function ChatPage() {
             }
           });
 
+          // Cleanup subscriptions on unmount
           return () => {
+            unsubscribeParticipants();
             unsubscribeMessages();
           };
         } catch (error) {
@@ -219,13 +218,13 @@ function ChatPage() {
       <Navbar />
 
       <div className="flex h-screen">
-        <div className="w-3/12 hidden md:block bg-black p-4 overflow-y-auto">
-          <h2 className="text-xl font-bold text-white mb-4">Chats:</h2>
+        <div className="w-3/12 hidden md:block bg-gray-100 text-black dark:text-white dark:bg-neutral-950 p-4 overflow-y-auto">
+          <h2 className="text-xl font-bold text-black dark:text-white mb-4">Chats:</h2>
           {userData?.chats.map((chat, index) => (
             <div
               key={index}
               onClick={() => handleChatClick(chat.chatId)}
-              className="cursor-pointer p-2 mb-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+              className="cursor-pointer p-2 mb-2 bg-white text-black dark:text-white rounded hover:bg-gray-200"
             >
               <div className="flex items-center">
                 <div className="mb-1 text-sm font-semibold flex md:flex-nowrap flex-wrap">
@@ -239,7 +238,7 @@ function ChatPage() {
                   style="dark"
                 >
                   <Button>
-                    <FaQuestionCircle />
+                    <FaQuestionCircle className="dark:text-white text-black" />
                   </Button>
                 </Tooltip>
               </div>
@@ -248,15 +247,15 @@ function ChatPage() {
                   {chat.chatWithEmail}
                 </p>
               </p>
-              <p className="mb-1 text-2xs text-white/50">
+              <p className="mb-1 text-2xs dark:text-white/50 text-black/50">
                 Chat ID: {chat.chatId}
               </p>
             </div>
           ))}
         </div>
 
-        <div className="flex-1 w-7/12 flex flex-col h-full p-4 border-2 rounded-lg md:border-l-2 text-white">
-          <div className="bg-black p-4 text-center flex items-center">
+        <div className="flex-1 w-7/12 flex flex-col h-full p-4  rounded-lg  bg-white dark:bg-black text-black dark:text-white">
+          <div className="bg-gray-200 dark:bg-black p-4 text-center flex items-center text-black dark:text-white">
             <span className="text-left">
               <CustomChatDrawer chats={chats} />
             </span>
@@ -273,7 +272,7 @@ function ChatPage() {
               </div>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 bg-black rounded shadow">
+          <div className="flex-1 overflow-y-auto p-4 bg-gray-100 dark:bg-black rounded shadow text-black dark:text-white">
             {messages.map((msg, index) => (
               <div
                 key={msg.id}
@@ -282,10 +281,10 @@ function ChatPage() {
                 }`}
               >
                 <div
-                  className={`p-3 w-full rounded-lg ${
+                  className={`p-3 text-black dark:text-white w-full rounded-lg ${
                     msg.sender === userId
-                      ? "bg-blue-500/10 text-white/75"
-                      : "bg-gray-300/10 text-white/75"
+                      ? "bg-blue-500/10 dark:text-white/75 text-black"
+                      : "bg-gray-300/10 dark:text-white/75 text-black"
                   }`}
                 >
                   {editingMessage === msg.id ? (
@@ -295,10 +294,10 @@ function ChatPage() {
                         onChange={(e) => setEditMessageContent(e.target.value)}
                         className="mb-2"
                       />
-                      <div className="flex">
+                      <div className="flex ">
                         <Button
                           onClick={() => handleUpdateMessage(msg.id)}
-                          className="mr-2"
+                          className="text-black dark:text-white mr-2"
                         >
                           Save
                         </Button>
@@ -321,8 +320,8 @@ function ChatPage() {
                         ></p>
                         <div>
                           {msg.sender === userId && (
-                            <div className="flex space-x-2 mt-0 p-0 m-0 align-top self-start">
-                              <div className="p-0">
+                            <div className="flex space-x-2 mt-0 p-0 m-0 align-top  self-start">
+                              <div className=" pr-2 bg-black/10 rounded-full">
                                 <Dropdown
                                   className="align-top self-start"
                                   dismissOnClick={false}

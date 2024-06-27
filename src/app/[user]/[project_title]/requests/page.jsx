@@ -17,6 +17,7 @@ import {
 
 import {
   Button,
+  Popover,
   Dropdown,
   TextInput,
   Modal,
@@ -86,7 +87,24 @@ function Page() {
       console.error("Error fetching projects:", error.message);
     }
   };
-  console.log("itens", items);
+  const content = (
+    <div className="w-64 text-sm text-gray-500 dark:text-gray-400">
+      <div className="border-b  px-3 py-2 border-gray-600 bg-gray-700">
+        <h3 className="font-semibold text-white">Use your own HTML!</h3>
+      </div>
+      <div className="px-3 py-2 bg-black">
+        <p>
+          In the description of any box, you can paste any HTML code, that
+          means, you can upload and resize images, put Iframes from spotify,
+          youtube or even Instagram posts! If you want to know how to do it
+          click{" "}
+          <a className="border-b-2" href="/docs/htmlEmbeded">
+            here!
+          </a>
+        </p>
+      </div>
+    </div>
+  );
   if (items == undefined) {
     console.log("jajaja");
     getProject();
@@ -310,7 +328,7 @@ function Page() {
     <div>
       <Navbar />
 
-      <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
+      <div className="bg-gray-100 dark:bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-black dark:text-white">
         <div className="w-full">
           <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
             <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
@@ -339,13 +357,13 @@ function Page() {
                     router.replace(`/${project.author}/${project.title}`)
                   }
                 >
-                  <HiUserCircle className="mr-3 h-4 w-4" />
-                  Overview
+                  <HiUserCircle className="mr-3 h-4 w-4 text-black dark:text-white" />
+                  <p className="text-black dark:text-white">Overview</p>
                 </Button>
                 <>
                   <Button onClick={() => setOpenModal(true)}>
-                    <HiCloudDownload className="mr-3 h-4 w-4" />
-                    Comments
+                    <HiCloudDownload className="mr-3 h-4 w-4 text-black dark:text-white" />
+                    <p className="text-black dark:text-white">Comments</p>
                   </Button>
                   <Modal
                     dismissible
@@ -582,13 +600,13 @@ function Page() {
             <div className="flex">
               <h1 className="text-2xl font-bold">Request Boxes:</h1>
               <Button
-                className="bg-gray-700 ml-4 hover:bg-gray-600 flex items-center justify-center"
+                className="dark:bg-gray-700 ml-4 bg-gray-100 text-black dark:text-white dark:hover:bg-gray-600 flex items-center justify-center"
                 onClick={() => setUploadModal(true)}
               >
                 <FaPlus />
               </Button>
             </div>
-            <div className="App text-black w-full ">
+            <div className="App text-black dark:text-white w-full ">
               <div className="w-full">
                 {reqItems?.length == 0 ? (
                   "There are no boxes in the list"
@@ -667,6 +685,11 @@ function Page() {
                       >
                         Description: (Description Suports HTML Embeded!)
                       </label>
+                      <Popover content={content} className="" placement="right">
+                        <Button className="align-middle mb-2 border-2 ml-3 border-white/35 text-black dark:text-white">
+                          Learn More
+                        </Button>
+                      </Popover>
 
                       <Textarea
                         className="mt-5"
@@ -678,7 +701,12 @@ function Page() {
                         rows={4}
                       />
 
-                      <button type="submit">Upload</button>
+                      <button
+                        className="text-black dark:text-white"
+                        type="submit"
+                      >
+                        Upload
+                      </button>
                     </div>
                   </form>
                 </Modal.Body>

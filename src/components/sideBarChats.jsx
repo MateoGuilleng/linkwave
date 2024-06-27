@@ -42,7 +42,7 @@ function CustomChatDrawer({ chats }) {
     <>
       <div className="block sm:hidden">
         <Button onClick={() => setIsOpen(true)}>
-          <HiMenu className="w-7 h-7" />
+          <HiMenu className="w-7 h-7 text-black dark:text-white" />
         </Button>
       </div>
       <Drawer open={isOpen} onClose={handleClose}>
@@ -82,7 +82,7 @@ function CustomChatDrawer({ chats }) {
                       <div
                         key={index}
                         onClick={() => handleChatClick(chat.chatId)}
-                        className="cursor-pointer p-2 mb-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+                        className="cursor-pointer p-2 mb-2 dark:bg-gray-700 bg-gray-100 text-black dark:text-white rounded hover:bg-gray-600"
                       >
                         <div className="flex items-center">
                           <div className="mb-1 text-sm font-semibold flex md:flex-nowrap flex-wrap">
@@ -105,7 +105,7 @@ function CustomChatDrawer({ chats }) {
                             {chat.chatWithEmail}
                           </p>
                         </p>
-                        <p className="mb-1 text-2xs text-white/50">
+                        <p className="mb-1 text-2xs dark:text-white/50 text-black/50">
                           Chat ID: {chat.chatId}
                         </p>
                       </div>

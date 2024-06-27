@@ -136,7 +136,7 @@ function Page() {
           if (res.ok) {
             console.log("Comment deleted successfully");
             // Optionally, update your local state or UI after deletion
-            window.location.reload(); // Reload the page after successful comment deletion (consider using React state update instead)
+
             resolve();
           } else {
             console.error("Failed to delete comment:", res.statusText);
@@ -228,7 +228,7 @@ function Page() {
     toast.promise(promise(), {
       loading: "Uploading...",
       success: (data) => {
-        return `${data.name} uploaded successfully`;
+        return `Box uploaded successfully`;
       },
       error: "Error uploading file",
     });
@@ -265,7 +265,6 @@ function Page() {
             const { comments } = await res.json();
             console.log("Comment updated successfully!");
             console.log("Comments:", comments);
-            window.location.reload(); // Reload the page after successful comment update (consider using React state update instead)
 
             resolve({ comment: newComment });
           } else {
@@ -330,7 +329,7 @@ function Page() {
 
           if (res.status === 200) {
             setError("");
-            window.location.reload(); // Reload the page after successful comment upload (consider using React state update instead)
+
             const { comments } = await res.json();
             console.log("Comment added successfully!");
             console.log("Comments:", comments);
@@ -442,7 +441,6 @@ function Page() {
 
             const resProject = await projectResponse.json();
             console.log("resProject", resProject);
-            router.refresh();
 
             resolve({ name: "Image" });
           }
@@ -632,7 +630,7 @@ function Page() {
   return (
     <div>
       <Navbar />
-      <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
+      <div className="bg-gray-100 dark:bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-black dark:text-white">
         <div className="w-full">
           <img
             className="object-cover w-full h-72 p-1 ring-2 ring-indigo-300 dark:ring-indigo-500"
@@ -891,13 +889,13 @@ function Page() {
                     router.replace(`/${project.author}/${project.title}`)
                   }
                 >
-                  <HiUserCircle className="mr-3 h-4 w-4" />
-                  Overview
+                  <HiUserCircle className="mr-3 h-4 w-4 text-black dark:text-white" />
+                  <p className="text-black dark:text-white">Overview</p>
                 </Button>
                 <>
                   <Button onClick={() => setOpenModal(true)}>
-                    <HiCloudDownload className="mr-3 h-4 w-4" />
-                    Comments
+                    <HiCloudDownload className="mr-3 h-4 w-4 text-black dark:text-white" />
+                    <p className="text-black dark:text-white">Comments</p>
                   </Button>
                   <Modal
                     dismissible
@@ -905,7 +903,7 @@ function Page() {
                     show={openModal}
                     onClose={() => setOpenModal(false)}
                   >
-                    <Modal.Header className="bg-black border-2">
+                    <Modal.Header className="bg-white dark:bg-black border-2 bg">
                       <form action="" onSubmit={handleUploadComment}>
                         <div className="w-full">
                           <div className="mb-2 ">
@@ -916,7 +914,7 @@ function Page() {
                             />
                           </div>
                           <Textarea
-                            className="mt-5 bg-black dark:bg-black"
+                            className="mt-5 bg-white dark:bg-black"
                             id="comment"
                             name="comment"
                             placeholder="give an opinion about the project..."
@@ -930,7 +928,7 @@ function Page() {
                           {showUploadButton && ( // Mostrar el botón de carga de comentarios si hay texto en el área de comentario
                             <Button
                               type="submit"
-                              className="mt-3 hover:border-2 border-0 border-white"
+                              className="mt-3 hover:border-2 border-0 border-white text-black dark:text-white"
                             >
                               Upload Comment
                             </Button>
@@ -938,7 +936,7 @@ function Page() {
                         </div>
                       </form>
                     </Modal.Header>
-                    <Modal.Body className="max-h-[400px] overflow-y-auto bg-black border-2 border-white/30">
+                    <Modal.Body className="max-h-[400px] overflow-y-auto bg-white dark:bg-black text-black dark:text-white border-2 border-white/30">
                       <div className="space-y-6">
                         <h3 className="text-xl font-bold">
                           Comments: ({projectComments?.length})
@@ -991,13 +989,13 @@ function Page() {
                                           setOpenCommentEditModal(false);
                                         }}
                                       >
-                                        <Modal.Header className="bg-black">
+                                        <Modal.Header className="bg-white dark:text-white">
                                           <form
                                             action=""
                                             onSubmit={handleUploadEditComment}
                                           >
                                             <div className="w-full">
-                                              <div className="mb-2">
+                                              <div className="mb-2 text-black dark:text-white">
                                                 <Label
                                                   className="text-xl"
                                                   htmlFor="comment"
@@ -1006,7 +1004,7 @@ function Page() {
                                               </div>
 
                                               <Textarea
-                                                className="mt-5 bg-black dark:bg-black"
+                                                className="mt-5 bg-white dark:bg-black"
                                                 id="newComment"
                                                 name="newComment"
                                                 placeholder={comment.comment}
@@ -1025,7 +1023,7 @@ function Page() {
                                               {showUpEditCommentButton && (
                                                 <Button
                                                   type="submit"
-                                                  className="mt-3 hover:border-2 border-white border-0"
+                                                  className="mt-3 hover:border-2 text-black dark:text-white border-white border-0"
                                                 >
                                                   Edit Comment
                                                 </Button>
@@ -1052,11 +1050,8 @@ function Page() {
                                         {user?.email == comment.author ? (
                                           <div>
                                             <Dropdown.Item>
-                                              Copy Link
-                                            </Dropdown.Item>
-                                            <Dropdown.Item>
                                               <Button
-                                                className="w-full h-full"
+                                                className="w-full h-full text-black dark:text-white"
                                                 onClick={() => {
                                                   setOpenCommentEditModal(true);
                                                   setCommentId(comment?.id);
@@ -1065,9 +1060,7 @@ function Page() {
                                                 Edit Comment
                                               </Button>
                                             </Dropdown.Item>
-                                            <Dropdown.Item>
-                                              Follow Comment
-                                            </Dropdown.Item>
+
                                             <Dropdown.Item
                                               onClick={async () => {
                                                 await setCommentId(comment.id);
@@ -1138,7 +1131,7 @@ function Page() {
             <div className="flex">
               <h1 className="text-2xl font-bold">Boxes:</h1>
               <Button
-                className="bg-gray-700 ml-4 hover:bg-gray-600 flex items-center justify-center"
+                className="dark:bg-gray-700 ml-4 bg-gray-100 text-black dark:text-white dark:hover:bg-gray-600 flex items-center justify-center"
                 onClick={() => setUploadModal(true)}
               >
                 <FaPlus />
@@ -1162,8 +1155,8 @@ function Page() {
                 show={uploadModal}
                 onClose={() => setUploadModal(false)}
               >
-                <Modal.Header className="bg-black">Upload Box:</Modal.Header>
-                <Modal.Body className="bg-black">
+                <Modal.Header className="bg-white dark:bg-black text-black dark:text-white">Upload Box:</Modal.Header>
+                <Modal.Body className="bg-white dark:bg-black text-black dark:text-white">
                   <form onSubmit={handleBoxSubmit}>
                     <div className="overflow-y-auto max-h-[70vh]">
                       <div className="flex gap-10">
@@ -1230,7 +1223,7 @@ function Page() {
                           className=""
                           placement="right"
                         >
-                          <Button className="align-middle mb-2 border-2 ml-3 border-white/35">
+                          <Button className="align-middle mb-2 border-2 ml-3 border-white/35 text-black dark:text-white">
                             Learn More
                           </Button>
                         </Popover>

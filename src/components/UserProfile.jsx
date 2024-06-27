@@ -101,7 +101,7 @@ const UserProfile = ({ userData }) => {
 
   return (
     <div key={userData._id} href={`/${userData.email}`} className="block">
-      <div className="relative h-72 bg-black rounded-lg w-80 overflow-hidden hover:transform hover:-translate-y-1 hover:shadow-lg transition mt-3 duration-300 ease-in-out shadow-md dark:bg-black border-white/35 border-2 p-6 flex flex-col">
+      <div className="relative h-72 bg-white border-black/15 dark:bg-gray-950 rounded-lg w-80 overflow-hidden hover:transform hover:-translate-y-1 hover:shadow-lg transition mt-3 duration-300 ease-in-out shadow-md  dark:border-white/35 border-2 p-6 flex flex-col">
         <div className="flex items-center space-x-4">
           <img
             src={userData.profile_image}
@@ -132,24 +132,24 @@ const UserProfile = ({ userData }) => {
             onClick={() => {
               router.push("/dashboard");
             }}
-            className="border-2 rounded-lg p-3"
+            className="border-2 rounded-lg p-3 text-black dark:text-white"
           >
             {" "}
             Dashboard{" "}
           </button>
         ) : (
-          <div className="mt-4 flex space-x-2">
+          <div className="mt-4 flex space-x-2 dark:text-white text-black">
             <Button
               onClick={() => {
                 router.push(userData.email);
               }}
-              className="w-full border-2 border-white"
+              className="w-full border-2 border-black/10 dark:border-white dark:text-white text-black"
             >
               Profile
             </Button>
             <Button
               onClick={isFollowing ? handleUnfollow : handleFollow}
-              className="w-full border-2 border-white"
+              className="w-full border-2 border-black/10 dark:border-white dark:text-white text-black"
             >
               {isFollowing ? "Stop Follow" : "Follow"}
             </Button>

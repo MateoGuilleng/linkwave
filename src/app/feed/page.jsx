@@ -143,17 +143,17 @@ export default function UsersPage() {
     : projects;
 
   return (
-    <div>
-      <Navbar using={"feed"} />
+    <div className="dark:bg-gray-950 bg-gray-100 text-black w-full">
+      <Navbar using="feed" />
       {!user && (
         <Banner>
-          <div className="flex w-full justify-between border-b border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-700">
+          <div className="flex w-full justify-between border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-4">
             <div className="mx-auto flex items-center">
               <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
                 <MdAnnouncement className="mr-4 h-4 w-4" />
-                <span className="[&_p]:inline">
+                <span>
                   You are currently in guest mode, create an account or sign in
-                  if you want to access to any project&nbsp;
+                  if you want to access any project&nbsp;
                   <Link
                     href="/api/auth/login"
                     className="inline font-medium text-cyan-600 underline decoration-solid underline-offset-2 hover:no-underline dark:text-cyan-500"
@@ -173,156 +173,157 @@ export default function UsersPage() {
         </Banner>
       )}
 
-      <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-8 lg:px-12 text-white">
-        <div className="w-full md:w-9/12">
-          <div className="flex my-10 gap-3">
-            <CustomDrawerFeed
-              followingUsers={userData?.following}
-              followingProjects={userFollowingProjects?.projects}
-            />
-            <Select
-              id="type"
-              type="type"
-              required
-              name="type"
-              value={selectedType}
-              onChange={handleTypeChange}
-            >
-              <option value="" disabled>
-                Filter
-              </option>
-              <option value="all">All</option>
-              <option value="project">Project</option>
-              <option value="user">User</option>
-            </Select>
-            <TextInput
-              id="search"
-              className="w-9/12"
-              type="search"
-              placeholder="Search for a nick name user or a project title!"
-              onChange={(e) => {
-                handleSearchChange(e);
-              }}
-              name="search"
-              autoComplete="off"
-            />
-            <Button onClick={handleSearchSubmit}>
-              <HiOutlineArrowRight className="h-6 w-6" />
-            </Button>
-          </div>
-
-          {selectedType == "all" || selectedType == "project" ? (
-            <div>
-              <h2 className="pl-3 mb-4 text-2xl font-semibold mt-10">
-                Top projects:
-              </h2>
-
-              <div className="grid md:flex md:justify-between md:mx-12 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-                <button
-                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                    !selectedCategory && "bg-blue-500"
-                  }`}
-                  onClick={() => handleCategoryClick("")}
-                >
-                  <div className="text-2xl sm:text-3xl">
-                    <HiArchive />
-                  </div>
-                  <div className="mt-2 p-2 text-sm sm:text-base">All</div>
-                </button>
-                <button
-                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                    selectedCategory === "Aplication" && "bg-blue-500"
-                  }`}
-                  onClick={() => handleCategoryClick("Aplication")}
-                >
-                  <div className="text-2xl sm:text-3xl">
-                    <HiPaperClip />
-                  </div>
-                  <div className="mt-2 p-2 text-sm sm:text-base">
-                    Application / Game
-                  </div>
-                </button>
-                <button
-                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                    selectedCategory === "Art" && "bg-blue-500"
-                  }`}
-                  onClick={() => handleCategoryClick("Art")}
-                >
-                  <div className="text-2xl sm:text-3xl">
-                    <HiPencil />
-                  </div>
-                  <div className="mt-2 text-sm sm:text-base">Art</div>
-                </button>
-                <button
-                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                    selectedCategory === "General discussion" && "bg-blue-500"
-                  }`}
-                  onClick={() => handleCategoryClick("General discussion")}
-                >
-                  <div className="text-2xl sm:text-3xl">
-                    <HiGlobe />
-                  </div>
-                  <div className="mt-2 text-sm sm:text-base">
-                    General discussion
-                  </div>
-                </button>
-                <button
-                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                    selectedCategory === "Audio" && "bg-blue-500"
-                  }`}
-                  onClick={() => handleCategoryClick("Audio")}
-                >
-                  <div className="text-2xl sm:text-3xl">
-                    <HiOutlineSpeakerphone />
-                  </div>
-                  <div className="mt-2 text-sm sm:text-base">Audio</div>
-                </button>
-                <button
-                  className={`h-24 sm:h-32 w-full lg:h-40 bg-white/10 bg-opacity-50 rounded-lg flex flex-col items-center justify-center text-white ${
-                    selectedCategory === "Video" && "bg-blue-500"
-                  }`}
-                  onClick={() => handleCategoryClick("Video")}
-                >
-                  <div className="text-2xl sm:text-3xl">
-                    <HiCamera />
-                  </div>
-                  <div className="mt-2 text-sm sm:text-base">Video</div>
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-                {filteredProjects.map((project) => (
-                  <ProjectCard key={project?._id} project={project} />
-                ))}
-
-                <p className="m-5">
-                  {filteredProjects.length <= 0 ? "Not projects found" : ""}
-                </p>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
-
-          {selectedType == "all" || selectedType == "user" ? (
-            <div>
-              <h2 className="pl-3 mb-4 text-2xl font-semibold mt-10">
-                Featured users:
-              </h2>
-
-              <div className="flex max-w-full gap-6 overflow-x-scroll pb-6">
-                {users?.map((user) => (
-                  <UserProfile key={user._id} userData={user} />
-                ))}
-                <p className="m-5">
-                  {users.length <= 0 ? "No users found" : ""}
-                </p>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
+      <div className="w-full flex flex-col gap-5 px-3 md:px-8 lg:px-12">
+        <div className="flex mt-10 gap-3">
+          <CustomDrawerFeed
+            followingUsers={userData?.following}
+            followingProjects={userFollowingProjects?.projects}
+          />
+          <Select
+            id="type"
+            type="type"
+            required
+            name="type"
+            value={selectedType}
+            onChange={handleTypeChange}
+            className="w-1/3"
+          >
+            <option value="" disabled>
+              Filter
+            </option>
+            <option value="all">All</option>
+            <option value="project">Project</option>
+            <option value="user">User</option>
+          </Select>
+          <TextInput
+            id="search"
+            type="search"
+            placeholder="Search for a nickname, user, or project title!"
+            onChange={handleSearchChange}
+            name="search"
+            autoComplete="off"
+            className="w-1/2"
+          />
+          <Button onClick={handleSearchSubmit}>
+            <HiOutlineArrowRight className="h-6 w-6 text-black dark:text-white" />
+          </Button>
         </div>
+
+        {(selectedType === "all" || selectedType === "project") && (
+          <div>
+            <h2 className="pl-3 mb-4 text-2xl font-semibold mt-10 text-black dark:text-white">
+              Top projects:
+            </h2>
+
+            <div className="grid md:flex md:justify-between md:mx-12 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 text-black dark:text-white">
+              <button
+                className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
+                  !selectedCategory
+                    ? "bg-blue-500 dark:bg-blue-500"
+                    : "bg-white"
+                }`}
+                onClick={() => handleCategoryClick("")}
+              >
+                <div className="text-2xl sm:text-3xl">
+                  <HiArchive />
+                </div>
+                <div className="mt-2 p-2 text-sm sm:text-base">All</div>
+              </button>
+              <button
+                className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
+                  selectedCategory === "Application"
+                    ? "bg-blue-500 dark:bg-blue-500"
+                    : "bg-white"
+                }`}
+                onClick={() => handleCategoryClick("Application")}
+              >
+                <div className="text-2xl sm:text-3xl">
+                  <HiPaperClip />
+                </div>
+                <div className="mt-2 p-2 text-sm sm:text-base">
+                  Application / Game
+                </div>
+              </button>
+              <button
+                className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
+                  selectedCategory === "Art"
+                    ? "bg-blue-500 dark:bg-blue-500"
+                    : "bg-white"
+                }`}
+                onClick={() => handleCategoryClick("Art")}
+              >
+                <div className="text-2xl sm:text-3xl">
+                  <HiPencil />
+                </div>
+                <div className="mt-2 text-sm sm:text-base">Art</div>
+              </button>
+              <button
+                className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
+                  selectedCategory === "General discussion"
+                    ? "bg-blue-500 dark:bg-blue-500"
+                    : "bg-white"
+                }`}
+                onClick={() => handleCategoryClick("General discussion")}
+              >
+                <div className="text-2xl sm:text-3xl">
+                  <HiGlobe />
+                </div>
+                <div className="mt-2 text-sm sm:text-base">
+                  General discussion
+                </div>
+              </button>
+              <button
+                className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
+                  selectedCategory === "Audio"
+                    ? "bg-blue-500 dark:bg-blue-500"
+                    : "bg-white"
+                }`}
+                onClick={() => handleCategoryClick("Audio")}
+              >
+                <div className="text-2xl sm:text-3xl">
+                  <HiOutlineSpeakerphone />
+                </div>
+                <div className="mt-2 text-sm sm:text-base">Audio</div>
+              </button>
+              <button
+                className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
+                  selectedCategory === "Video"
+                    ? "bg-blue-500 dark:bg-blue-500"
+                    : "bg-white"
+                }`}
+                onClick={() => handleCategoryClick("Video")}
+              >
+                <div className="text-2xl sm:text-3xl">
+                  <HiCamera />
+                </div>
+                <div className="mt-2 text-sm sm:text-base">Video</div>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10">
+              {filteredProjects.map((project) => (
+                <ProjectCard key={project?._id} project={project} />
+              ))}
+              <p className="m-5">
+                {filteredProjects.length <= 0 ? "No projects found" : ""}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {(selectedType === "all" || selectedType === "user") && (
+          <div>
+            <h2 className="pl-3 mb-4 text-2xl font-semibold  dark:text-white text-black">
+              Featured users:
+            </h2>
+            <div className="flex max-w-full gap-6 overflow-x-scroll pb-6">
+              {users?.map((user) => (
+                <UserProfile key={user._id} userData={user} />
+              ))}
+              <p className="m-5">{users.length <= 0 ? "No users found" : ""}</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

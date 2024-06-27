@@ -407,7 +407,7 @@ function Page() {
     <div>
       <Navbar />
 
-      <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
+      <div className="bg-gray-100 dark:bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-black dark:text-white">
         <div className="w-full">
           <img
             className="object-cover w-full h-72 p-1 ring-2 ring-indigo-300 dark:ring-indigo-500"
@@ -479,13 +479,13 @@ function Page() {
             <div className="">
               <Button.Group className="flex-wrap">
                 <Button>
-                  <HiUserCircle className="mr-3 h-4 w-4" />
-                  Overview
+                  <HiUserCircle className="mr-3 h-4 w-4 dark:text-white text-black" />
+                  <p className="dark:text-white text-black">Overview</p>
                 </Button>
                 <>
                   <Button onClick={() => setOpenModal(true)}>
-                    <HiCloudDownload className="mr-3 h-4 w-4" />
-                    Comments
+                    <HiCloudDownload className="mr-3 h-4 w-4 text-black dark:text-white" />
+                    <p className="dark:text-white text-black">Overview</p>
                   </Button>
                   <Modal
                     dismissible

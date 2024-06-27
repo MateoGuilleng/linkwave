@@ -44,7 +44,7 @@ function ProjectsPage() {
     <div>
       <Navbar using={"projects"} />
 
-      <div className="bg-black w-full flex flex-col gap-5 sm:px-5 md:px-10 md:flex-row text-[#ffffff]">
+      <div className="bg-gray-100 dark:bg-black text-black dark:text-white w-full flex flex-col gap-5 sm:px-5 md:px-10 md:flex-row ">
         <CustomAside />
 
         <main className="w-screen min-h-screen py-1 md:w-2/3 lg:w-3/4">
@@ -64,7 +64,7 @@ function ProjectsPage() {
                       onClick={() => {
                         router.push(`/${user.email}/chats/${chat.chatId}`);
                       }}
-                      className="p-4 mb-4 flex border-2 hover:bg-white/5 border-white/50 bg-black text-white rounded-lg"
+                      className="p-4 mb-4 flex border-2 dark:hover:bg-white/5 bg-white dark:bg-black dark:border-white/50 border-black/50 hover:border-black text-black dark:text-white rounded-lg"
                     >
                       <img
                         src={chat.chatWithProfileImage}

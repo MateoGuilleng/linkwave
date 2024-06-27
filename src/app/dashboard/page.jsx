@@ -279,7 +279,7 @@ function Dashboard() {
     <div>
       <Navbar using={"dashboard"} />
 
-      <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
+      <div className="dark:bg-black bg-gray-100 text-black dark:text-white w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row ">
         <CustomAside />
         <main className="w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
           <div className="p-2 md:p-4">
@@ -292,7 +292,7 @@ function Dashboard() {
                       Welcome {userData?.nickName || ""}
                       <DarkThemeToggle />
                     </h2>
-                    <p className="align-middle self-center text-white/50">
+                    <p className="align-middle self-center dark:text-white/50 text-black">
                       {userData?.email}
                     </p>
                   </div>
@@ -309,7 +309,7 @@ function Dashboard() {
                   <div className="flex flex-col space-y-5 sm:ml-8">
                     <>
                       <Button
-                        className="hover:border-white bg-green-700"
+                        className="dark:hover:bg-green-700 hover:bg-green-700 bg-green-500 dark:bg-green-800"
                         onClick={() => setPicModal(true)}
                       >
                         <div className="flex gap-5 align-middle">
@@ -403,7 +403,7 @@ function Dashboard() {
                     </>
                     <>
                       <Button
-                        className="border-w hover:bg-red-800"
+                        className="dark:hover:bg-red-700 hover:bg-red-700 bg-red-500 dark:bg-red-800"
                         onClick={() => setOpenModal(true)}
                       >
                         Sign out
@@ -518,7 +518,7 @@ function Dashboard() {
                 </div>
                 <form onSubmit={handleSubmit} onChange={handleChange}>
                   <div className="items-center mt-8 sm:mt-14 text-[#202142]">
-                    <h2 className=" text-2xl font-bold mb-10 sm:text-xl text-white">
+                    <h2 className=" text-2xl font-bold mb-10 sm:text-xl text-black dark:text-white">
                       Edit info:
                     </h2>
                     <div className="flex flex-col items-center w-full mb-2 space-x-0 space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0 sm:mb-6">
@@ -599,7 +599,7 @@ function Dashboard() {
                         id="message"
                         name="bio"
                         rows={4}
-                        className="block p-2.5 w-full text-sm text-white bg-black rounded-lg border border-indigo-300 focus:ring-indigo-500 focus:border-indigo-500 "
+                        className="block p-2.5 w-full text-sm text-black bg-white rounded-lg border border-indigo-300 focus:ring-indigo-500 focus:border-indigo-500 "
                         placeholder={userData?.bio || ""}
                         defaultValue={""}
                       />
@@ -618,8 +618,8 @@ function Dashboard() {
                       </button>
                     </div>
                   </div>
-                  <div className="mb-6">
-                    <h3 className="text-lg font-bold mb-4 text-white">
+                  <div className="mb-6 text-black dark:text-white">
+                    <h3 className="text-lg font-bold mb-4 ">
                       Add accounts to your profile:
                     </h3>
                     <div className="flex space-x-4">
@@ -662,7 +662,7 @@ function Dashboard() {
                     />
                   )}
                 </form>
-                <div>
+                <div className="">
                   <SocialProfilesList
                     socialProfiles={userData?.socialProfiles} userEmail={user?.email}
                   />

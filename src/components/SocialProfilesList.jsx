@@ -80,8 +80,8 @@ const SocialProfilesList = ({ socialProfiles, userEmail }) => {
   };
 
   return (
-    <div className="mt-6">
-      <h2 className="text-2xl font-bold mb-4 text-white">
+    <div className="mt-6 text-black dark:text-white">
+      <h2 className="text-2xl font-bold mb-4 text-black dark:text-white ">
         Your Social Profiles
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -90,17 +90,19 @@ const SocialProfilesList = ({ socialProfiles, userEmail }) => {
           return (
             <div
               key={index}
-              className="p-4 border rounded-lg shadow-md bg-black"
+              className="p-4 border rounded-lg shadow-md bg-white dark:bg-black"
             >
-              <h3 className="text-xl font-semibold text-white flex items-center">
+              <h3 className="text-xl font-semibold text-black dark:text-white flex items-center">
                 {Icon && <Icon className="mr-2" />}
                 {profile.social}
               </h3>
-              <p className="text-sm text-white break-words">{profile.url}</p>
+              <p className="text-sm text-black dark:text-white break-words">
+                {profile.url}
+              </p>
               <div className="flex space-x-4 mt-4">
                 <button
                   onClick={() => handleEdit(profile._id)}
-                  className="p-2 bg-blue-600 text-white rounded-full"
+                  className="p-2 bg-blue-600 text-white  rounded-full"
                 >
                   <FaEdit />
                 </button>
@@ -137,12 +139,12 @@ const SocialProfilesList = ({ socialProfiles, userEmail }) => {
                 required
               />
             </div>
-            <div className="flex justify-end">
-              <Button onClick={handleCancel} variant="secondary">
-                Cancel
+            <div className="flex justify-end ">
+              <Button className="" onClick={handleCancel} variant="secondary">
+                <p className="text-black dark:text-white">Cancel</p>
               </Button>
               <Button onClick={handleSave} className="ml-2">
-                Save
+                <p className="text-black dark:text-white">Save</p>
               </Button>
             </div>
           </div>
