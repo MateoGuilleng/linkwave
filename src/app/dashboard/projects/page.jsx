@@ -257,7 +257,7 @@ function ProjectsPage() {
                           />
                         </div>
 
-                        <Button type="submit" disabled={isSubmitDisabled}>
+                        <Button type="submit" className="text-black border-2 border-black/50 dark:border-white/50 dark:text-white" disabled={isSubmitDisabled}>
                           Submit
                         </Button>
                       </form>

@@ -543,7 +543,10 @@ const SortableList = ({ items = [], projectName }) => {
       return (
         <div className="box-description w-full border-t-2 pt-2 border-white/45">
           {/* Renderización segura del contenido HTML */}
-          <div dangerouslySetInnerHTML={createMarkup(description)} />
+          <div
+            className="prose prose-sm md:prose-lg lg:prose-xl max-w-full"
+            dangerouslySetInnerHTML={createMarkup(description)}
+          />
         </div>
       );
     };

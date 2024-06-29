@@ -356,38 +356,6 @@ function Page() {
     });
   };
 
-  const handleStarClick = async () => {
-    console.log("loco");
-    const newStarIsClicked = !starIsClicked;
-    setStarIsClicked(newStarIsClicked); // Cambia el estado de clicado a no clicado y viceversa
-
-    const newBinaryStar = newStarIsClicked ? 1 : 0;
-
-    console.log("binary Star: ", newBinaryStar, typeof newBinaryStar); //binary Star:  1 number
-    console.log("lastWord: ", lastWord, typeof lastWord); // Añade un log para lastWord
-
-    const starredBy = await user?.email;
-    try {
-      const res = await fetch(`/api/stars/project/${lastWord}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          binaryStar: newBinaryStar,
-          starredBy,
-        }),
-      });
-
-      if (res.status === 200) {
-        setError("");
-      } else {
-        setError("Failed to update the star status");
-        console.log("Response status: ", res.status);
-      }
-    } catch (error) {
-      setError("Something went wrong, try again");
-      console.log(error);
-    }
-  };
-
   const handleSaveImage = async (e) => {
     e.preventDefault();
     const formImageData = new FormData();
@@ -665,14 +633,14 @@ function Page() {
                           </div>
                         </Button>
                         <Modal
-                          className="bg-black/75 w-screen"
+                          className="bg-black/75 w-screen text-black dark:text-white"
                           show={editModal}
                           onClose={() => setEditModal(false)}
                         >
-                          <Modal.Header className="bg-black">
+                          <Modal.Header className="dark:bg-black bg-white">
                             Edit Project:
                           </Modal.Header>
-                          <Modal.Body className="bg-black">
+                          <Modal.Body className="dark:bg-black bg-white">
                             <div className="overflow-y-auto max-h-[70vh]">
                               <div className="text-left text-md font-semibold p-5">
                                 Banner:
@@ -681,7 +649,7 @@ function Page() {
                               <div className="flex w-full items-center justify-center">
                                 <Label
                                   htmlFor="dropzone-file"
-                                  className="flex h-34 w-full bg-black mb-3 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 hover:bg-gray-900 "
+                                  className="flex h-34 w-full dark:bg-black bg-white mb-3 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 hover:bg-gray-400 dark:hover:bg-gray-900 "
                                 >
                                   <div className="flex flex-col items-center justify-center pb-6 pt-5">
                                     <svg
