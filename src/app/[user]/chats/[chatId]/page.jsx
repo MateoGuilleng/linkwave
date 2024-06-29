@@ -224,7 +224,7 @@ function ChatPage() {
             <div
               key={index}
               onClick={() => handleChatClick(chat.chatId)}
-              className="cursor-pointer p-2 mb-2 bg-white text-black dark:text-white rounded hover:bg-gray-200"
+              className="cursor-pointer p-2 mb-2 bg-white text-black dark:bg-black dark:hover:bg-gray-900 dark:text-white rounded hover:bg-gray-200"
             >
               <div className="flex items-center">
                 <div className="mb-1 text-sm font-semibold flex md:flex-nowrap flex-wrap">
@@ -268,7 +268,7 @@ function ChatPage() {
               <div className="flex gap-5 items-center flex-wrap">
                 Chatting with:{" "}
                 <p className="md:ml-2 text-xl">{participantData?.nickName} </p>{" "}
-                <p className="text-white/50 text-xs">{participant}</p>
+                <p className="text-black/50 dark:text-white/50 text-xs">{participant}</p>
               </div>
             </div>
           </div>

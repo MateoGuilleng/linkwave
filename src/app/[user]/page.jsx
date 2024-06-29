@@ -20,6 +20,8 @@ import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
 export default function Page() {
+  const [createdChat, setCreatedChat] = useState(false);
+  const [chatId, setChatId] = useState(null);
   const { user, isLoading } = useUser();
   const [userData, setUserData] = useState(null);
   const [sessionUserData, setSessionUserData] = useState(null);
@@ -47,15 +49,14 @@ export default function Page() {
       let chatId = null;
       const myEmail = user.email;
 
-      console.log("PUTA", lastWord, myEmail);
-
       const response = await fetch(`/api/${lastWord}/${myEmail}/chats`, {
         method: "GET",
       });
+
       if (response.ok) {
         const existingChat = await response.json();
-
         console.log("existing chat", existingChat);
+
         if (existingChat && existingChat.chatId) {
           chatId = existingChat.chatId;
         }
@@ -63,30 +64,27 @@ export default function Page() {
         throw new Error("Failed to check existing chat");
       }
 
+      const chatRef = ref(db, `chats/${chatId}`);
+
+      await set(chatRef, {
+        participants: [user.email, userData.email],
+        createdAt: Date.now(),
+      });
+
       // If no existing chat, generate a new chat ID
-      if (!chatId) {
+      if (chatId == null) {
         chatId = uuidv4();
+
+        // Update both users with the new chat ID
+        await Promise.all([
+          updateUserWithChatId(lastWord, chatId),
+          updateUserSessionWithChatId(user.email, chatId),
+        ]);
+
+        router.push(`${user.email}/chats/${chatId}`);
       } else {
         router.push(`${user.email}/chats/${chatId}`);
       }
-
-      if (!chatId) {
-        const chatRef = ref(db, `chats/${chatId}`);
-        await set(chatRef, {
-          participants: [user.email, userData.email],
-          createdAt: Date.now(),
-        });
-      }
-      // Update both users with the new chat ID if it doesn't exist
-      if (!chatId) {
-        await updateUserWithChatId(lastWord, chatId);
-      }
-      if (!chatId) {
-        await updateUserSessionWithChatId(user.email, chatId);
-      }
-
-      // Redirect to the chat page with the newly created or existing chat ID
-      router.push(`${user.email}/chats/${chatId}`);
     } catch (error) {
       console.error("Error handling chat:", error);
     } finally {
@@ -175,6 +173,18 @@ export default function Page() {
           const response = await fetch(`/api/${lastWord}`);
           const userData = await response.json();
           setUserData(userData);
+
+          // Buscar en el array userData.chats y guardar el chatId
+          const existingChat = userData.chats.find(
+            (chat) => chat.chatWithEmail === user.email
+          );
+          if (existingChat) {
+            setChatId(existingChat.chatId);
+            setCreatedChat(true)
+          }
+
+          console.log("Existing chat:", existingChat);
+          console.log(sessionUserData);
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -219,6 +229,7 @@ export default function Page() {
     return <div>Loading...</div>;
   }
 
+  console.log(createdChat);
   return (
     <div className="bg-gray-100 dark:bg-black min-h-screen">
       <Navbar />
@@ -240,15 +251,29 @@ export default function Page() {
                 Dashboard
               </Button>
             ) : (
-              <div className="mt-4 w-full  sm:flex " >
-                <Button className="w-full mb-2 text-black dark:text-white">Follow</Button>
-                <Button
-                  onClick={handleChatButtonClick}
-                  className="w-full text-black dark:text-white"
-                  disabled={loading}
-                >
-                  {loading ? "Loading Chat..." : "Chat"}
+              <div className="mt-4 w-full  sm:flex ">
+                <Button className="w-full mb-2 text-black dark:text-white">
+                  Follow
                 </Button>
+                {createdChat ? (
+                  <Button
+                    onClick={() => {
+                      router.push(`${user.email}/chats/${chatId}`);
+                    }}
+                    className="w-full text-black dark:text-white"
+                    disabled={loading}
+                  >
+                    {loading ? "Loading Chat..." : "Load the chat"}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleChatButtonClick}
+                    className="w-full text-black dark:text-white"
+                    disabled={loading}
+                  >
+                    {loading ? "Creating Chat..." : "Create a chat"}
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -268,7 +293,7 @@ export default function Page() {
                 <button
                   key={index}
                   className="p-4 border rounded-lg shadow-md bg-black"
-                  onClick={()=> router.push(`${profile.url}`)}
+                  onClick={() => router.push(`${profile.url}`)}
                 >
                   <div className="flex items-center space-x-4">
                     {iconMap[profile.social]}
