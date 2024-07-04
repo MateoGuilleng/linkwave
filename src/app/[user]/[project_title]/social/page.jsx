@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { formatDistanceToNow } from "date-fns";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 
 import SortableRequestListReadOnly from "@/components/requestBoxesForClient";
+
+import UserProfile from "@/components/UserProfile";
 
 import {
   HiAdjustments,
@@ -26,7 +29,7 @@ import {
   FileInput,
   Select,
 } from "flowbite-react";
-import { FaArrowLeft, FaPlus } from "react-icons/fa";
+import { FaArrowLeft, FaPlus, FaPeopleArrows } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { SlOptionsVertical } from "react-icons/sl";
 import { useUser } from "@auth0/nextjs-auth0/client";
@@ -37,6 +40,8 @@ function Page() {
   const [imagePreview, setImagePreview] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [openCommentEditModal, setOpenCommentEditModal] = useState(false);
+
+  const [users, setUsers] = useState([]);
 
   const [commentId, setCommentId] = useState();
   const [uploadModal, setUploadModal] = useState(false);
@@ -54,6 +59,8 @@ function Page() {
 
   const [message, setMessage] = useState("");
 
+  const [projectId, setProjectId] = useState(null);
+
   const [requestBoxTitle, setRequestBoxTitle] = useState("");
   const [requestBoxCategory, setRequestBoxCategory] = useState("");
   const [requestFile, setRequestFile] = useState(null);
@@ -61,8 +68,12 @@ function Page() {
   const router = useRouter();
 
   const [items, setItems] = useState([]);
+
   const getProject = async () => {
-    console.log("last word desde get project", lastWord);
+    const projectId = project._id;
+
+    console.log(projectId);
+
     try {
       const res = await fetch(
         `/api/project/specificProject/${encodeURIComponent(lastWord)}`,
@@ -79,6 +90,7 @@ function Page() {
         setProject(data);
         setItems(data.boxes);
         setReqItems(data.requestBoxes);
+        setProjectId(data._id);
       } else {
         console.error("Failed to fetch projects:", res.statusText);
       }
@@ -86,17 +98,43 @@ function Page() {
       console.error("Error fetching projects:", error.message);
     }
   };
-  console.log("itens", items);
+
   if (items == undefined) {
-    console.log("jajaja");
     getProject();
   } else {
     console.log("jejee");
   }
 
+  console.log(projectId);
   useEffect(() => {
     getProject();
   }, []);
+
+  const getFollowers = async () => {
+    try {
+      const res = await fetch(`/api/users/${projectId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log("users", data);
+        setUsers(data);
+      } else {
+        console.error("Failed to fetch projects:", res.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (projectId !== null) {
+      getFollowers();
+    }
+  }, [projectId]);
 
   useEffect(() => {
     const currentPath = window.location.pathname;
@@ -310,7 +348,7 @@ function Page() {
     <div>
       <Navbar />
 
-      <div className="bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#ffffff]">
+      <div className="bg-white dark:bg-black w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-black dark:text-white">
         <div className="w-full">
           <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
             <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
@@ -339,13 +377,13 @@ function Page() {
                     router.replace(`/${project.author}/${project.title}`)
                   }
                 >
-                  <HiUserCircle className="mr-3 h-4 w-4" />
-                  Overview
+                  <HiUserCircle className="mr-3 h-4 w-4 text-black dark:text-white" />
+                  <p className="text-black dark:text-white">Overview</p>
                 </Button>
                 <>
                   <Button onClick={() => setOpenModal(true)}>
-                    <HiCloudDownload className="mr-3 h-4 w-4" />
-                    Comments
+                    <HiCloudDownload className="mr-3 h-4 w-4 text-black dark:text-white" />
+                    <p className="text-black dark:text-white">Comments</p>
                   </Button>
                   <Modal
                     dismissible
@@ -574,16 +612,27 @@ function Page() {
                 ) : (
                   ""
                 )}
+                <Button className="block sm:hidden" color="">
+                  <FaPeopleArrows className="mr-3 h-4 w-4 " />
+                  People
+                </Button>
               </Button.Group>
             </div>
             <div className="flex items-center gap-5 mb-5">
               <h1 className="text-2xl font-bold">Owner: </h1>{" "}
-              <a className="hover:border-b-2" href={`${project.author}`}>{project?.author}</a>
+              <a className="hover:border-b-2" href={`${project.author}`}>
+                {project?.author}
+              </a>
             </div>
             <div className="flex">
               <h1 className="text-2xl font-bold">Followers:</h1>
-          
-           </div>
+            </div>
+            <div className="flex max-w-full gap-6 overflow-x-scroll pb-6">
+              {users?.map((user) => (
+                <UserProfile key={user._id} userData={user} />
+              ))}
+              <p className="m-5">{users.length <= 0 ? "No users found" : ""}</p>
+            </div>
           </main>
         </div>
         <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">

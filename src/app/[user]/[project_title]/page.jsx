@@ -30,7 +30,7 @@ import {
   FileInput,
   Select,
 } from "flowbite-react";
-import { FaArrowLeft, FaPlus } from "react-icons/fa";
+import { FaArrowLeft, FaPeopleArrows, FaPlus } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { SlOptionsVertical } from "react-icons/sl";
 import { useUser } from "@auth0/nextjs-auth0/client";
@@ -485,7 +485,7 @@ function Page() {
                 <>
                   <Button onClick={() => setOpenModal(true)}>
                     <HiCloudDownload className="mr-3 h-4 w-4 text-black dark:text-white" />
-                    <p className="dark:text-white text-black">Overview</p>
+                    <p className="dark:text-white text-black">Comments</p>
                   </Button>
                   <Modal
                     dismissible
@@ -493,7 +493,7 @@ function Page() {
                     show={openModal}
                     onClose={() => setOpenModal(false)}
                   >
-                    <Modal.Header className="bg-black border-2">
+                    <Modal.Header className="dark:bg-black bg-white border-2">
                       <form action="" onSubmit={handleUploadComment}>
                         <div className="w-full">
                           <div className="mb-2 ">
@@ -523,7 +523,7 @@ function Page() {
                         </div>
                       </form>
                     </Modal.Header>
-                    <Modal.Body className="max-h-[400px] overflow-y-auto bg-black border-2 border-white/30">
+                    <Modal.Body className="max-h-[400px] overflow-y-auto bg-white text-black dark:text-white dark:bg-black border-2 border-white/30">
                       <div className="space-y-6">
                         <h3 className="text-xl font-bold">
                           Comments: ({projectComments?.length})
@@ -714,6 +714,14 @@ function Page() {
                 ) : (
                   ""
                 )}
+                <Button
+                  className="block sm:hidden"
+                  color=""
+                  onClick={() => router.push(`${lastWord}/social`)}
+                >
+                  <FaPeopleArrows className="mr-3 h-4 w-4 " />
+                  People
+                </Button>
               </Button.Group>
             </div>
 

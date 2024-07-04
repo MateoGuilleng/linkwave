@@ -22,9 +22,9 @@ function CustomDrawer() {
 
   return (
     <>
-      <div className="block sm:hidden">
+      <div className="block  sm:hidden">
         <Button onClick={() => setIsOpen(true)}>
-          <HiMenu className="w-7 h-7" />
+          <HiMenu className="w-7 h-7 text-black dark:text-white" />
         </Button>
       </div>
       <Drawer open={isOpen} onClose={handleClose}>

@@ -15,7 +15,13 @@ import {
 
 import { formatDistanceToNow } from "date-fns";
 
-import { FaArrowLeft, FaPlus, FaSave, FaEdit, FaTrash } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaPlus,
+  FaSave,
+  FaEdit,
+  FaPeopleArrows,
+} from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 import { SlOptionsVertical } from "react-icons/sl";
@@ -215,6 +221,8 @@ function Page() {
             });
 
             resolve({ name: result.filename });
+
+            window.location.reload();
           } else {
             console.error("Error uploading file:", result);
             reject(new Error("Error uploading file"));
@@ -1091,6 +1099,14 @@ function Page() {
                 ) : (
                   ""
                 )}
+                <Button
+                  className="block sm:hidden"
+                  color=""
+                  onClick={() => router.push(`/${project?.author}/${lastWord}/social`)}
+                >
+                  <FaPeopleArrows className="mr-3 h-4 w-4 " />
+                  People
+                </Button>
               </Button.Group>
             </div>
 
@@ -1123,9 +1139,15 @@ function Page() {
                 show={uploadModal}
                 onClose={() => setUploadModal(false)}
               >
-                <Modal.Header className="bg-white dark:bg-black text-black dark:text-white">Upload Box:</Modal.Header>
+                <Modal.Header className="bg-white dark:bg-black text-black dark:text-white">
+                  Upload Box:
+                </Modal.Header>
                 <Modal.Body className="bg-white dark:bg-black text-black dark:text-white">
-                  <form onSubmit={handleBoxSubmit}>
+                  <form
+                    onSubmit={(e) => {
+                      handleBoxSubmit(e);
+                    }}
+                  >
                     <div className="overflow-y-auto max-h-[70vh]">
                       <div className="flex gap-10">
                         <div className="mt-5 w-full ">
@@ -1226,7 +1248,7 @@ function Page() {
             </a>
 
             <a
-              href={`${lastWord}/social`}
+              href={`/${project?.author}/${lastWord}/social`}
               className="flex items-center px-3 py-2.5 font-semibold hover:border hover:rounded-full  "
             >
               People

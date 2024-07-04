@@ -544,7 +544,7 @@ const SortableList = ({ items = [], projectName }) => {
         <div className="box-description w-full border-t-2 pt-2 border-white/45">
           {/* Renderización segura del contenido HTML */}
           <div
-            className="prose prose-sm md:prose-lg lg:prose-xl max-w-full"
+            className="sm:prose proseSmall prose-sm md:prose-lg lg:prose-xl max-w-full"
             dangerouslySetInnerHTML={createMarkup(description)}
           />
         </div>
@@ -567,8 +567,10 @@ const SortableList = ({ items = [], projectName }) => {
               <span className="text-gray-500 mr-2 self-center">
                 {item.position}.
               </span>
-              <span className="text-3xl font-bold">{item.title}</span>{" "}
-              <p className="text-sm ml-5">
+              <span className="sm:text-3xl text-xl font-bold ">
+                {item.title}
+              </span>{" "}
+              <p className="sm:text-sm text-xs ml-5">
                 Uploaded by: {item.author ? item.author : "Admin"}
               </p>
               <span className="text-4xl ml-10">
