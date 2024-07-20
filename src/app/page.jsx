@@ -90,6 +90,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen h-fit flex-col items-center justify-center relative bg-gray-50 dark:bg-black">
       <div className="w-full">
+        
         <Navbar />
       </div>
 
