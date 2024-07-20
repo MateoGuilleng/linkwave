@@ -744,7 +744,7 @@ function Page() {
                                       type="text"
                                       name="title"
                                       id="title"
-                                      className="bg-black border border-gray-300 text-white  text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black   dark:focus:ring-primary-500 d"
+                                      className="bg-black border border-gray-300 text-black dark:text-white  text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black   dark:focus:ring-primary-500 d"
                                       placeholder={project?.title}
                                     />
                                   </div>

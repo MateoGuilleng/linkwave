@@ -321,7 +321,7 @@ export default function UsersPage() {
               {users?.map((user) => (
                 <UserProfile key={user._id} userData={user} />
               ))}
-              <p className="m-5">{users.length <= 0 ? "No users found" : ""}</p>
+              <p className="m-5 text-black dark:text-white">{users.length <= 0 ? "No users found" : ""}</p>
             </div>
           </div>
         )}
