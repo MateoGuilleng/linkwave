@@ -21,7 +21,7 @@ function Navbar({ using }) {
               className="text-lg font-bold hover:text-fuchsia-600 transition-colors"
               href="/"
             >
-              Projectfully
+              Linkwave
             </Link>
             <ul className="flex gap-8 text-gray-700 dark:text-gray-300">
               <li>
@@ -58,10 +58,10 @@ function Navbar({ using }) {
         <div className="w-full h-16 backdrop-filter backdrop-blur-xl bg-opacity-20 border-b flex items-center justify-center sticky top-0 z-10 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-10 w-full flex items-center justify-between p-4">
             <Link
-              className="text-lg font-bold hover:text-fuchsia-600 transition-colors"
+              className="text-lg font-bold text-black dark:text-white hover:text-fuchsia-600 transition-colors"
               href="/"
             >
-              Projectfully
+              Linkwave
             </Link>
             <ul className="flex gap-8 align-middle items-center">
               <li>

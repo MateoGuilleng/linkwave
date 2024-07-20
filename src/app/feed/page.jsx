@@ -35,7 +35,7 @@ export default function UsersPage() {
   const [projectsCopy, setProjectsCopy] = useState(null);
 
   const [users, setUsers] = useState([]);
-  const [usersCopy, setUsersCopy] = useState(null);
+  const [usersCopy, setUsersCopy] = useState([]);
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedType, setSelectedType] = useState("all");
@@ -58,6 +58,7 @@ export default function UsersPage() {
   }, [user]);
 
   console.log(userFollowingProjects);
+  console.log(users);
 
   const fetchData = async () => {
     if (user) {
@@ -304,7 +305,7 @@ export default function UsersPage() {
               {filteredProjects.map((project) => (
                 <ProjectCard key={project?._id} project={project} />
               ))}
-              <p className="m-5">
+              <p className="m-5 text-black dark:text-white">
                 {filteredProjects.length <= 0 ? "No projects found" : ""}
               </p>
             </div>

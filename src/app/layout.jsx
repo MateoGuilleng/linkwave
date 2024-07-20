@@ -15,7 +15,7 @@ import {
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Projectfully",
+  title: "Linkwave",
   description: "Social media focused on projects",
 };
 
@@ -177,7 +177,7 @@ export default async function RootLayout({ children }) {
             <div className="w-full bg-white dark:bg-gray-900 px-4 border-t-2 border-gray-300 dark:border-gray-700 py-6 sm:flex sm:items-center sm:justify-between">
               <Footer.Copyright
                 href="#"
-                by="Projectfully"
+                by="Linkwave"
                 year={2024}
                 className="text-gray-600 dark:text-gray-300"
               />

@@ -8,7 +8,7 @@ const infoCards = [
   {
     title: "Help others",
     bodyText:
-      " projectfully is based on the feedback supoort of the community, being an active part of this will reward you in the future  ",
+      " Linkwave is based on the feedback suport of the community, being an active part of this will reward you ",
     icon: ArrowUpNarrowWide,
     id: 1,
   },

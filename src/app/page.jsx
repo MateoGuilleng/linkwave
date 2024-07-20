@@ -100,14 +100,14 @@ export default function Home() {
         <div className="w-full h-2/4 md:h-full md:w-2/5 flex flex-col justify-center items-center md:items-start gap-8">
           <div className="flex flex-col gap-2">
             <h1 className="text-4xl font-black md:text-8xl text-gray-900 dark:text-white">
-              Projectfully
+              Linkwave
             </h1>
             <h2 className="text-md md:text-2xl text-gray-700 dark:text-gray-300">
               Start growing today!
             </h2>
           </div>
           <p className="max-w-md text-sm md:text-base text-gray-600 dark:text-gray-400">
-            Projectfully is a social media app where you can share and give your
+            Linkwave is a social media app where you can share and give your
             opinion about any type of project around the world!
           </p>
           <div className="w-full flex items-center justify-center md:justify-start gap-4">
@@ -166,7 +166,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
     </main>
   );
 
