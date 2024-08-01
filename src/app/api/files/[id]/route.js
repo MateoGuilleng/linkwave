@@ -55,6 +55,9 @@ export const PUT = async (request, { params }) => {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    
+    const project_name = decodeURIComponent(projectName);
+
     return new Promise(async (resolve, reject) => {
       const writestream = gfs.createWriteStream({
         filename: file.name,
@@ -67,7 +70,7 @@ export const PUT = async (request, { params }) => {
         const fileId = writestream.id.toString();
 
         try {
-          const project = await Project.findOne({ title: projectName });
+          const project = await Project.findOne({ title: project_name });
 
           if (!project) {
             throw new Error("Project not found");
@@ -102,7 +105,7 @@ export const PUT = async (request, { params }) => {
           };
 
           const updatedProject = await Project.findOneAndUpdate(
-            { title: projectName },
+            { title: project_name },
             update,
             options
           );

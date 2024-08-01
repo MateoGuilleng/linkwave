@@ -131,32 +131,36 @@ const SortableList = ({ items = [], projectName }) => {
   const handleUpdateBoxSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-
+  
     formData.append("projectID", currentBoxId); // Ensure to add the ID of the currently edited box
-
+  
     console.log("Project ID: " + typeof currentBoxId);
-
+  
     let title = formData.get("title");
     let description = formData.get("description");
     let category = formData.get("type");
-
+  
     // Verify if the field is empty and replace with placeholder value
     if (!title.trim()) {
       title = e.target.querySelector("#Title").getAttribute("placeholder");
     }
     if (!description.trim()) {
-      description = e.target
-        .querySelector("#Description")
-        .getAttribute("placeholder");
+      description = e.target.querySelector("#Description").getAttribute("placeholder");
     }
-    if (!category.trim()) {
-      category = e.target.querySelector("#type").getAttribute("placeholder");
+  
+    // Verifica si se cambió el valor del select con nombre 'type'
+    const valorInicial = 'valorInicial'; // Reemplaza esto con el valor inicial o por defecto del select
+    if (category !== valorInicial) {
+      console.log('El valor del select ha cambiado:', category);
+    } else {
+      console.log('El valor del select no ha cambiado.');
     }
-
+  
+    // Establecer los valores en formData
     formData.set("title", title);
     formData.set("description", description);
     formData.set("category", category);
-
+  
     const promise = () =>
       new Promise(async (resolve, reject) => {
         try {
@@ -164,12 +168,12 @@ const SortableList = ({ items = [], projectName }) => {
             method: "PUT",
             body: formData,
           });
-
+  
           const result = await response.json();
           if (response.ok) {
             console.log("File updated successfully", result);
             setMessage("Box updated successfully");
-
+  
             const newBox = {
               id: currentBoxId,
               title,
@@ -178,7 +182,7 @@ const SortableList = ({ items = [], projectName }) => {
               filename: result.filename,
               filetype: result.filetype,
             };
-
+  
             resolve({ name: title });
           } else {
             console.error("Error updating box:", result);
@@ -189,7 +193,7 @@ const SortableList = ({ items = [], projectName }) => {
           reject(error);
         }
       });
-
+  
     toast.promise(promise(), {
       loading: "Updating...",
       success: (data) => {
@@ -198,6 +202,8 @@ const SortableList = ({ items = [], projectName }) => {
       error: "Error updating box",
     });
   };
+  
+  
 
   const handleEditBoxClick = async (item) => {
     setCurrentBoxId(item.identifier); // Establecer el ID del box actual
@@ -835,7 +841,7 @@ const SortableList = ({ items = [], projectName }) => {
                   <div className="mt-5 w-full">
                     <Button
                       type="submit"
-                      className="bg-slate-800 text-black dark:text-white"
+                      className="bg-slate-800 w-full border-2 dark:border-white/50 border-black/50 text-black dark:text-white"
                     >
                       <div className="self-center ">
                         <FaEdit className="" />

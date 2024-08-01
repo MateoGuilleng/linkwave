@@ -1102,7 +1102,9 @@ function Page() {
                 <Button
                   className="block sm:hidden"
                   color=""
-                  onClick={() => router.push(`/${project?.author}/${lastWord}/social`)}
+                  onClick={() =>
+                    router.push(`/${project?.author}/${lastWord}/social`)
+                  }
                 >
                   <FaPeopleArrows className="mr-3 h-4 w-4 " />
                   People
@@ -1135,7 +1137,7 @@ function Page() {
             </div>
             <>
               <Modal
-                className="bg-black/75"
+                className="bg-black/75 "
                 show={uploadModal}
                 onClose={() => setUploadModal(false)}
               >
@@ -1144,6 +1146,7 @@ function Page() {
                 </Modal.Header>
                 <Modal.Body className="bg-white dark:bg-black text-black dark:text-white">
                   <form
+                    className=""
                     onSubmit={(e) => {
                       handleBoxSubmit(e);
                     }}
@@ -1228,8 +1231,12 @@ function Page() {
                         required
                         rows={4}
                       />
-
-                      <button type="submit">Upload</button>
+                      <button
+                        className="border-2 dark:border-white/50 border-black/50 p-2 my-4  rounded-lg w-full"
+                        type="submit"
+                      >
+                        Upload
+                      </button>
                     </div>
                   </form>
                 </Modal.Body>
