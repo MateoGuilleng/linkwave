@@ -231,7 +231,7 @@ function ProjectsPage() {
                               </option>
                               <option value="Math">Math</option>
                               <option value="Chemestry">Chemestry</option>
-                              <option value="History">History</option>
+                              <option value="Social science">Social science</option>
                               <option value="English">English</option>
                               <option value="Technology">Tecnology</option>
                               <option value="Farandula">Farandula</option>

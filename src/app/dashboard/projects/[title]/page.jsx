@@ -42,10 +42,11 @@ import {
 function Page() {
   const [editModal, setEditModal] = useState(false);
   const { user, isLoading } = useUser();
+
   const [openModal, setOpenModal] = useState(false);
   const [starIsClicked, setStarIsClicked] = useState(false);
   const [uploadModal, setUploadModal] = useState(false);
-  const [selectedProjectType, setSelectedProjectType] = useState("");
+
   const [archivo, setArchivo] = useState(null);
   const [newComment, setNewComment] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
@@ -67,11 +68,24 @@ function Page() {
   const [boxTitle, setBoxTitle] = useState("");
   const [boxCategory, setBoxCategory] = useState("fileVanilla");
 
-  const [categoryChanged, setCateogoryChanged] = useState(false);
   const [boxInfo, setBoxInfo] = useState(null);
   const [items, setItems] = useState([]);
 
   const [commentId, setCommentId] = useState();
+
+  const [title, setTitle] = useState(project?.title || "");
+  const [description, setDescription] = useState(project?.description || "");
+  const [contentProject, setContentProject] = useState(project?.content || "");
+  const [selectedProjectType, setSelectedProjectType] = useState(
+    project?.projectType || ""
+  );
+  const [categoryChanged, setCategoryChanged] = useState(false);
+
+  // Manejador para el cambio en el tipo de proyecto
+  const handleProjectTypeChange = (e) => {
+    setSelectedProjectType(e.target.value);
+    setCategoryChanged(true); // Indica que la categoría fue cambiada
+  };
 
   const getProject = async () => {
     try {
@@ -306,12 +320,6 @@ function Page() {
     const text = e.target.value;
     setCommentText(text);
     setShowUploadButton(text.trim().length > 0); // Mostrar el botón si hay texto en el área de comentario
-  };
-
-  const handleProjectTypeChange = (e) => {
-    setSelectedProjectType(e.target.value);
-    setCateogoryChanged(true);
-    console.log(selectedProjectType);
   };
   const handleUploadComment = async (e) => {
     const author = user?.email;
@@ -744,34 +752,39 @@ function Page() {
                                       type="text"
                                       name="title"
                                       id="title"
-                                      className="bg-black border border-gray-300 text-black dark:text-white  text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black   dark:focus:ring-primary-500 d"
-                                      value={project?.title}
+                                      className="bg-black border border-gray-300 text-black dark:text-white text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black dark:focus:ring-primary-500"
+                                      value={title}
+                                      onChange={(e) => setTitle(e.target.value)}
+                                      placeholder={project?.title}
                                     />
                                   </div>
                                   <div className="col-span-2 sm:col-span-1">
                                     <label
-                                      htmlFor="price"
+                                      htmlFor="description"
                                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                     >
                                       Description
                                     </label>
-                                    <input
-                                      type="text"
+                                    <TextInput
                                       name="description"
                                       id="description"
-                                      className="bg-black border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                      value={project?.description}
+                                      placeholder={project?.description}
+                                      value={description}
+                                      onChange={(e) =>
+                                        setDescription(e.target.value)
+                                      }
                                     />
                                   </div>
                                   <div className="col-span-2 sm:col-span-1">
                                     <div className="mb-2 block">
-                                      <Label htmlFor="type" value="type" />
+                                      <Label htmlFor="type" value="Type" />
                                     </div>
                                     <Select
                                       id="category"
                                       name="category"
                                       required
                                       onChange={handleProjectTypeChange}
+                                      value={selectedProjectType}
                                     >
                                       <option
                                         className="dark:bg-black bg-black"
@@ -779,15 +792,14 @@ function Page() {
                                       >
                                         current: {project?.projectType}
                                       </option>
-
                                       <option value="Math">Math</option>
                                       <option value="Chemestry">
                                         Chemestry
                                       </option>
-                                      <option value="History">History</option>
+                                      <option value="Social science">Social science</option>
                                       <option value="English">English</option>
                                       <option value="Technology">
-                                        Tecnology
+                                        Technology
                                       </option>
                                       <option value="Farandula">
                                         Farandula
@@ -808,8 +820,12 @@ function Page() {
                                       id="content"
                                       name="content"
                                       rows={4}
-                                      className="block p-2.5 w-full text-sm dark:bg-black text-gray-900  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500  dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                      value={project?.content}
+                                      className="block p-2.5 w-full text-sm dark:bg-black text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                      value={contentProject}
+                                      onChange={(e) =>
+                                        setContentProject(e.target.value)
+                                      }
+                                      placeholder={project?.content}
                                     />
                                   </div>
                                 </div>

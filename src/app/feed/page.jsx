@@ -28,6 +28,8 @@ import {
   HiX,
   HiOutlineArrowRight,
   HiSpeakerphone,
+  HiDesktopComputer,
+  HiPresentationChartLine,
 } from "react-icons/hi";
 import { toast } from "sonner";
 import { Fa500Px, FaGlassCheers } from "react-icons/fa";
@@ -260,16 +262,16 @@ export default function UsersPage() {
               </button>
               <button
                 className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
-                  selectedCategory === "History"
+                  selectedCategory === "Social science"
                     ? "bg-blue-500 dark:bg-blue-500"
                     : "bg-white"
                 }`}
-                onClick={() => handleCategoryClick("History")}
+                onClick={() => handleCategoryClick("Social science")}
               >
                 <div className="text-2xl sm:text-3xl">
                   <HiGlobe />
                 </div>
-                <div className="mt-2 text-sm sm:text-base">History</div>
+                <div className="mt-2 text-sm sm:text-base">Social science</div>
               </button>
               <button
                 className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
@@ -293,7 +295,7 @@ export default function UsersPage() {
                 onClick={() => handleCategoryClick("Technology")}
               >
                 <div className="text-2xl sm:text-3xl">
-                  <HiCamera />
+                  <HiDesktopComputer />
                 </div>
                 <div className="mt-2 text-sm sm:text-base">Technology</div>
               </button>
@@ -319,7 +321,7 @@ export default function UsersPage() {
                 onClick={() => handleCategoryClick("Pruebas Icfes")}
               >
                 <div className="text-2xl sm:text-3xl">
-                  <HiCamera />
+                  <HiPresentationChartLine />
                 </div>
                 <div className="mt-2 text-sm sm:text-base">Pruebas Icfes</div>
               </button>
