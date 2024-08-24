@@ -65,6 +65,9 @@ function Navbar({ using }) {
             </Link>
             <ul className="flex gap-8 align-middle items-center">
               <li>
+                <DarkThemeToggle className="p-0" />
+              </li>
+              <li>
                 <Link
                   className="hover:text-fuchsia-600 transition-colors text-gray-700 dark:text-gray-300"
                   href="/feed"

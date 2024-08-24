@@ -82,15 +82,28 @@ const SortableListReadOnly = ({ items = [], projectName }) => {
               {item.boxFiles.map((file) => (
                 <li
                   key={file.fileId}
-                  className="flex items-center gap-2 hover:border-b-2"
+                  className="flex flex-col gap-2 hover:border-b-2"
                 >
-                  <a href={`/api/files/downloadFile/${file.fileId}`}>
-                    {file.filename}
-                  </a>
-                  {file.filetype === "application/pdf" && <FaFilePdf />}
-                  {file.filetype?.startsWith("image/") && <FaFileImage />}
-                  {file.filetype?.startsWith("video/") && <FaFileVideo />}
-                  {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                  {/* Renderizar enlace de descarga del archivo */}
+                  <div className="flex items-center gap-2">
+                    <a href={`/api/files/downloadFile/${file.fileId}`}>
+                      {file.filename}
+                    </a>
+                    {/* Renderizar icono correspondiente al tipo de archivo */}
+                    {file.filetype === "application/pdf" && <FaFilePdf />}
+                    {file.filetype?.startsWith("image/") && <FaFileImage />}
+                    {file.filetype?.startsWith("video/") && <FaFileVideo />}
+                    {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                  </div>
+
+                  {/* Renderizar previsualización para archivos de imagen */}
+                  {file.filetype?.startsWith("image/") && (
+                    <img
+                      src={`/api/files/downloadFile/${file.fileId}`}
+                      alt={file.filename}
+                      className="mt-2 max-w-full h-auto rounded-md"
+                    />
+                  )}
                 </li>
               ))}
             </ul>

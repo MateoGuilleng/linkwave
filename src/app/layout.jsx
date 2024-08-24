@@ -9,6 +9,7 @@ import {
   BsFacebook,
   BsGithub,
   BsInstagram,
+  BsMailbox,
   BsTwitter,
 } from "react-icons/bs";
 
@@ -38,142 +39,6 @@ export default async function RootLayout({ children }) {
         <UserProvider>{children}</UserProvider>
         <Footer className="bg-white  dark:bg-gray-900">
           <div className="w-full bg-white dark:bg-gray-900 border-t-2 border-gray-300 dark:border-gray-700">
-            <div className="grid w-full grid-cols-2 gap-8 px-6 py-8 md:grid-cols-4">
-              <div>
-                <Footer.Title
-                  title="Company"
-                  className="text-gray-900 dark:text-white"
-                />
-                <Footer.LinkGroup
-                  col
-                  className="text-gray-600 dark:text-gray-300"
-                >
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    About
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Careers
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Brand Center
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Blog
-                  </Footer.Link>
-                </Footer.LinkGroup>
-              </div>
-              <div>
-                <Footer.Title
-                  title="Help Center"
-                  className="text-gray-900 dark:text-white"
-                />
-                <Footer.LinkGroup
-                  col
-                  className="text-gray-600 dark:text-gray-300"
-                >
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Discord Server
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Twitter
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Facebook
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Contact Us
-                  </Footer.Link>
-                </Footer.LinkGroup>
-              </div>
-              <div>
-                <Footer.Title
-                  title="Legal"
-                  className="text-gray-900 dark:text-white"
-                />
-                <Footer.LinkGroup
-                  col
-                  className="text-gray-600 dark:text-gray-300"
-                >
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Privacy Policy
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Licensing
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Terms & Conditions
-                  </Footer.Link>
-                </Footer.LinkGroup>
-              </div>
-              <div>
-                <Footer.Title
-                  title="Download"
-                  className="text-gray-900 dark:text-white"
-                />
-                <Footer.LinkGroup
-                  col
-                  className="text-gray-600 dark:text-gray-300"
-                >
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    iOS
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Android
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    Windows
-                  </Footer.Link>
-                  <Footer.Link
-                    href="#"
-                    className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400"
-                  >
-                    MacOS
-                  </Footer.Link>
-                </Footer.LinkGroup>
-              </div>
-            </div>
             <div className="w-full bg-white dark:bg-gray-900 px-4 border-t-2 border-gray-300 dark:border-gray-700 py-6 sm:flex sm:items-center sm:justify-between">
               <Footer.Copyright
                 href="#"
@@ -181,30 +46,16 @@ export default async function RootLayout({ children }) {
                 year={2024}
                 className="text-gray-600 dark:text-gray-300"
               />
-              <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
+              <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center text-black dark:text-white">
                 <Footer.Icon
-                  href="#"
-                  icon={BsFacebook}
-                  className="text-gray-600 hover:text-fuchsia-600 dark:text-gray-300 dark:hover:text-fuchsia-400"
-                />
-                <Footer.Icon
-                  href="#"
-                  icon={BsInstagram}
-                  className="text-gray-600 hover:text-fuchsia-600 dark:text-white dark:hover:text-fuchsia-400"
-                />
-                <Footer.Icon
-                  href="#"
-                  icon={BsTwitter}
-                  className="text-gray-600 hover:text-fuchsia-600 dark:text-white dark:hover:text-fuchsia-400"
-                />
-                <Footer.Icon
-                  href="#"
+                  href="https://github.com/MateoGuilleng/linkwave"
                   icon={BsGithub}
                   className="text-gray-600 hover:text-fuchsia-600 dark:text-white dark:hover:text-fuchsia-400"
                 />
+                <p className="text-gray-700 dark:text-white/50">Contacto: mmguilleng@cpsih.edu.co - saherandez@cpsih.edu.co </p>
                 <Footer.Icon
                   href="#"
-                  icon={BsDribbble}
+                  icon={BsMailbox}
                   className="text-gray-600 hover:text-fuchsia-600 dark:text-white dark:hover:text-fuchsia-400"
                 />
               </div>

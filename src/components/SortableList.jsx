@@ -45,6 +45,27 @@ const SortableList = ({ items = [], projectName }) => {
   const [hoverIndex, setHoverIndex] = useState(null);
   const [dragIndex, setDragIndex] = useState(null);
   const [hoverIdentifier, setHoverIdentifier] = useState(null);
+
+  console.log(items);
+
+  useEffect(() => {
+    const initializeFilesPreview = () => {
+      const allFilesPreview = items.flatMap((items) =>
+        items.boxFiles.map((file) => ({
+          id: file.fileId,
+          name: file.filename,
+          type: file.filetype,
+          url: `/api/files/downloadFile/${file.fileId}`, // URL para descargar el archivo
+        }))
+      );
+      setFilesPreview(allFilesPreview);
+    };
+
+    if (items && Array.isArray(items)) {
+      initializeFilesPreview();
+    }
+  }, [items]); // Ejecuta este efecto cuando 'boxes' cambie
+
   const content = (
     <div className="w-64 text-sm text-gray-500 dark:text-gray-400">
       <div className="border-b  px-3 py-2 border-gray-600 bg-gray-700">
@@ -63,6 +84,7 @@ const SortableList = ({ items = [], projectName }) => {
       </div>
     </div>
   );
+
   const [sortedItems, setSortedItems] = useState(
     Array.isArray(items)
       ? [...items].sort((a, b) => a.position - b.position)
@@ -131,36 +153,38 @@ const SortableList = ({ items = [], projectName }) => {
   const handleUpdateBoxSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-  
+
     formData.append("projectID", currentBoxId); // Ensure to add the ID of the currently edited box
-  
+
     console.log("Project ID: " + typeof currentBoxId);
-  
+
     let title = formData.get("title");
     let description = formData.get("description");
     let category = formData.get("type");
-  
+
     // Verify if the field is empty and replace with placeholder value
     if (!title.trim()) {
       title = e.target.querySelector("#Title").getAttribute("placeholder");
     }
     if (!description.trim()) {
-      description = e.target.querySelector("#Description").getAttribute("placeholder");
+      description = e.target
+        .querySelector("#Description")
+        .getAttribute("placeholder");
     }
-  
+
     // Verifica si se cambió el valor del select con nombre 'type'
-    const valorInicial = 'valorInicial'; // Reemplaza esto con el valor inicial o por defecto del select
+    const valorInicial = "valorInicial"; // Reemplaza esto con el valor inicial o por defecto del select
     if (category !== valorInicial) {
-      console.log('El valor del select ha cambiado:', category);
+      console.log("El valor del select ha cambiado:", category);
     } else {
-      console.log('El valor del select no ha cambiado.');
+      console.log("El valor del select no ha cambiado.");
     }
-  
+
     // Establecer los valores en formData
     formData.set("title", title);
     formData.set("description", description);
     formData.set("category", category);
-  
+
     const promise = () =>
       new Promise(async (resolve, reject) => {
         try {
@@ -168,12 +192,12 @@ const SortableList = ({ items = [], projectName }) => {
             method: "PUT",
             body: formData,
           });
-  
+
           const result = await response.json();
           if (response.ok) {
             console.log("File updated successfully", result);
             setMessage("Box updated successfully");
-  
+
             const newBox = {
               id: currentBoxId,
               title,
@@ -182,7 +206,7 @@ const SortableList = ({ items = [], projectName }) => {
               filename: result.filename,
               filetype: result.filetype,
             };
-  
+
             resolve({ name: title });
           } else {
             console.error("Error updating box:", result);
@@ -193,7 +217,7 @@ const SortableList = ({ items = [], projectName }) => {
           reject(error);
         }
       });
-  
+
     toast.promise(promise(), {
       loading: "Updating...",
       success: (data) => {
@@ -202,8 +226,6 @@ const SortableList = ({ items = [], projectName }) => {
       error: "Error updating box",
     });
   };
-  
-  
 
   const handleEditBoxClick = async (item) => {
     setCurrentBoxId(item.identifier); // Establecer el ID del box actual
@@ -613,15 +635,28 @@ const SortableList = ({ items = [], projectName }) => {
                 {item.boxFiles.map((file) => (
                   <li
                     key={file.fileId}
-                    className="flex items-center gap-2 hover:border-b-2"
+                    className="flex flex-col gap-2 hover:border-b-2"
                   >
-                    <a href={`/api/files/downloadFile/${file.fileId}`}>
-                      {file.filename}
-                    </a>
-                    {file.filetype === "application/pdf" && <FaFilePdf />}
-                    {file.filetype?.startsWith("image/") && <FaFileImage />}
-                    {file.filetype?.startsWith("video/") && <FaFileVideo />}
-                    {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                    {/* Renderizar enlace de descarga del archivo */}
+                    <div className="flex items-center gap-2">
+                      <a href={`/api/files/downloadFile/${file.fileId}`}>
+                        {file.filename}
+                      </a>
+                      {/* Renderizar icono correspondiente al tipo de archivo */}
+                      {file.filetype === "application/pdf" && <FaFilePdf />}
+                      {file.filetype?.startsWith("image/") && <FaFileImage />}
+                      {file.filetype?.startsWith("video/") && <FaFileVideo />}
+                      {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                    </div>
+
+                    {/* Renderizar previsualización para archivos de imagen */}
+                    {file.filetype?.startsWith("image/") && (
+                      <img
+                        src={`/api/files/downloadFile/${file.fileId}`}
+                        alt={file.filename}
+                        className="mt-2 max-w-full h-auto rounded-md"
+                      />
+                    )}
                   </li>
                 ))}
               </ul>
@@ -686,7 +721,7 @@ const SortableList = ({ items = [], projectName }) => {
                       <Select
                         id="id"
                         name="id"
-                        value={currentBoxId} // Asegúrate de que currentBoxId esté inicializado correctamente
+                        value={currentBoxId}
                         onChange={(e) => {
                           const newPosition = parseInt(e.target.value);
                           if (newPosition !== 0) {
@@ -709,7 +744,7 @@ const SortableList = ({ items = [], projectName }) => {
                       <TextInput
                         id="Title"
                         type="text"
-                        placeholder={boxTitle} // Usar el título actual como placeholder
+                        placeholder={boxTitle}
                         name="title"
                         autoComplete="off"
                         onChange={handleTitleChange}
@@ -722,7 +757,7 @@ const SortableList = ({ items = [], projectName }) => {
                       <Select
                         id="type"
                         name="type"
-                        value={boxCategory} // Usar value en lugar de selected
+                        value={boxCategory}
                         onChange={handleCategoryChange}
                       >
                         <option value="" disabled>
@@ -767,6 +802,7 @@ const SortableList = ({ items = [], projectName }) => {
 
                     <div className="mt-5 w-full flex text-black dark:text-white">
                       <Label value="Current Files:" />
+
                       {filesPreview &&
                       Array.isArray(filesPreview) &&
                       filesPreview.length > 0 ? (
@@ -779,10 +815,7 @@ const SortableList = ({ items = [], projectName }) => {
                               <img
                                 src={file.url}
                                 alt={file.name}
-                                style={{
-                                  maxWidth: "200px",
-                                  maxHeight: "200px",
-                                }}
+                                className="max-w-[200px] max-h-[200px]"
                               />
                             ) : (
                               <a
@@ -811,7 +844,7 @@ const SortableList = ({ items = [], projectName }) => {
                       <div className="mb-2 block">
                         <Label
                           htmlFor="Description"
-                          value="Description: (Description Suports HTML Embeded!)"
+                          value="Description: (Description Supports HTML Embedded!)"
                         />
                       </div>
                       <Popover content={content} className="" placement="right">
@@ -823,15 +856,15 @@ const SortableList = ({ items = [], projectName }) => {
                     <Textarea
                       id="Description"
                       type="text"
-                      placeholder={boxDescription} // Usar la descripción actual como placeholder
+                      placeholder={boxDescription}
                       name="description"
                       autoComplete="off"
                       value={boxDescription}
                       onChange={handleBoxDescriptionChange}
                       className="w-full min-h-[3rem] p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                       style={{
-                        minHeight: "3rem", // Altura mínima inicial
-                        height: "6rem", // Altura se ajusta automáticamente
+                        minHeight: "3rem",
+                        height: "6rem",
                         whiteSpace: "pre-wrap",
                         wordBreak: "break-word",
                       }}
