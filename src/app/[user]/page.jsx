@@ -193,7 +193,7 @@ export default function Page() {
       try {
         const response = await fetch(`/api/project/${lastWord}`);
         const userProjects = await response.json();
-        setUserProjects(userProjects);
+        await setUserProjects(userProjects);
       } catch (error) {
         console.error("Error fetching user projects:", error);
       }

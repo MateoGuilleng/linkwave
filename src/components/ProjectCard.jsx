@@ -1,9 +1,17 @@
+"use client"
 import Link from "next/link";
 import AOS from "aos"; // Importa AOS
+import { useEffect } from "react";
 import "aos/dist/aos.css"; // Importa los estilos de AOS
+import { FaStar } from "react-icons/fa";
 
 const ProjectCard = ({ project }) => {
-  
+  useEffect(() => {
+    AOS.init({
+      duration: 1000, // Duración de la animación en milisegundos
+    });
+  }, []);
+
   return (
     <Link
       key={project._id}
@@ -35,6 +43,12 @@ const ProjectCard = ({ project }) => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div className="absolute top-5 left-5 px-5 py-2 bg-black bg-opacity-75 text-white text-xs font-semibold">
+          <div className="flex ">
+            <FaStar className="self-center" />{" "}
+            <p className="self-center pl-2">{project.stars}</p>
           </div>
         </div>
         <div className="absolute top-5 right-5 px-5 py-2 bg-black bg-opacity-75 text-white text-xs font-semibold">
