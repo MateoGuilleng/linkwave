@@ -29,6 +29,99 @@ export default function Page() {
   const [lastWord, setLastWord] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  console.log(user, userData);
+
+  useEffect(() => {
+    // User Data es el usuario de la pagina dinamica, el user seria el usuario de la session
+    const checkIfFollowing = async () => {
+      try {
+        const response = await fetch(
+          `/api/${userData.email}/${user.email}/follows`
+        );
+        if (!response.ok) {
+          throw new Error(
+            `Failed to check if user ${user.email} is following ${userData.email}`
+          );
+        }
+        const data = await response.json();
+        setIsFollowing(data.isFollowing);
+      } catch (error) {
+        console.error(
+          `Error checking follow status for ${user?.email} and ${userData?.email}:`,
+          error
+        );
+      }
+    };
+
+    if (user) {
+      checkIfFollowing();
+    }
+  }, [user, userData?.email]);
+
+  const handleFollow = async () => {
+    try {
+      const response = await fetch(
+        `/api/${userData.email}/${user.email}/follows`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to update follow status for ${user.email} and ${userData.email}`
+        );
+      }
+
+      const updatedUserData = await response.json();
+      console.log(
+        `Follow status updated for ${user.email} and ${userData.email}`,
+        updatedUserData
+      );
+
+      setIsFollowing(true); // Set follow status to true
+    } catch (error) {
+      console.error(
+        `Error updating follow status for ${user.email} and ${userData.email}:`,
+        error
+      );
+    }
+  };
+
+  const handleUnfollow = async () => {
+    try {
+      const response = await fetch(
+        `/api/${userData.email}/${user.email}/follows`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to update unfollow status for ${user.email} and ${userData.email}`
+        );
+      }
+
+      const updatedUserData = await response.json();
+      console.log(
+        `Unfollow status updated for ${user.email} and ${userData.email}`,
+        updatedUserData
+      );
+
+      setIsFollowing(false); // Set follow status to false
+    } catch (error) {
+      console.error(
+        `Error updating unfollow status for ${user.email} and ${userData.email}:`,
+        error
+      );
+    }
+  };
 
   const iconMap = {
     Facebook: <FaFacebook size={24} />,
@@ -180,7 +273,7 @@ export default function Page() {
           );
           if (existingChat) {
             setChatId(existingChat.chatId);
-            setCreatedChat(true)
+            setCreatedChat(true);
           }
 
           console.log("Existing chat:", existingChat);
@@ -233,7 +326,7 @@ export default function Page() {
   return (
     <div className="bg-gray-100 dark:bg-black min-h-screen">
       <Navbar />
-      <div className="bg-white dark:bg-black dark:border-2 shadow-md rounded-lg p-6 max-w-4xl mx-auto mt-10">
+      <div className="bg-white dark:bg-zinc-900 shadow-md rounded-lg p-6 max-w-4xl mx-auto mt-10">
         <div className="flex flex-col md:flex-row  md:items-start">
           <div className="justify-center flex sm:block">
             <img
@@ -252,8 +345,11 @@ export default function Page() {
               </Button>
             ) : (
               <div className="mt-4 w-full  sm:flex ">
-                <Button className="w-full mb-2 text-black dark:text-white">
-                  Follow
+                <Button
+                  onClick={isFollowing ? handleUnfollow : handleFollow}
+                  className="w-full border-2  dark:text-white text-black"
+                >
+                  {isFollowing ? "Stop Follow" : "Follow"}
                 </Button>
                 {createdChat ? (
                   <Button

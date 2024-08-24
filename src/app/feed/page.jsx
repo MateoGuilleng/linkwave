@@ -14,6 +14,7 @@ import {
 import UserProfile from "@/components/UserProfile";
 import ProjectCard from "@/components/ProjectCard";
 import { MdDashboard, MdAnnouncement } from "react-icons/md";
+import { FaChevronDown } from "react-icons/fa"; // Importa el icono de flecha hacia abajo
 
 import CustomDrawerFeed from "@/components/sideBarFeed";
 
@@ -50,6 +51,14 @@ export default function UsersPage() {
   const [userFollowingProjects, setUserFollowingProjects] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState(null);
+
+  // Estado para controlar cuántos proyectos se muestran
+  const [visibleProjects, setVisibleProjects] = useState(6);
+
+  // Función para cargar más proyectos
+  const handleLoadMore = () => {
+    setVisibleProjects((prevVisibleProjects) => prevVisibleProjects + 8);
+  };
 
   const handleTypeChange = (e) => {
     setSelectedType(e.target.value);
@@ -160,7 +169,10 @@ export default function UsersPage() {
       <Navbar using="feed" />
       {!user && (
         <Banner>
-          <div  data-aos="fade-up" className="flex w-full justify-between border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-4">
+          <div
+            data-aos="fade-up"
+            className="flex w-full justify-between border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-4"
+          >
             <div className="mx-auto flex items-center">
               <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
                 <MdAnnouncement className="mr-4 h-4 w-4" />
@@ -186,7 +198,10 @@ export default function UsersPage() {
         </Banner>
       )}
 
-      <div data-aos="fade-up" className="w-full flex flex-col gap-5 px-3 md:px-8 lg:px-12">
+      <div
+        data-aos="fade-up"
+        className="w-full flex flex-col gap-5 px-3 md:px-8 lg:px-12"
+      >
         <div className="flex mt-10 gap-3">
           <CustomDrawerFeed
             followingUsers={userData?.following}
@@ -335,17 +350,35 @@ export default function UsersPage() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10">
-              {filteredProjects.map((project) => (
-                <ProjectCard
-                  key={project?._id}
-                  project={project}
-                  data-aos="fade-up"
-                />
-              ))}
-              <p className="m-5 text-black dark:text-white">
-                {filteredProjects.length <= 0 ? "No projects found" : ""}
-              </p>
+            <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10">
+                {filteredProjects.slice(0, visibleProjects).map((project) => (
+                  <ProjectCard
+                    key={project?._id}
+                    project={project}
+                    data-aos="fade-up"
+                  />
+                ))}
+                <p className="m-5 text-black dark:text-white">
+                  {filteredProjects.length <= 0 ? "No projects found" : ""}
+                </p>
+              </div>
+
+              {/* Mostrar el botón "Ver más" solo si hay más proyectos para cargar */}
+              {visibleProjects < filteredProjects.length && (
+                <div className="flex items-center justify-center my-10">
+                  {/* Líneas horizontales a los lados del botón */}
+                  <div className="h-px w-16 bg-gray-300 dark:bg-gray-700"></div>
+                  <button
+                    onClick={handleLoadMore}
+                    data-aos="fade-down"
+                    className="mx-4 px-6 py-3 flex items-center space-x-2 bg-white text-black rounded-full hover:bg-gray-200 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 transition-colors duration-300 shadow-md"
+                  >
+                    Load more <FaChevronDown className="ml-2" />
+                  </button>
+                  <div className="h-px w-16 bg-gray-300 dark:bg-gray-700"></div>
+                </div>
+              )}
             </div>
           </div>
         )}
