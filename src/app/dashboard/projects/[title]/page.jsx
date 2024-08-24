@@ -780,15 +780,21 @@ function Page() {
                                         current: {project?.projectType}
                                       </option>
 
-                                      <option value="Aplication">
-                                        Application / Game
+                                      <option value="Math">Math</option>
+                                      <option value="Chemestry">
+                                        Chemestry
                                       </option>
-                                      <option value="Art">Art</option>
-                                      <option value="General discussion">
-                                        General discussion
+                                      <option value="History">History</option>
+                                      <option value="English">English</option>
+                                      <option value="Technology">
+                                        Tecnology
                                       </option>
-                                      <option value="Audio">Audio</option>
-                                      <option value="Video">Video</option>
+                                      <option value="Farandula">
+                                        Farandula
+                                      </option>
+                                      <option value="Pruebas Icfes">
+                                        Pruebas Icfes
+                                      </option>
                                     </Select>
                                   </div>
                                   <div className="col-span-2">

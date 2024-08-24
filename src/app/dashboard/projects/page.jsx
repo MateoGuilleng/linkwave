@@ -229,15 +229,13 @@ function ProjectsPage() {
                               <option value="" disabled>
                                 Choose a category
                               </option>
-                              <option value="Aplication">
-                                Application / Game
-                              </option>
-                              <option value="Art">Art</option>
-                              <option value="General discussion">
-                                General discussion
-                              </option>
-                              <option value="Audio">Audio</option>
-                              <option value="Video">Video</option>
+                              <option value="Math">Math</option>
+                              <option value="Chemestry">Chemestry</option>
+                              <option value="History">History</option>
+                              <option value="English">English</option>
+                              <option value="Technology">Tecnology</option>
+                              <option value="Farandula">Farandula</option>
+                              <option value="Pruebas Icfes">Pruebas Icfes</option>
                             </Select>
                           </div>
                         </div>
@@ -257,7 +255,11 @@ function ProjectsPage() {
                           />
                         </div>
 
-                        <Button type="submit" className="text-black border-2 border-black/50 dark:border-white/50 dark:text-white" disabled={isSubmitDisabled}>
+                        <Button
+                          type="submit"
+                          className="text-black border-2 border-black/50 dark:border-white/50 dark:text-white"
+                          disabled={isSubmitDisabled}
+                        >
                           Submit
                         </Button>
                       </form>
