@@ -745,7 +745,7 @@ function Page() {
                                       name="title"
                                       id="title"
                                       className="bg-black border border-gray-300 text-black dark:text-white  text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black   dark:focus:ring-primary-500 d"
-                                      placeholder={project?.title}
+                                      value={project?.title}
                                     />
                                   </div>
                                   <div className="col-span-2 sm:col-span-1">
@@ -760,7 +760,7 @@ function Page() {
                                       name="description"
                                       id="description"
                                       className="bg-black border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-black dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                      placeholder={project?.description}
+                                      value={project?.description}
                                     />
                                   </div>
                                   <div className="col-span-2 sm:col-span-1">
@@ -809,8 +809,7 @@ function Page() {
                                       name="content"
                                       rows={4}
                                       className="block p-2.5 w-full text-sm dark:bg-black text-gray-900  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500  dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                      placeholder={project?.content}
-                                      defaultValue={""}
+                                      value={project?.content}
                                     />
                                   </div>
                                 </div>
