@@ -78,7 +78,7 @@ function Navbar({ using }) {
               <li>
                 <button
                   className="hover:text-fuchsia-600 hover:border-fuchsia-600 transition-colors text-gray-700 dark:text-gray-300 border-2 px-3 py-1 rounded border-gray-700 dark:border-gray-300"
-                  onClick={() => router.push("/api/auth/login")}
+                  onClick={() => router.push("/")}
                 >
                   Log in
                 </button>

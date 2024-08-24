@@ -5,7 +5,25 @@ import infoCards from "./libs/InfoCard";
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {
+  HiArchive,
+  HiPaperClip,
+  HiPencil,
+  HiGlobe,
+  HiOutlineSpeakerphone,
+  HiCamera,
+  HiX,
+  HiOutlineArrowRight,
+  HiSpeakerphone,
+  HiDesktopComputer,
+  HiPresentationChartLine,
+} from "react-icons/hi";
+import Link from "next/link";
+import {
+  Banner,
+} from "flowbite-react";
 import { useRouter } from "next/navigation";
+import { MdDashboard, MdAnnouncement } from "react-icons/md";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import AOS from "aos"; // Importa AOS
 import "aos/dist/aos.css"; // Importa los estilos de AOS
@@ -98,6 +116,37 @@ export default function Home() {
         <Navbar />
       </div>
 
+      {!user && (
+        <Banner>
+          <div
+            data-aos="fade-up"
+            className="flex w-full justify-between border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-4"
+          >
+            <div className="mx-auto flex items-center">
+              <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
+                <MdAnnouncement className="mr-4 h-4 w-4" />
+                <span>
+                  You are currently in guest mode, create an account or sign in
+                  if you want to access any project&nbsp;
+                  <Link
+                    href="/api/auth/login"
+                    className="inline font-medium text-cyan-600 underline decoration-solid underline-offset-2 hover:no-underline dark:text-cyan-500"
+                  >
+                    Sign up
+                  </Link>
+                </span>
+              </p>
+            </div>
+            <Banner.CollapseButton
+              color="gray"
+              className="border-0 bg-transparent text-gray-500 dark:text-gray-400"
+            >
+              <HiX className="h-4 w-4" />
+            </Banner.CollapseButton>
+          </div>
+        </Banner>
+      )}
+
       <header
         id="home"
         data-aos="fade-down"
@@ -124,12 +173,14 @@ export default function Home() {
               Explore
             </button>
 
-            <button
-              onClick={() => router.push("/api/auth/login")}
-              className="w-48 h-12 text-sm sm:text-base rounded border border-gray-300 bg-transparent text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-600 transition-colors"
-            >
-              Log in
-            </button>
+            {!user && (
+              <button
+                onClick={() => router.push("/api/auth/login")}
+                className="w-48 h-12 text-sm sm:text-base rounded border border-gray-300 bg-transparent text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-600 transition-colors"
+              >
+                Log in
+              </button>
+            )}
           </div>
         </div>
 

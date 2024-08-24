@@ -180,7 +180,7 @@ export default function UsersPage() {
                   You are currently in guest mode, create an account or sign in
                   if you want to access any project&nbsp;
                   <Link
-                    href="/api/auth/login"
+                    href="/"
                     className="inline font-medium text-cyan-600 underline decoration-solid underline-offset-2 hover:no-underline dark:text-cyan-500"
                   >
                     Sign up
