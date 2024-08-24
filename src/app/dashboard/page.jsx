@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import SocialProfilesList from "@/components/SocialProfilesList";
 import ModalSocial from "@/components/ModalSocial";
+import AOS from "aos"; // Importa AOS
+import "aos/dist/aos.css"; // Importa los estilos de AOS
 import {
   FaFacebook,
   FaTwitter,
@@ -49,6 +51,10 @@ function Dashboard() {
 
   const email = user?.email;
   useEffect(() => {
+    AOS.init({
+      duration: 1000, // Duración de la animación en milisegundos
+    });
+
     if (email) {
       fetchData();
     }
@@ -664,7 +670,8 @@ function Dashboard() {
                 </form>
                 <div className="">
                   <SocialProfilesList
-                    socialProfiles={userData?.socialProfiles} userEmail={user?.email}
+                    socialProfiles={userData?.socialProfiles}
+                    userEmail={user?.email}
                   />
                 </div>
               </div>

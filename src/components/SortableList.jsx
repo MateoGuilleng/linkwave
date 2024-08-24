@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useDrag, useDrop, DndProvider } from "react-dnd";
+import AOS from "aos"; // Importa AOS
+import "aos/dist/aos.css"; // Importa los estilos de AOS
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 import {
@@ -697,7 +699,7 @@ const SortableList = ({ items = [], projectName }) => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="">
+      <div data-aos="fade-up" className="">
         <ul className="flex gap-3 flex-wrap justify-between mt-10 w-full">
           {sortedItems.map((item, index) => (
             <Item key={item.identifier} index={index} item={item} />

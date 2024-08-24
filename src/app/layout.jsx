@@ -52,7 +52,7 @@ export default async function RootLayout({ children }) {
                   icon={BsGithub}
                   className="text-gray-600 hover:text-fuchsia-600 dark:text-white dark:hover:text-fuchsia-400"
                 />
-                <p className="text-gray-700 dark:text-white/50">Contacto: mmguilleng@cpsih.edu.co - saherandez@cpsih.edu.co </p>
+                <p className="text-gray-700 dark:text-white/50">Contacto: mmguilleng@cpsih.edu.co - saherandezp@cpsih.edu.co </p>
                 <Footer.Icon
                   href="#"
                   icon={BsMailbox}

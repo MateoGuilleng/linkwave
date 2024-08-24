@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import AOS from "aos"; // Importa AOS
+import "aos/dist/aos.css"; // Importa los estilos de AOS
 import {
   Banner,
   Tabs,
@@ -53,6 +55,12 @@ export default function UsersPage() {
     setSelectedType(e.target.value);
     console.log(selectedType);
   };
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000, // Duración de la animación en milisegundos
+    });
+  }, []);
 
   const email = user?.email;
   useEffect(() => {
@@ -152,7 +160,7 @@ export default function UsersPage() {
       <Navbar using="feed" />
       {!user && (
         <Banner>
-          <div className="flex w-full justify-between border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-4">
+          <div  data-aos="fade-up" className="flex w-full justify-between border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-4">
             <div className="mx-auto flex items-center">
               <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
                 <MdAnnouncement className="mr-4 h-4 w-4" />
@@ -178,7 +186,7 @@ export default function UsersPage() {
         </Banner>
       )}
 
-      <div className="w-full flex flex-col gap-5 px-3 md:px-8 lg:px-12">
+      <div data-aos="fade-up" className="w-full flex flex-col gap-5 px-3 md:px-8 lg:px-12">
         <div className="flex mt-10 gap-3">
           <CustomDrawerFeed
             followingUsers={userData?.following}
@@ -215,7 +223,7 @@ export default function UsersPage() {
         </div>
 
         {(selectedType === "all" || selectedType === "project") && (
-          <div>
+          <div data-aos="fade-up">
             <h2 className="pl-3 mb-4 text-2xl font-semibold mt-10 text-black dark:text-white">
               Top projects:
             </h2>
@@ -329,7 +337,11 @@ export default function UsersPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10">
               {filteredProjects.map((project) => (
-                <ProjectCard key={project?._id} project={project} />
+                <ProjectCard
+                  key={project?._id}
+                  project={project}
+                  data-aos="fade-up"
+                />
               ))}
               <p className="m-5 text-black dark:text-white">
                 {filteredProjects.length <= 0 ? "No projects found" : ""}
@@ -339,13 +351,17 @@ export default function UsersPage() {
         )}
 
         {(selectedType === "all" || selectedType === "user") && (
-          <div>
+          <div data-aos="fade-up">
             <h2 className="pl-3 mb-4 text-2xl font-semibold  dark:text-white text-black">
               Featured users:
             </h2>
             <div className="flex max-w-full gap-6 overflow-x-scroll pb-6">
               {users?.map((user) => (
-                <UserProfile key={user._id} userData={user} />
+                <UserProfile
+                  key={user._id}
+                  userData={user}
+                  data-aos="fade-up"
+                />
               ))}
               <p className="m-5 text-black dark:text-white">
                 {users.length <= 0 ? "No users found" : ""}

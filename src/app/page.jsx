@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import AOS from "aos"; // Importa AOS
+import "aos/dist/aos.css"; // Importa los estilos de AOS
 
 export default function Home() {
   const router = useRouter();
@@ -16,6 +18,9 @@ export default function Home() {
   const email = user?.email;
 
   useEffect(() => {
+    AOS.init({
+      duration: 1000, // Duración de la animación en milisegundos
+    });
     const fetchData = async () => {
       if (email) {
         const promise = () =>
@@ -95,6 +100,7 @@ export default function Home() {
 
       <header
         id="home"
+        data-aos="fade-down"
         className="flex flex-col-reverse md:flex-row w-full h-screen max-w-7xl items-center justify-center p-8 relative overflow-x-hidden"
       >
         <div className="w-full h-2/4 md:h-full md:w-2/5 flex flex-col justify-center items-center md:items-start gap-8">
@@ -137,6 +143,7 @@ export default function Home() {
       </header>
       <section
         id="about"
+        data-aos="fade-up"
         className="h-fit min-h-screen w-full flex relative items-center justify-center p-8 bg-white dark:bg-black"
       >
         <div className="absolute -z-10 h-full w-full overflow-hidden">
@@ -151,7 +158,10 @@ export default function Home() {
           <h3 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
             Give and receive feedback
           </h3>
-          <div className="w-full grid grid-cols-1 grid-rows-3 md:grid-cols-2 md:grid-rows-2 lg:grid-cols-3 lg:grid-rows-1 gap-4 justify-between relative">
+          <div
+            data-aos="fade-right"
+            className="w-full grid grid-cols-1 grid-rows-3 md:grid-cols-2 md:grid-rows-2 lg:grid-cols-3 lg:grid-rows-1 gap-4 justify-between relative "
+          >
             {infoCards.map((infoCard) => (
               <InfoCard
                 key={infoCard.id}

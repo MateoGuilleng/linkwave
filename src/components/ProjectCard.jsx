@@ -1,12 +1,18 @@
 import Link from "next/link";
+import AOS from "aos"; // Importa AOS
+import "aos/dist/aos.css"; // Importa los estilos de AOS
 
 const ProjectCard = ({ project }) => {
+  
   return (
     <Link
       key={project._id}
       href={`/${project.author}/${encodeURIComponent(project.title)}`}
     >
-      <div className="relative rounded-lg overflow-hidden hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300 ease-in-out shadow-md bg-white dark:bg-gray-800">
+      <div
+        data-aos="fade-up"
+        className="relative rounded-lg overflow-hidden hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300 ease-in-out shadow-md bg-white dark:bg-gray-800"
+      >
         <img
           className="w-full h-60 object-cover"
           src={project.banner}

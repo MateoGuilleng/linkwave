@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import AOS from "aos"; // Importa AOS
+import "aos/dist/aos.css"; // Importa los estilos de AOS
 import {
   FaFilePdf,
   FaFileImage,
@@ -37,7 +39,10 @@ const SortableListReadOnly = ({ items = [], projectName }) => {
     );
   }, [items]);
   const Item = ({ item }) => (
-    <li className="h-fit w-full lg:w-fit max-w-full p-5 bg-white dark:bg-black text-black dark:text-white  rounded-lg flex items-center mb-2">
+    <li
+      data-aos="fade-up"
+      className="h-fit w-full lg:w-fit max-w-full p-5 bg-white dark:bg-black text-black dark:text-white  rounded-lg flex items-center mb-2"
+    >
       <div className="ml-4 w-full">
         <h2 className="text-2xl mb-2 items-center">
           <div className="flex items-center">

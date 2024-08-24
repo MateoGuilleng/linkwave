@@ -6,6 +6,12 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --scrollbar-track-light: #f0f0f0; /* Color de fondo para modo claro */
+  --scrollbar-thumb-light: #c0c0c0; /* Color del pulgar para modo claro */
+  --scrollbar-hover-light: #a0a0a0; /* Color al pasar el mouse para modo claro */
+  --scrollbar-track-dark: #1d1d1d; /* Color de fondo para modo oscuro */
+  --scrollbar-thumb-dark: #69696970; /* Color del pulgar para modo oscuro */
+  --scrollbar-hover-dark: #ffffff80; /* Color al pasar el mouse para modo oscuro */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,31 +37,40 @@ body {
   width: 8px; /* Ancho de la barra de desplazamiento */
 }
 
-/* Estilo de la barra de desplazamiento */
-::-webkit-scrollbar-track {
-  background: #1d1d1d; /* Color de fondo de la barra de desplazamiento */
+/* Estilo de la barra de desplazamiento en modo claro */
+body:not(.dark-mode) ::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-light); /* Color de fondo */
 }
 
-
-/* Estilo del pulgar de la barra de desplazamiento */
-::-webkit-scrollbar-thumb {
-  background: #69696970; /* Color del pulgar de la barra de desplazamiento */
-  border-radius: 4px; /* Borde redondeado del pulgar */
-
+body:not(.dark-mode) ::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-light); /* Color del pulgar */
+  border-radius: 4px; /* Borde redondeado */
 }
 
-/* Estilo del pulgar de la barra de desplazamiento al pasar el mouse sobre él */
-::-webkit-scrollbar-thumb:hover {
-  background: #ffffff80; /* Cambio de color al pasar el mouse */
+body:not(.dark-mode) ::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover-light); /* Color al pasar el mouse */
 }
 
+/* Estilo de la barra de desplazamiento en modo oscuro */
+body.dark-mode ::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-dark); /* Color de fondo */
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-dark); /* Color del pulgar */
+  border-radius: 4px; /* Borde redondeado */
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover-dark); /* Color al pasar el mouse */
+}
 
 .prose iframe {
   max-width: 100%;
   max-height: 27.5rem;
 }
 
-.proseSmall iframe{
+.proseSmall iframe {
   max-height: 10rem;
   max-width: 100%;
 }

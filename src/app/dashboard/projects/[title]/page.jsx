@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AOS from "aos"; // Importa AOS
+import "aos/dist/aos.css"; // Importa los estilos de AOS
 import { toast } from "sonner";
 
 import Navbar from "@/components/Navbar";
@@ -116,6 +118,9 @@ function Page() {
   }
 
   useEffect(() => {
+    AOS.init({
+      duration: 1000, // Duración de la animación en milisegundos
+    });
     getProject();
   }, []);
 
@@ -622,7 +627,10 @@ function Page() {
             alt="Bordered avatar"
           />
 
-          <div className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold">
+          <div
+            data-aos="fade-up"
+            className="m-10 sm:flex-row-reverse mb-0 text-2xl border-b pb-5 flex flex-col gap-6 justify-between border-indigo-100 font-semibold"
+          >
             <div className="flex w-full flex-wrap sm:flex-nowrap justify-between">
               <div className="flex flex-wrap sm:w-full">
                 <div className="sm:w-fit  w-full sm:order-first">
@@ -796,7 +804,9 @@ function Page() {
                                       <option value="Chemestry">
                                         Chemestry
                                       </option>
-                                      <option value="Social science">Social science</option>
+                                      <option value="Social science">
+                                        Social science
+                                      </option>
                                       <option value="English">English</option>
                                       <option value="Technology">
                                         Technology
@@ -878,8 +888,8 @@ function Page() {
             </div>
           </div>
 
-          <main className="m-10 mt-0">
-            <div className="">
+          <main data-aos="fade-up" className="m-10 mt-0">
+            <div data-aos="fade-up" className="">
               <Button.Group className="flex-wrap">
                 <Button
                   onClick={() =>
@@ -1135,7 +1145,7 @@ function Page() {
 
             <div className="m-10"> {project?.content}</div>
 
-            <div className="flex">
+            <div data-aos="fade-up" className="flex">
               <h1 className="text-2xl font-bold">Boxes:</h1>
               <Button
                 className="dark:bg-gray-700 ml-4 bg-gray-100 text-black dark:text-white dark:hover:bg-gray-600 flex items-center justify-center"
@@ -1144,7 +1154,7 @@ function Page() {
                 <FaPlus />
               </Button>
             </div>
-            <div className="App text-black w-full ">
+            <div data-aos="fade-up" className="App text-black w-full ">
               <div className="w-full">
                 {items?.length == 0 ? (
                   "There are no boxes in the list"
