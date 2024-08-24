@@ -27,8 +27,10 @@ import {
   HiCamera,
   HiX,
   HiOutlineArrowRight,
+  HiSpeakerphone,
 } from "react-icons/hi";
 import { toast } from "sonner";
+import { Fa500Px, FaGlassCheers } from "react-icons/fa";
 
 export default function UsersPage() {
   const [projects, setProjects] = useState([]);
@@ -216,7 +218,7 @@ export default function UsersPage() {
               Top projects:
             </h2>
 
-            <div className="grid md:flex md:justify-between md:mx-12 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 text-black dark:text-white">
+            <div className="grid md:flex md:justify-between md:mx-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 text-black dark:text-white">
               <button
                 className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
                   !selectedCategory
@@ -232,72 +234,94 @@ export default function UsersPage() {
               </button>
               <button
                 className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
-                  selectedCategory === "Application"
+                  selectedCategory === "Math"
                     ? "bg-blue-500 dark:bg-blue-500"
                     : "bg-white"
                 }`}
-                onClick={() => handleCategoryClick("Application")}
+                onClick={() => handleCategoryClick("Math")}
               >
                 <div className="text-2xl sm:text-3xl">
-                  <HiPaperClip />
+                  <Fa500Px />
                 </div>
-                <div className="mt-2 p-2 text-sm sm:text-base">
-                  Application / Game
-                </div>
+                <div className="mt-2 p-2 text-sm sm:text-base">Math</div>
               </button>
               <button
                 className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
-                  selectedCategory === "Art"
+                  selectedCategory === "Chemestry"
                     ? "bg-blue-500 dark:bg-blue-500"
                     : "bg-white"
                 }`}
-                onClick={() => handleCategoryClick("Art")}
+                onClick={() => handleCategoryClick("Chemestry")}
               >
                 <div className="text-2xl sm:text-3xl">
-                  <HiPencil />
+                  <FaGlassCheers />
                 </div>
-                <div className="mt-2 text-sm sm:text-base">Art</div>
+                <div className="mt-2 text-sm sm:text-base">Chemestry</div>
               </button>
               <button
                 className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
-                  selectedCategory === "General discussion"
+                  selectedCategory === "History"
                     ? "bg-blue-500 dark:bg-blue-500"
                     : "bg-white"
                 }`}
-                onClick={() => handleCategoryClick("General discussion")}
+                onClick={() => handleCategoryClick("History")}
               >
                 <div className="text-2xl sm:text-3xl">
                   <HiGlobe />
                 </div>
-                <div className="mt-2 text-sm sm:text-base">
-                  General discussion
-                </div>
+                <div className="mt-2 text-sm sm:text-base">History</div>
               </button>
               <button
                 className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
-                  selectedCategory === "Audio"
+                  selectedCategory === "English"
                     ? "bg-blue-500 dark:bg-blue-500"
                     : "bg-white"
                 }`}
-                onClick={() => handleCategoryClick("Audio")}
+                onClick={() => handleCategoryClick("English")}
               >
                 <div className="text-2xl sm:text-3xl">
-                  <HiOutlineSpeakerphone />
+                  <HiSpeakerphone />
                 </div>
-                <div className="mt-2 text-sm sm:text-base">Audio</div>
+                <div className="mt-2 text-sm sm:text-base">English</div>
               </button>
               <button
                 className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
-                  selectedCategory === "Video"
+                  selectedCategory === "Technology"
                     ? "bg-blue-500 dark:bg-blue-500"
                     : "bg-white"
                 }`}
-                onClick={() => handleCategoryClick("Video")}
+                onClick={() => handleCategoryClick("Technology")}
               >
                 <div className="text-2xl sm:text-3xl">
                   <HiCamera />
                 </div>
-                <div className="mt-2 text-sm sm:text-base">Video</div>
+                <div className="mt-2 text-sm sm:text-base">Technology</div>
+              </button>
+              <button
+                className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
+                  selectedCategory === "Farandula"
+                    ? "bg-blue-500 dark:bg-blue-500"
+                    : "bg-white"
+                }`}
+                onClick={() => handleCategoryClick("Farandula")}
+              >
+                <div className="text-2xl sm:text-3xl">
+                  <HiCamera />
+                </div>
+                <div className="mt-2 text-sm sm:text-base">Farandula</div>
+              </button>
+              <button
+                className={`h-24 sm:h-32 w-full lg:h-40 border-black border dark:bg-white/10 dark:border-white/15  rounded-lg flex flex-col items-center justify-center ${
+                  selectedCategory === "Pruebas Icfes"
+                    ? "bg-blue-500 dark:bg-blue-500"
+                    : "bg-white"
+                }`}
+                onClick={() => handleCategoryClick("Pruebas Icfes")}
+              >
+                <div className="text-2xl sm:text-3xl">
+                  <HiCamera />
+                </div>
+                <div className="mt-2 text-sm sm:text-base">Pruebas Icfes</div>
               </button>
             </div>
 
@@ -321,7 +345,9 @@ export default function UsersPage() {
               {users?.map((user) => (
                 <UserProfile key={user._id} userData={user} />
               ))}
-              <p className="m-5 text-black dark:text-white">{users.length <= 0 ? "No users found" : ""}</p>
+              <p className="m-5 text-black dark:text-white">
+                {users.length <= 0 ? "No users found" : ""}
+              </p>
             </div>
           </div>
         )}

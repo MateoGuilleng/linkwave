@@ -15,7 +15,7 @@ const SortableListReadOnly = ({ items = [], projectName }) => {
     const createMarkup = (htmlContent) => ({ __html: htmlContent });
 
     return (
-      <div className="box-description w-full border-t-2 pt-2 border-white/45">
+      <div className="box-description w-full  pt-2 ">
         <div
           className="sm:prose proseSmall prose-sm md:prose-lg lg:prose-xl max-w-full"
           dangerouslySetInnerHTML={createMarkup(description)}
@@ -37,31 +37,31 @@ const SortableListReadOnly = ({ items = [], projectName }) => {
     );
   }, [items]);
   const Item = ({ item }) => (
-    <li className="h-fit w-full lg:w-fit max-w-full p-5 bg-white dark:bg-black text-black dark:text-white border-2 rounded-lg flex items-center mb-2">
+    <li className="h-fit w-full lg:w-fit max-w-full p-5 bg-white dark:bg-black text-black dark:text-white  rounded-lg flex items-center mb-2">
       <div className="ml-4 w-full">
         <h2 className="text-2xl mb-2 items-center">
           <div className="flex items-center">
-            <span className="text-gray-500 mr-2 self-center">
+            {/* <span className="text-gray-500 mr-2 self-center">
               {item.position}.
-            </span>
+            </span> */}
             <span className="sm:text-3xl text-xl font-bold ">{item.title}</span>{" "}
-            <p className="sm:text-sm text-xs ml-5">
+            {/* <p className="sm:text-sm text-xs ml-5">
               Uploaded by: {item.author ? item.author : "Admin"}
-            </p>
-            <span className="text-4xl ml-10">
+            </p> */}
+            {/* <span className="text-4xl ml-10">
               {item.category === "fileVanilla" && <FaFile />}
               {item.category === "File" && <FaFileCode />}
               {item.category === "Picture" && <FaFileImage />}
               {item.category === "Video" && <FaFileVideo />}
               {item.category === "Text" && <FaFilePdf />}
               {item.category === "Audio" && <FaFileAudio />}
-            </span>
+            </span> */}
           </div>
         </h2>
 
-        <span className="text-gray-500 ml-2 text-xs">{item.identifier}.</span>
+        {/* <span className="text-gray-500 ml-2 text-xs">{item.identifier}.</span> */}
 
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           {item.filetype === "application/pdf" && <FaFilePdf />}
           {item.filetype?.startsWith("image/") && <FaFileImage />}
           {item.filetype?.startsWith("video/") && <FaFileVideo />}
@@ -73,11 +73,11 @@ const SortableListReadOnly = ({ items = [], projectName }) => {
           >
             {item.filename}
           </a>
-        </div>
+        </div> */}
 
         {item?.boxFiles?.length > 0 && (
           <div className="my-2 w-full">
-            <Label className="text-lg font-semibold" value="Files:" />
+            {/* <Label className="text-lg font-semibold" value="Files:" /> */}
             <ul className="mt-2">
               {item.boxFiles.map((file) => (
                 <li
