@@ -55,7 +55,6 @@ export const PUT = async (request, { params }) => {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    
     const project_name = decodeURIComponent(projectName);
 
     return new Promise(async (resolve, reject) => {
@@ -156,20 +155,23 @@ export const DELETE = async (request, { params }) => {
   const fileId = params.id;
 
   // Aquí obtenemos el cuerpo de la solicitud de manera diferente
-  const { projectTitle } = JSON.parse(await request.text());
+  const { projectTitle } = await request.json();
 
-  console.log(fileId, projectTitle); // Asegúrate de que projectTitle se imprima correctamente
+  const projectName = decodeURIComponent(projectTitle);
+
+  console.log("projectTitle:", projectTitle);
+  console.log("project Name:", projectName);
 
   try {
     // Eliminar referencias del fileId en el array boxFiles de todos los proyectos que coincidan con el projectTitle
     const updatedProjects = await Project.updateMany(
-      { title: projectTitle, "boxes.boxFiles.fileId": fileId },
+      { title: projectName, "boxes.boxFiles.fileId": fileId },
       { $pull: { "boxes.$[].boxFiles": { fileId } } }
     );
 
-    // Eliminar fileId del array files de todos los proyectos que coincidan con el projectTitle
+    // Eliminar fileId del array files de todos los proyectos que coincidan con el projectName
     const updateFiles = await Project.updateMany(
-      { title: projectTitle },
+      { title: projectName },
       { $pull: { files: fileId } }
     );
 
