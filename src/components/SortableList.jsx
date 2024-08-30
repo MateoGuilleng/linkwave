@@ -51,6 +51,12 @@ const SortableList = ({ items = [], projectName }) => {
   console.log(items);
 
   useEffect(() => {
+    AOS.init({
+      duration: 1000, // Duration of animations in milliseconds
+    });
+  }, []);
+
+  useEffect(() => {
     const initializeFilesPreview = () => {
       const allFilesPreview = items.flatMap((items) =>
         items.boxFiles.map((file) => ({
