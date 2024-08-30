@@ -248,7 +248,7 @@ function Requests() {
 
               {/* Renderizar los requests */}
               {requests.map((request) => (
-                <div>
+                <div key={request._id}>
                   <RequestCard
                     key={request._id}
                     title={request.title}

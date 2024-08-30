@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import AOS from "aos"; // Importa AOS
 import "aos/dist/aos.css"; // Importa los estilos de AOS
-import RequestCard from "@/components/RequestCard";
+
 import { useRouter } from "next/navigation";
 import {
   Banner,
@@ -14,6 +14,7 @@ import {
   Select,
 } from "flowbite-react";
 import UserProfile from "@/components/UserProfile";
+import RequestCard from "@/components/RequestCard";
 import ProjectCard from "@/components/ProjectCard";
 import { MdDashboard, MdAnnouncement } from "react-icons/md";
 import { FaChevronDown } from "react-icons/fa"; // Importa el icono de flecha hacia abajo
@@ -290,6 +291,7 @@ export default function UsersPage() {
                     onClick={() => {
                       router.push(`requests/${request.title}`);
                     }}
+                    key={request._id}
                   >
                     <RequestCard
                       key={request._id}

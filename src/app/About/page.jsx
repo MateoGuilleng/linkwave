@@ -124,8 +124,8 @@ export default function About() {
         </h2>
         <p className="text-center text-gray-700 dark:text-gray-300 text-md md:text-lg max-w-2xl mb-8">
           Become a part of Linkwave and start your journey of growth,
-          collaboration, and creativity. Whether you're here to share or to
-          discover, there's a place for you at Linkwave.
+          collaboration, and creativity. Whether youre here to share or to
+          discover, theres a place for you at Linkwave.
         </p>
         <button
           className="w-48 h-12 text-sm md:text-base rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
