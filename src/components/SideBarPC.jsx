@@ -19,6 +19,12 @@ const CustomAside = () => {
             Projects
           </a>
           <a
+            href="/dashboard/requests/"
+            className="flex items-center px-3 py-2.5 font-semibold hover:border-2 border-black dark:border-white hover:rounded-full"
+          >
+            Requests
+          </a>
+          <a
             href="/dashboard/chats"
             className="flex items-center px-3 py-2.5 font-semibold hover:border-2 border-black dark:border-white hover:rounded-full"
           >
@@ -27,16 +33,16 @@ const CustomAside = () => {
         </div>
 
         <a
-          href="/docs"
+          href="/About"
           className="flex items-center px-3 py-2.5 font-semibold hover:border-2 border-black dark:border-white hover:rounded-full"
         >
-          Docs
+          About Linkwave
         </a>
         <a
           href="/contact"
           className="flex items-center px-3 py-2.5 font-semibold hover:border-2 border-black dark:border-white hover:rounded-full"
         >
-          contact
+          Contact
         </a>
       </div>
     </aside>

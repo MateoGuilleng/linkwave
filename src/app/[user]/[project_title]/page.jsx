@@ -516,7 +516,7 @@ function Page() {
 
                           {error}
                           {showUploadButton && ( // Mostrar el botón de carga de comentarios si hay texto en el área de comentario
-                            <Button type="submit" className="mt-3">
+                            <Button type="submit" className="mt-3 text-black dark:text-white">
                               Upload Comment
                             </Button>
                           )}

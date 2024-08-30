@@ -19,9 +19,7 @@ import {
   HiPresentationChartLine,
 } from "react-icons/hi";
 import Link from "next/link";
-import {
-  Banner,
-} from "flowbite-react";
+import { Banner } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { MdDashboard, MdAnnouncement } from "react-icons/md";
 import { useUser } from "@auth0/nextjs-auth0/client";
@@ -165,22 +163,30 @@ export default function Home() {
             Linkwave is a social media app where you can share and give your
             opinion about any type of project around the world!
           </p>
-          <div className="w-full flex items-center justify-center md:justify-start gap-4">
-            <button
-              onClick={() => router.push("/feed")}
-              className="w-48 h-12 text-sm sm:text-base rounded bg-fuchsia-600 text-white hover:bg-fuchsia-700 transition-colors dark:bg-fuchsia-700 dark:hover:bg-fuchsia-800"
-            >
-              Explore
-            </button>
-
+          <div className="w-full flex flex-col items-center justify-center md:justify-start gap-4">
             {!user && (
               <button
                 onClick={() => router.push("/api/auth/login")}
-                className="w-48 h-12 text-sm sm:text-base rounded border border-gray-300 bg-transparent text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-600 transition-colors"
+                className="w-96 h-12 text-sm sm:text-base rounded bg-fuchsia-600 text-white hover:bg-fuchsia-700 transition-colors dark:bg-fuchsia-700 dark:hover:bg-fuchsia-800"
               >
                 Log in
               </button>
             )}
+            <div className="gap-5 flex">
+              <button
+                onClick={() => router.push("/feed")}
+                className="w-48 h-12 text-sm sm:text-base rounded border border-gray-300 bg-transparent text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-600 transition-colors"
+              >
+                Discover
+              </button>
+
+              <button
+                onClick={() => router.push("/About")}
+                className="w-48 h-12 text-sm sm:text-base rounded border border-gray-300 bg-transparent text-gray-900 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:border-gray-600 transition-colors"
+              >
+                About Us
+              </button>
+            </div>
           </div>
         </div>
 

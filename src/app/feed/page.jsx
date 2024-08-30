@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import AOS from "aos"; // Importa AOS
 import "aos/dist/aos.css"; // Importa los estilos de AOS
+import RequestCard from "@/components/RequestCard";
+import { useRouter } from "next/navigation";
 import {
   Banner,
   Tabs,
@@ -38,11 +40,16 @@ import { toast } from "sonner";
 import { Fa500Px, FaGlassCheers } from "react-icons/fa";
 
 export default function UsersPage() {
+  const router = useRouter();
+
   const [projects, setProjects] = useState([]);
   const [projectsCopy, setProjectsCopy] = useState(null);
 
   const [users, setUsers] = useState([]);
   const [usersCopy, setUsersCopy] = useState([]);
+
+  const [requests, setRequests] = useState([]);
+  const [requestsCopy, setRequestsCopy] = useState([]);
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedType, setSelectedType] = useState("all");
@@ -55,9 +62,16 @@ export default function UsersPage() {
   // Estado para controlar cuántos proyectos se muestran
   const [visibleProjects, setVisibleProjects] = useState(6);
 
+  const [visibleRequests, setVisibleRequests] = useState(2);
+
   // Función para cargar más proyectos
   const handleLoadMore = () => {
     setVisibleProjects((prevVisibleProjects) => prevVisibleProjects + 8);
+  };
+
+  // Función para cargar más requests
+  const handleLoadMoreRequests = () => {
+    setVisibleRequests((prevVisibleRequests) => prevVisibleRequests + 2);
   };
 
   const handleTypeChange = (e) => {
@@ -104,6 +118,16 @@ export default function UsersPage() {
   };
 
   useEffect(() => {
+    fetch("api/request")
+      .then((response) => response.json())
+      .then((data) => {
+        setRequests(data);
+        setRequestsCopy(data);
+      })
+      .catch((error) => console.error("Error fetching requests:", error));
+  }, []);
+
+  useEffect(() => {
     fetch("api/project")
       .then((response) => response.json())
       .then((data) => {
@@ -132,6 +156,7 @@ export default function UsersPage() {
 
     let queryFilteredProjects = [];
     let queryFilteredUsers = [];
+    let queryFilteredRequests = [];
 
     if (selectedType === "all") {
       queryFilteredProjects = projectsCopy.filter((project) =>
@@ -140,25 +165,40 @@ export default function UsersPage() {
       queryFilteredUsers = usersCopy.filter((user) =>
         user.nickName.toLowerCase().includes(searchQuery.toLowerCase())
       );
+      queryFilteredRequests = requestsCopy.filter((request) =>
+        request?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     } else if (selectedType === "project") {
       queryFilteredProjects = projectsCopy.filter((project) =>
         project.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
       queryFilteredUsers = []; // No mostrar usuarios
+      queryFilteredRequests = []; // No mostrar requests
     } else if (selectedType === "user") {
       queryFilteredUsers = usersCopy.filter((user) =>
         user.nickName.toLowerCase().includes(searchQuery.toLowerCase())
       );
       queryFilteredProjects = []; // No mostrar proyectos
+      queryFilteredRequests = []; // No mostrar requests
+    } else if (selectedType === "request") {
+      queryFilteredRequests = requestsCopy.filter((request) =>
+        request?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      queryFilteredProjects = []; // No mostrar proyectos
+      queryFilteredUsers = []; // No mostrar usuarios
     }
 
     setProjects(queryFilteredProjects);
     setUsers(queryFilteredUsers);
+    setRequests(queryFilteredRequests);
   };
 
   const handleCategoryClick = (category) => {
     setSelectedCategory(category === selectedCategory ? "" : category);
   };
+
+  // No filtrar requests por categoría seleccionada
+  const visibleRequestsToShow = requests.slice(0, visibleRequests);
 
   const filteredProjects = selectedCategory
     ? projects.filter((project) => project.projectType === selectedCategory)
@@ -222,6 +262,7 @@ export default function UsersPage() {
             <option value="all">All</option>
             <option value="project">Project</option>
             <option value="user">User</option>
+            <option value="request">Request</option>
           </Select>
           <TextInput
             id="search"
@@ -237,9 +278,55 @@ export default function UsersPage() {
           </Button>
         </div>
 
+        {selectedType === "all" || selectedType === "request" ? (
+          <div data-aos="fade-up">
+            <h2 className="pl-3 mb-4 text-2xl font-semibold  dark:text-white text-black">
+              Recent requests:
+            </h2>
+            {visibleRequestsToShow.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-2 grid-cols-1">
+                {visibleRequestsToShow.map((request) => (
+                  <div
+                    onClick={() => {
+                      router.push(`requests/${request.title}`);
+                    }}
+                  >
+                    <RequestCard
+                      key={request._id}
+                      title={request.title}
+                      category={request.category}
+                      content={request.content}
+                      createdAt={request.createdAt}
+                      updatedAt={request.updatedAt}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400">
+                No requests found for this category.
+              </p>
+            )}
+            {requests.length > visibleRequests && (
+              <div className="flex items-center justify-center my-10">
+                {/* Líneas horizontales a los lados del botón */}
+                <div className="h-px w-16 bg-gray-300 dark:bg-gray-700"></div>
+                <button
+                  onClick={handleLoadMoreRequests}
+                  data-aos="fade-down"
+                  className="mx-4 px-6 py-3 flex items-center space-x-2 bg-white text-black rounded-full hover:bg-gray-200 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 transition-colors duration-300 shadow-md"
+                >
+                  Load more requests <FaChevronDown className="ml-2" />
+                </button>
+                <div className="h-px w-16 bg-gray-300 dark:bg-gray-700"></div>
+              </div>
+            )}
+          </div>
+        ) : null}
+
         {(selectedType === "all" || selectedType === "project") && (
           <div data-aos="fade-up">
-            <h2 className="pl-3 mb-4 text-2xl font-semibold mt-10 text-black dark:text-white">
+            <h2 className="pl-3 mb-4 text-2xl font-semibold text-black dark:text-white">
               Top projects:
             </h2>
 
@@ -374,7 +461,7 @@ export default function UsersPage() {
                     data-aos="fade-down"
                     className="mx-4 px-6 py-3 flex items-center space-x-2 bg-white text-black rounded-full hover:bg-gray-200 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 transition-colors duration-300 shadow-md"
                   >
-                    Load more <FaChevronDown className="ml-2" />
+                    Load more projects <FaChevronDown className="ml-2" />
                   </button>
                   <div className="h-px w-16 bg-gray-300 dark:bg-gray-700"></div>
                 </div>

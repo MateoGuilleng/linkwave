@@ -32,6 +32,12 @@ const SortableListReadOnly = ({ items = [], projectName }) => {
   );
 
   useEffect(() => {
+    AOS.init({
+      duration: 1000, // Duración de la animación en milisegundos
+    });
+  }, []);
+
+  useEffect(() => {
     setSortedItems(
       Array.isArray(items)
         ? [...items].sort((a, b) => a.position - b.position)

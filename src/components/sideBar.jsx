@@ -44,13 +44,16 @@ function CustomDrawer() {
                     <Sidebar.Item href="/dashboard/projects" icon={HiPencil}>
                       Projects
                     </Sidebar.Item>
+                    <Sidebar.Item href="/dashboard/projects" icon={HiSearch}>
+                      Requests
+                    </Sidebar.Item>
                     <Sidebar.Item href="/dashboard/chats" icon={HiUsers}>
                       Chats
                     </Sidebar.Item>
                   </Sidebar.ItemGroup>
                   <Sidebar.ItemGroup>
-                    <Sidebar.Item href="/docs" icon={HiClipboard}>
-                      Docs
+                    <Sidebar.Item href="/About" icon={HiClipboard}>
+                      About Linkwave
                     </Sidebar.Item>
 
                     <Sidebar.Item href="/contact" icon={HiInformationCircle}>
