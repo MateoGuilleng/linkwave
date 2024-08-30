@@ -342,7 +342,7 @@ function Page() {
                   </div>
                 </div>
 
-                <main className="m-10 mt-0 h-screen">
+                <main className="m-10 mt-0">
                   <div className="flex align-middle mt-10">
                     <h1 className="text-2xl font-bold">Responses:</h1>
 
