@@ -181,27 +181,39 @@ const SortableRequestList = ({ items = [], projectName, projectId }) => {
         </div>
 
         {item?.requestBoxFiles?.length > 0 && (
-          <div className="mt-2 w-full">
-            <Label className="text-lg font-semibold" value="Files:" />
+          <div className="my-2 w-full">
+            {/* <Label className="text-lg font-semibold" value="Files:" /> */}
             <ul className="mt-2">
               {item.requestBoxFiles.map((file) => (
                 <li
                   key={file.fileId}
-                  className="flex items-center gap-2 hover:border-b-2"
+                  className="flex flex-col gap-2 hover:border-b-2"
                 >
-                  <a href={`/api/files/downloadFile/${file.fileId}`}>
-                    {file.filename}
-                  </a>
-                  {file.filetype === "application/pdf" && <FaFilePdf />}
-                  {file.filetype?.startsWith("image/") && <FaFileImage />}
-                  {file.filetype?.startsWith("video/") && <FaFileVideo />}
-                  {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                  {/* Renderizar enlace de descarga del archivo */}
+                  <div className="flex items-center gap-2">
+                    <a href={`/api/files/downloadFile/${file.fileId}`}>
+                      {file.filename}
+                    </a>
+                    {/* Renderizar icono correspondiente al tipo de archivo */}
+                    {file.filetype === "application/pdf" && <FaFilePdf />}
+                    {file.filetype?.startsWith("image/") && <FaFileImage />}
+                    {file.filetype?.startsWith("video/") && <FaFileVideo />}
+                    {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                  </div>
+
+                  {/* Renderizar previsualización para archivos de imagen */}
+                  {file.filetype?.startsWith("image/") && (
+                    <img
+                      src={`/api/files/downloadFile/${file.fileId}`}
+                      alt={file.filename}
+                      className="mt-2 max-w-full h-auto rounded-md"
+                    />
+                  )}
                 </li>
               ))}
             </ul>
           </div>
         )}
-
         <BoxDescription description={item.description} />
 
         <div className="flex gap-2 mt-3">

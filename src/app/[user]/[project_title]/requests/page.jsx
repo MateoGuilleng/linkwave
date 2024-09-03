@@ -629,7 +629,7 @@ function Page() {
                   <form onSubmit={handleRequestBoxSubmit}>
                     <div className="overflow-y-auto max-h-[70vh]">
                       <div className="flex gap-10">
-                        <div className="mt-5 w-full ">
+                        <div className=" w-full ">
                           <div className="mb-2 block">
                             <Label htmlFor="Title" value="Title (optional)" />
                           </div>
@@ -643,7 +643,7 @@ function Page() {
                           />
                         </div>
                         <div className="w-full">
-                          <div className="mb-2 mt-6  block">
+                          <div className="mb-2 block">
                             <Label htmlFor="Category" value="Category:" />
                           </div>
                           <Select
@@ -685,11 +685,6 @@ function Page() {
                       >
                         Description: (Description Suports HTML Embeded!)
                       </label>
-                      <Popover content={content} className="" placement="right">
-                        <Button className="align-middle mb-2 border-2 ml-3 border-white/35 text-black dark:text-white">
-                          Learn More
-                        </Button>
-                      </Popover>
 
                       <Textarea
                         className="mt-5"
@@ -702,7 +697,7 @@ function Page() {
                       />
 
                       <button
-                        className="text-black dark:text-white"
+                        className="text-black mt-5 text-center w-full border-2 p-2 border-black/50 dark:border-white rounded-lg dark:text-white"
                         type="submit"
                       >
                         Upload

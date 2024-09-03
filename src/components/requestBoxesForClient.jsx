@@ -31,7 +31,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
   const [editBoxModal, setEditBoxModal] = useState(false);
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
-  const {user, isLoading} = useUser()
+  const { user, isLoading } = useUser();
 
   const handleTitleChange = (e) => setBoxTitle(e.target.value);
   const handleCategoryChange = (e) => setBoxCategory(e.target.value);
@@ -366,21 +366,34 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
         </div>
 
         {item?.requestBoxFiles?.length > 0 && (
-          <div className="mt-2 w-full">
-            <Label className="text-lg font-semibold" value="Files:" />
+          <div className="my-2 w-full">
+            {/* <Label className="text-lg font-semibold" value="Files:" /> */}
             <ul className="mt-2">
               {item.requestBoxFiles.map((file) => (
                 <li
                   key={file.fileId}
-                  className="flex items-center gap-2 hover:border-b-2"
+                  className="flex flex-col gap-2 hover:border-b-2"
                 >
-                  <a href={`/api/files/downloadFile/${file.fileId}`}>
-                    {file.filename}
-                  </a>
-                  {file.filetype === "application/pdf" && <FaFilePdf />}
-                  {file.filetype?.startsWith("image/") && <FaFileImage />}
-                  {file.filetype?.startsWith("video/") && <FaFileVideo />}
-                  {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                  {/* Renderizar enlace de descarga del archivo */}
+                  <div className="flex items-center gap-2">
+                    <a href={`/api/files/downloadFile/${file.fileId}`}>
+                      {file.filename}
+                    </a>
+                    {/* Renderizar icono correspondiente al tipo de archivo */}
+                    {file.filetype === "application/pdf" && <FaFilePdf />}
+                    {file.filetype?.startsWith("image/") && <FaFileImage />}
+                    {file.filetype?.startsWith("video/") && <FaFileVideo />}
+                    {file.filetype?.startsWith("audio/") && <FaFileAudio />}
+                  </div>
+
+                  {/* Renderizar previsualización para archivos de imagen */}
+                  {file.filetype?.startsWith("image/") && (
+                    <img
+                      src={`/api/files/downloadFile/${file.fileId}`}
+                      alt={file.filename}
+                      className="mt-2 max-w-full h-auto rounded-md"
+                    />
+                  )}
                 </li>
               ))}
             </ul>
@@ -398,7 +411,7 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
               }}
             >
               <div className="flex gap-5 align-middle">
-                <FaEdit className="text-white"/>
+                <FaEdit className="text-white" />
               </div>
             </button>
             <button
@@ -573,11 +586,14 @@ const SortableRequestListReadOnly = ({ items = [], projectName }) => {
                 </div>
 
                 <div className="mt-5 w-full">
-                  <Button type="submit" className="bg-slate-800 text-black dark:text-white">
+                  <Button
+                    type="submit"
+                    className="bg-slate-800 text-black dark:text-white w-full border-2 border-black/50 dark:border-white/50"
+                  >
                     <div className="self-center">
                       <FaEdit />
                     </div>
-                    <p className="p-2">Edit</p>
+                    <p className="pr-5">Edit</p>
                   </Button>
                 </div>
               </div>

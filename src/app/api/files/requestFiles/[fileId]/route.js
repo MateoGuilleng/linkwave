@@ -41,10 +41,9 @@ export const PUT = async (request, { params }) => {
     const file = data.get("file");
 
     const boxIdentifier = params.fileId;
-    const projectName = data.get("projectName");
+    const projectName = decodeURIComponent(data.get("projectName"));
 
-
-    console.log("file", file); 
+    console.log("file", file);
     // Devuelve:
     //File {
     //   size: 23620,
@@ -52,7 +51,6 @@ export const PUT = async (request, { params }) => {
     //   name: 'gatocomuneuropeo-97.webp',
     //   lastModified: 1718214779935
     // }
-
 
     if (!file) {
       return NextResponse.json(
@@ -161,14 +159,18 @@ export const DELETE = async (request, { params }) => {
   const fileId = params.fileId;
 
   // Aquí obtenemos el cuerpo de la solicitud de manera diferente
-  const { projectTitle } = JSON.parse(await request.text());
+  const { projectTitle } = await request.json();
 
-  console.log(fileId, projectTitle); // Asegúrate de que projectTitle se imprima correctamente
+  console.log(projectTitle);
+
+  const projectName = await decodeURIComponent(projectTitle);
+
+  console.log(fileId, projectName); // Asegúrate de que projectTitle se imprima correctamente
 
   try {
-    // Eliminar referencias del fileId en el array boxFiles de todos los proyectos que coincidan con el projectTitle
+    // Eliminar referencias del fileId en el array boxFiles de todos los proyectos que coincidan con el projectName
     const updatedProjects = await Project.updateMany(
-      { title: projectTitle, "requestBoxes.requestBoxFiles.fileId": fileId },
+      { title: projectName, "requestBoxes.requestBoxFiles.fileId": fileId },
       { $pull: { "requestBoxes.$[].requestBoxFiles": { fileId } } }
     );
 
