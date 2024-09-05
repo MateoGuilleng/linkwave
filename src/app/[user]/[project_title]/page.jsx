@@ -30,7 +30,12 @@ import {
   FileInput,
   Select,
 } from "flowbite-react";
-import { FaArrowLeft, FaPeopleArrows, FaPlus } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaPeopleArrows,
+  FaPlus,
+  FaQuestionCircle,
+} from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { SlOptionsVertical } from "react-icons/sl";
 import { useUser } from "@auth0/nextjs-auth0/client";
@@ -516,7 +521,10 @@ function Page() {
 
                           {error}
                           {showUploadButton && ( // Mostrar el botón de carga de comentarios si hay texto en el área de comentario
-                            <Button type="submit" className="mt-3 text-black dark:text-white">
+                            <Button
+                              type="submit"
+                              className="mt-3 text-black dark:text-white"
+                            >
                               Upload Comment
                             </Button>
                           )}
@@ -728,6 +736,15 @@ function Page() {
             <div className="m-10"> {project?.content}</div>
             <div className="flex">
               <h1 className="text-2xl font-bold">Boxes:</h1>
+
+              <FaQuestionCircle
+                className="self-center text-black dark:text-white ml-5"
+                onClick={() => {
+                  toast.info(
+                    "Boxes are maded by the author or contributors, if you are the administrator, try to click on edit project in order to edit the project"
+                  );
+                }}
+              />
             </div>
             <div className="App text-black w-full ">
               <div className="w-full">

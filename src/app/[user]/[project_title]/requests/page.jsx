@@ -27,7 +27,7 @@ import {
   FileInput,
   Select,
 } from "flowbite-react";
-import { FaArrowLeft, FaPlus } from "react-icons/fa";
+import { FaArrowLeft, FaPlus, FaQuestionCircle } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { SlOptionsVertical } from "react-icons/sl";
 import { useUser } from "@auth0/nextjs-auth0/client";
@@ -599,12 +599,21 @@ function Page() {
 
             <div className="flex">
               <h1 className="text-2xl font-bold">Request Boxes:</h1>
+
               <Button
                 className="dark:bg-gray-700 ml-4 bg-gray-100 text-black dark:text-white dark:hover:bg-gray-600 flex items-center justify-center"
                 onClick={() => setUploadModal(true)}
               >
                 <FaPlus />
               </Button>
+              <FaQuestionCircle
+                className="self-center text-black dark:text-white ml-5"
+                onClick={() => {
+                  toast.info(
+                    "Only the admin of the project can accept or deny the requests, requests are designed to allow any user contribute to the project, if you are the administrator, try to click on edit project and then click on requests in order to accpet or deny requests"
+                  );
+                }}
+              />
             </div>
             <div className="App text-black dark:text-white w-full ">
               <div className="w-full">
