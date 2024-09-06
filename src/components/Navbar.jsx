@@ -22,6 +22,8 @@ import {
   HiInformationCircle,
 } from "react-icons/hi";
 
+import { FaPaperclip, FaPlus, FaQuestionCircle } from "react-icons/fa";
+
 function Navbar({ using }) {
   const { user, error, isLoading } = useUser();
   const [isOpen, setIsOpen] = useState(false);
@@ -98,25 +100,31 @@ function Navbar({ using }) {
 
             <div className="md:flex gap-5 hidden ">
               <Link
-                className={`hover:text-fuchsia-600 transition-colors ${
+                className={`hover:text-fuchsia-600 border-2 border-green-800/75 rounded-md p-2  transition-colors ${
                   use == "projects"
                     ? "border-b-4 border-fuchsia-600"
                     : "text-gray-700 dark:text-gray-300"
                 }`}
                 href="/dashboard/projects"
               >
-                New Project
+                <div className="flex">
+                  New Project
+                  <FaPaperclip className="self-center ml-2" />
+                </div>
               </Link>
 
               <Link
-                className={`hover:text-fuchsia-600 transition-colors ${
+                className={`hover:text-fuchsia-600 border-2 border-green-800/75 rounded-md p-2 transition-colors ${
                   use == "requests"
                     ? "border-b-4 border-fuchsia-600"
                     : "text-gray-700 dark:text-gray-300"
                 }`}
                 href="/dashboard/requests"
               >
-                New Question
+                <div className="flex">
+                  New Question
+                  <FaQuestionCircle className="self-center ml-2" />
+                </div>
               </Link>
             </div>
 
