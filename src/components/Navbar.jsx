@@ -48,7 +48,7 @@ function Navbar({ using }) {
                   }`}
                   href="/dashboard"
                 >
-                  Dashboard
+                  My account
                 </Link>
               </li>
             </ul>
