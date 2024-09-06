@@ -139,7 +139,7 @@ function Requests() {
 
   return (
     <div>
-      <Navbar using={"projects"} />
+      <Navbar using={"requests"} />
 
       <div className="bg-gray-100 dark:bg-black w-full flex flex-col gap-5 sm:px-5 md:px-10 md:flex-row text-black dark:text-white">
         <CustomAside />
