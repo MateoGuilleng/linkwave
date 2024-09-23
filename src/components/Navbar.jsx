@@ -17,6 +17,7 @@ import {
   HiMenu,
   HiPencil,
   HiSearch,
+  HiUser,
   HiUsers,
   HiClipboard,
   HiInformationCircle,
@@ -48,6 +49,7 @@ function Navbar({ using }) {
                   <HiMenu className="w-7 h-7 text-black dark:text-white" />
                 </Button>
               </div>
+
               <Drawer open={isOpen} onClose={handleClose}>
                 <Drawer.Header title="MENU" titleIcon={() => <></>} />
                 <Drawer.Items>
@@ -80,7 +82,7 @@ function Navbar({ using }) {
                           </Sidebar.ItemGroup>
                           <Sidebar.ItemGroup>
                             <Sidebar.Item href="/About" icon={HiClipboard}>
-                              About Linkwave
+                              About Linkwaves
                             </Sidebar.Item>
 
                             <Sidebar.Item
@@ -129,21 +131,21 @@ function Navbar({ using }) {
             </div>
 
             {/* Center - Linkwave */}
-            <div className="absolute left-1/2 transform -translate-x-1/2">
+            <div className="flex items-center justify-center sm:justify-start sm:absolute sm:left-1/2 sm:transform sm:-translate-x-1/2">
               <Link
                 className="text-lg font-bold hover:text-fuchsia-600 transition-colors"
                 href="/"
               >
-                Linkwave
+                Linkwaves
               </Link>
             </div>
 
             {/* Right side - Feed and Dashboard */}
-            <ul className="flex gap-8 text-gray-700 dark:text-gray-300">
+            <ul className="flex gap-8 self-center text-gray-700 dark:text-gray-300">
               <li>
-                <DarkThemeToggle className="p-0" />
+                <DarkThemeToggle className="self-center" />
               </li>
-              <li>
+              <li className="self-center">
                 <Link
                   className={`hover:text-fuchsia-600 transition-colors ${
                     use == "feed"
@@ -156,16 +158,17 @@ function Navbar({ using }) {
                 </Link>
               </li>
 
-              <li>
+              <li className="justify-center flex">
                 <Link
-                  className={`hover:text-fuchsia-600 border-2 p-2 transition-colors rounded ${
+                  className={`hover:text-fuchsia-600 border-2 p-2 flex transition-colors rounded ${
                     use == "dashboard"
                       ? "border-fuchsia-600 text-fuchsia-600"
                       : "text-gray-700 dark:text-gray-300 border-gray-700 dark:border-gray-300"
                   }`}
-                  href="/dashboard"
+                  href="/dashboard "
                 >
-                  My account
+                  <p className="hidden sm:block">My account</p>
+                  <HiUser className="self-center sm:ml-5 " />{" "}
                 </Link>
               </li>
             </ul>
@@ -178,7 +181,7 @@ function Navbar({ using }) {
               className="text-lg font-bold text-black dark:text-white hover:text-fuchsia-600 transition-colors"
               href="/"
             >
-              Linkwave
+              Linkwaves
             </Link>
             <ul className="flex gap-8 align-middle items-center">
               <li>
